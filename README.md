@@ -11,7 +11,7 @@
 2. npm install 하여 패키지 설치
 ```
 
-## 패키지 목록
+### 패키지 목록
 
 - axios: API 비동기 호출
 - pinia: 전역 상태관리
@@ -41,6 +41,43 @@ json 서버만 실행
 ```shell
 json-server db.json --port 3000
 
+```
+
+# 폴더 구조
+
+```text
+📂
+├─ public/                      # 정적 파일
+│  └─ favicon.ico
+├─ docs/                        # 프로젝트 문서
+├─ src/
+│  ├─ components/
+│  │  ├─ common/                # 공통 컴포넌트
+│  │  │  └─ Header.vue
+│  │  └─ ui/                    # shadcn-vue 컴포넌트 위치
+│  ├─ layouts/                  # 공통 레이아웃
+│  │  └─ DefaultLayout.vue
+│  ├─ pages/                    # 라우트와 연결되는 페이지
+│  │  ├─ DashboardPage.vue
+│  │  ├─ LoginPage.vue
+│  │  └─ NotFoundPage.vue
+│  ├─ router/                   # vue-router 설정
+│  │  └─ index.js
+│  ├─ stores/                   # pinia 전역 상태 관리
+│  │  └─ auth.js
+│  ├─ style/                    # 전역 스타일
+│  │  └─ global.css
+│  ├─ lib/                      # 공용 유틸 함수
+│  │  └─ utils.js
+│  ├─ App.vue                   # 최상위 앱 컴포넌트
+│  └─ main.js                   # 앱 진입 파일
+├─ components.json              # shadcn-vue 설정
+├─ db.json                      # json-server 데이터
+├─ index.html
+├─ jsconfig.json
+├─ package.json
+├─ package-lock.json
+└─ vite.config.js
 ```
 
 # 협업 규칙

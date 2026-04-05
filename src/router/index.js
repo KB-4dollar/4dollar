@@ -1,11 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
-import NotFound from '@/components/Common/NotFound.vue';
-import Dashboard from '@/components/Dashboard/dashboard.vue';
-
-import Layout from '@/components/Common/Layout.vue';
-import Login from '@/components/Auth/Login.vue';
+import NotFound from '@/pages/NotFoundPage.vue';
+import Dashboard from '@/pages/DashboardPage.vue';
+import Layout from '@/layouts/DefaultLayout.vue';
+import Login from '@/pages/LoginPage.vue';
 
 const publicRoutes = [
   {
