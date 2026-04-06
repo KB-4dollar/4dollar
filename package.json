@@ -9,7 +9,8 @@
     "dev": "concurrently npm:watch:*",
     "db": "json-server db.json --port 3000",
     "watch:json-server": "json-server db.json --port 3000",
-    "watch:vite": "vite"
+    "watch:vite": "vite",
+    "start": "json-server --watch db.json --port $PORT --host 0.0.0.0"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
