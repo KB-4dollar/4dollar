@@ -20,6 +20,8 @@
 - **기간:** 2026.04.07 ~ 2026.04.13 (5일)
 - **배포 링크:** <!-- TODO: GitHub Pages 링크 -->
 
+<!-- TODO: 아키텍쳐(프로젝트 구조, CI/CD) 내용 추가-->
+
 ## 2. 팀원 구성
 
 <!-- TODO: 팀원 정보 채우기 -->
@@ -83,20 +85,33 @@
 
 ## 프로젝트 셋팅
 
-```shell
-1. git clone ${git repository 주소}
-2. cd moneybook
-3. npm install
+로컬 개발 환경 설정
+
+1. 레포지토리 클론
+
+```bash
+git clone https://github.com/KB-4dollar/4dollar.git
+cd 4dollar
+git checkout dev
 ```
 
-### 패키지 목록
+2. 패키지 설치
 
-- axios: API 비동기 호출
-- pinia: 전역 상태관리
-- tailwind
-- json-server
-- json-server-auth (추후 기능 개발시 설치 예정)
-- concurrently: front서버와 json서버를 동시에 실행가능
+```bash
+npm install
+```
+
+3. 환경변수 설정
+   프로젝트 루트에 .env.dev 파일 생성 후 아래 내용 입력 (API URL은 따로 받기)
+   `VITE_API_URL=여기에*받은*URL*입력`
+4. 개발 서버 실행
+
+```bash
+   npm run dev
+```
+
+5. 배포
+   - dev 브랜치에 push하면 자동으로 배포(dev: https://KB-4dollar.github.io/4dollar)
 
 ## 실행방법
 
