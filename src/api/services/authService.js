@@ -1,3 +1,5 @@
+import apiClient from '../client/apiClient';
+
 /**
  * 회원 인증 관련 서비스 (F-00)
  */
