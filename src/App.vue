@@ -1,6 +1,5 @@
 <script setup>
 import axios from 'axios';
-import Header from './components/Common/Header.vue';
 const requestAPI = () => {
   // const url = "http://localhost:3000/users 와 같음";
   const url = '/api/users';
