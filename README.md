@@ -84,8 +84,9 @@
 ## 프로젝트 셋팅
 
 ```shell
-1. git pull ${git repository 주소}
-2. npm install 하여 패키지 설치
+1. git clone ${git repository 주소}
+2. cd moneybook
+3. npm install
 ```
 
 ### 패키지 목록
@@ -94,25 +95,31 @@
 - pinia: 전역 상태관리
 - tailwind
 - json-server
-- json-server-auth: 인증/인가 구현
+- json-server-auth (추후 기능 개발시 설치 예정)
 - concurrently: front서버와 json서버를 동시에 실행가능
 
 ## 실행방법
 
-프론트&json 서버 동시 실행
+프론트엔드와 json-server 동시 실행
 
 ```shell
 npm run dev
 ```
 
-프론트 서버만 실행
+프론트엔드만 실행
 
 ```shell
-vite
+npm run dev:web
 ```
 
-json 서버만 실행
+json-server만 실행
 
 ```shell
-json-server db.json --port 3000
+npm run db
+```
+
+배포 환경(Railway)에서는 아래 명령으로 json-server가 실행됩니다.
+
+```shell
+npm run start
 ```
