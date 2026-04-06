@@ -1,10 +1,87 @@
 # KB 스켈레톤 프로젝트 - 가계부
 
-# 프로젝트 개요
+# 목차
 
-- [프로젝트 개요 및 설명](./docs/Overview.md)
+- [1. 프로젝트 소개](#1-프로젝트-소개)
+- [2. 팀원 구성](#2-팀원-구성)
+- [3. 기술 스택](#3-기술-스택)
+- [4. 주요 기능](#4-주요-기능)
+- [5. 화면 설계](#5-화면-설계)
+- [6. 컴포넌트 설계](#6-컴포넌트-설계)
+- [7. 구현 결과 화면](#7-구현-결과-화면)
+- [8. 프로젝트 후기](#8-프로젝트-후기)
+- [프로젝트 셋팅](#프로젝트-셋팅)
+- [실행방법](#실행방법)
 
-# 프로젝트 셋팅
+## 1. 프로젝트 소개
+
+> 수입과 지출을 기록하고 월별 재정을 한눈에 확인할 수 있는 가계부 서비스
+
+- **기간:** 2026.04.07 ~ 2026.04.13 (5일)
+- **배포 링크:** <!-- TODO: GitHub Pages 링크 -->
+
+## 2. 팀원 구성
+
+<!-- TODO: 팀원 정보 채우기 -->
+
+| 이름  | 역할 | 담당 기능 |
+| ----- | ---- | --------- |
+| 이름1 | 팀장 | -         |
+| 이름2 | 팀원 | -         |
+| 이름3 | 팀원 | -         |
+| 이름4 | 팀원 | -         |
+
+## 3. 기술 스택
+
+![Vue.js](https://img.shields.io/badge/Vue_3-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Vue Router](https://img.shields.io/badge/Vue_Router-35495E?style=for-the-badge&logo=vuedotjs&logoColor=white)
+![Pinia](https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logoColor=black)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![shadcn-vue](https://img.shields.io/badge/shadcn--vue-000000?style=for-the-badge&logoColor=white)
+![json-server](https://img.shields.io/badge/json--server-gray?style=for-the-badge&logo=json&logoColor=white)
+
+## 4. 주요 기능
+
+<!-- TODO: 구현한 기능 목록 채우기 -->
+
+| 기능           | 설명                                    |
+| -------------- | --------------------------------------- |
+| 수입/지출 등록 | 날짜, 금액, 카테고리, 메모 입력 후 저장 |
+| 거래 내역 조회 | 전체 내역 목록 확인                     |
+| 필터링         | 날짜, 카테고리, 수입/지출 유형별 필터   |
+| 월별 요약      | 총 수입, 총 지출, 순이익 요약 표시      |
+
+## 5. 화면 설계
+
+<!-- TODO: 와이어프레임 또는 스토리보드 이미지 삽입 -->
+
+## 6. 컴포넌트 설계
+
+<!-- TODO: 컴포넌트 트리 또는 다이어그램 삽입 -->
+
+## 7. 구현 결과 화면
+
+<!-- TODO: 완성된 화면 스크린샷 삽입 -->
+<!-- 예시: ![대시보드](./docs/attach/screenshot_dashboard.png) -->
+
+## 8. 프로젝트 후기
+
+<!-- TODO: 팀원별 후기 채우기 -->
+
+| 이름  | 후기 |
+| ----- | ---- |
+| 이름1 | -    |
+| 이름2 | -    |
+| 이름3 | -    |
+| 이름4 | -    |
+
+---
+
+---
+
+## 프로젝트 셋팅
 
 ```shell
 1. git pull ${git repository 주소}
@@ -20,126 +97,22 @@
 - json-server-auth: 인증/인가 구현
 - concurrently: front서버와 json서버를 동시에 실행가능
 
-# 실행방법
+## 실행방법
 
 프론트&json 서버 동시 실행
 
 ```shell
 npm run dev
-
 ```
 
 프론트 서버만 실행
 
 ```shell
 vite
-
 ```
 
 json 서버만 실행
 
 ```shell
 json-server db.json --port 3000
-
 ```
-
-# 폴더 구조
-
-```text
-📂
-├─ public/                      # 정적 파일
-│  └─ favicon.ico
-├─ docs/                        # 프로젝트 문서
-├─ src/
-│  ├─ components/
-│  │  ├─ common/                # 공통 컴포넌트
-│  │  │  └─ Header.vue
-│  │  └─ ui/                    # shadcn-vue 컴포넌트 위치
-│  ├─ layouts/                  # 공통 레이아웃
-│  │  └─ DefaultLayout.vue
-│  ├─ pages/                    # 라우트와 연결되는 페이지
-│  │  ├─ DashboardPage.vue
-│  │  ├─ LoginPage.vue
-│  │  └─ NotFoundPage.vue
-│  ├─ router/                   # vue-router 설정
-│  │  └─ index.js
-│  ├─ stores/                   # pinia 전역 상태 관리
-│  │  ├─ auth.js
-│  │  └─ transaction.js
-│  ├─ style/                    # 전역 스타일
-│  │  └─ global.css
-│  ├─ lib/                      # 공용 유틸 함수
-│  │  └─ utils.js
-│  ├─ App.vue                   # 최상위 앱 컴포넌트
-│  └─ main.js                   # 앱 진입 파일
-├─ components.json              # shadcn-vue 설정
-├─ db.json                      # json-server 데이터
-├─ index.html
-├─ jsconfig.json
-├─ package.json
-├─ package-lock.json
-└─ vite.config.js
-```
-
-# 개발 시작 가이드
-
-> 상세 내용: [docs/DevGuide.md](./docs/DevGuide.md)
-
-## 라우터 추가
-
-`src/router/index.js` 하단의 `authRoutes` / `userRoutes` 배열에 본인 담당 라우트를 추가한다.
-
-```js
-const userRoutes = [
-  {
-    path: '/',
-    component: Layout,
-    meta: { requiresAuth: true },
-    children: [
-      {
-        path: 'list',
-        name: 'transactionList',
-        component: () => import('@/pages/TransactionListPage.vue'),
-      },
-    ],
-  },
-];
-```
-
-## API 호출
-
-`/api` 프리픽스를 사용하면 json-server(`localhost:3000`)로 자동 프록시된다.
-
-```js
-import axios from 'axios';
-const res = await axios.get('/api/transactions');
-```
-
-## Pinia 스토어
-
-`src/stores/` 하위 파일을 참고해 스토어를 불러오거나 새로 추가한다.
-
-```js
-import { useTransactionStore } from '@/stores/transaction';
-const store = useTransactionStore();
-```
-
-# 협업 규칙
-
-**< 브랜치 전략 >**
-
-```
-main
-⌞ dev
-⌞ feature-기능명/
-⌞ hotfix-버그명/
-```
-
-**<커밋 규칙>**
-
-- `feat`: 기능명
-- `fix`: 버그수정
-- `style`: UI수정
-- `core`: 코어 기능
-- `refactor`: 코드 리팩토링
-- `docs`: 문서 관련 작업
