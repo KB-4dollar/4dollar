@@ -64,7 +64,8 @@ json-server db.json --port 3000
 │  ├─ router/                   # vue-router 설정
 │  │  └─ index.js
 │  ├─ stores/                   # pinia 전역 상태 관리
-│  │  └─ auth.js
+│  │  ├─ auth.js
+│  │  └─ transaction.js
 │  ├─ style/                    # 전역 스타일
 │  │  └─ global.css
 │  ├─ lib/                      # 공용 유틸 함수
@@ -78,6 +79,49 @@ json-server db.json --port 3000
 ├─ package.json
 ├─ package-lock.json
 └─ vite.config.js
+```
+
+# 개발 시작 가이드
+
+> 상세 내용: [docs/DevGuide.md](./docs/DevGuide.md)
+
+## 라우터 추가
+
+`src/router/index.js` 하단의 `authRoutes` / `userRoutes` 배열에 본인 담당 라우트를 추가한다.
+
+```js
+const userRoutes = [
+  {
+    path: '/',
+    component: Layout,
+    meta: { requiresAuth: true },
+    children: [
+      {
+        path: 'list',
+        name: 'transactionList',
+        component: () => import('@/pages/TransactionListPage.vue'),
+      },
+    ],
+  },
+];
+```
+
+## API 호출
+
+`/api` 프리픽스를 사용하면 json-server(`localhost:3000`)로 자동 프록시된다.
+
+```js
+import axios from 'axios';
+const res = await axios.get('/api/transactions');
+```
+
+## Pinia 스토어
+
+`src/stores/` 하위 파일을 참고해 스토어를 불러오거나 새로 추가한다.
+
+```js
+import { useTransactionStore } from '@/stores/transaction';
+const store = useTransactionStore();
 ```
 
 # 협업 규칙
