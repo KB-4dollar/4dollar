@@ -1,3 +1,4 @@
+<!-- src/components/common/Header.vue -->
 <script setup>
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
