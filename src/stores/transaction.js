@@ -14,6 +14,8 @@ export const useTransactionStore = defineStore('transaction', {
     loading: false,
     // 페이지네이션
     totalCount: 0,
+    // 대시보드용 월별 통계 데이터를 담을 바구니
+    monthlyStats: null,
   }),
 
   getters: {
@@ -60,6 +62,19 @@ export const useTransactionStore = defineStore('transaction', {
         }
         this.transactions = append ? [...this.transactions, ...newItems] : newItems;
         this.totalCount = total;
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    // 대시보드용 통계 가져오기
+    async fetchMonthlyStats(userId, yearMonth) {
+      this.loading = true;
+      try {
+        const stats = await transactionService.getMonthlyStats(userId, yearMonth);
+        this.monthlyStats = stats; // 성공하면 상태에 저장
+      } catch (error) {
+        console.error('통계 로드 실패:', error);
       } finally {
         this.loading = false;
       }
