@@ -28,6 +28,13 @@ const publicRoutes = [
         name: 'detail',
         component: () => import('../pages/TransactionDetailPage.vue'),
       },
+      {
+        path: 'list',
+        name: 'transactionList',
+        component: () => import('@/pages/TransactionListPage.vue'),
+        meta: { requiresAuth: false }, // 테스트를 위해 우선 false
+        props: { dummyMode: true },
+      },
     ],
   },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
@@ -36,16 +43,7 @@ const publicRoutes = [
 /**본인 담당 라우터 추가 */
 const authRoutes = []; //로그인, 회원가입
 const userRoutes = [];
-const transactionRoutes = [
-  {
-    path: '/list',
-    name: 'transactionList',
-    component: () => import('@/pages/TransactionListPage.vue'),
-    meta: { requiresAuth: false },
-    // 더미 모드 활성화: API 없이 UI 테스트 시 props: { dummyMode: true } 로 변경
-    props: { dummyMode: true },
-  },
-];
+const transactionRoutes = [];
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
@@ -55,6 +53,10 @@ const router = createRouter({
 //네비게이션 가드
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
+  // ✅ 더미 테스트를 위해 'transactionList'는 가드를 통과시킴
+  if (to.name === 'transactionList') {
+    return true;
+  }
 
   if (!authStore.checked) {
     await authStore.checkAuth();

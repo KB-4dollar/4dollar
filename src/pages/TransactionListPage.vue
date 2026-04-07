@@ -3,6 +3,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { cn } from '@/lib/utils';
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
+import SectionCard from '@/components/common/SectionCard.vue';
 
 // 2. store/router
 import { useTransactionStore } from '@/stores/transaction';
@@ -447,270 +448,280 @@ function handleEdit(item) {
 
 <template>
   <PageSectionLayout title="거래내역">
-    <!-- 필터 카드 -->
-    <!-- 기간 탭 -->
-    <div class="text-sm text-muted-foreground mb-3">기간</div>
-    <div
-      class="flex gap-4 md:gap-6 border-b border-border pb-2 mb-6 overflow-x-auto whitespace-nowrap"
-    >
-      <button
-        v-for="period in [
-          FILTER_PERIOD.DAILY,
-          FILTER_PERIOD.WEEKLY,
-          FILTER_PERIOD.MONTHLY,
-          FILTER_PERIOD.CUSTOM,
-        ]"
-        :key="period"
-        :class="
-          cn(
-            'pb-2 text-sm text-muted-foreground relative',
-            activePeriod === period &&
-              'text-primary font-medium after:content-[\'\'] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-primary',
-          )
-        "
-        @click="activePeriod = period"
-      >
-        <span v-if="period === FILTER_PERIOD.CUSTOM" class="mr-1">📅</span
-        >{{ period }}
-      </button>
-    </div>
-
-    <!-- 사용자 지정 날짜 입력 -->
-    <div
-      v-if="activePeriod === FILTER_PERIOD.CUSTOM"
-      class="flex flex-col sm:flex-row items-center gap-2 md:gap-3 bg-secondary/20 p-4 rounded-lg mb-8"
-    >
-      <input
-        v-model="customStart"
-        type="date"
-        class="w-full sm:w-[150px] h-10 border border-border rounded-md px-3 bg-background text-sm text-foreground"
-      />
-      <span class="text-muted-foreground">~</span>
-      <input
-        v-model="customEnd"
-        type="date"
-        class="w-full sm:w-[150px] h-10 border border-border rounded-md px-3 bg-background text-sm text-foreground"
-      />
-    </div>
-
-    <!-- 요약 -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-      <div>
-        <div class="text-sm text-muted-foreground mb-1">총 수입</div>
-        <div class="text-xl md:text-2xl font-bold text-foreground">
-          {{ formatCurrency(displayTotalIncome)
-          }}<span class="text-sm font-normal text-muted-foreground ml-1"
-            >원</span
-          >
-        </div>
-      </div>
-      <div>
-        <div class="text-sm text-muted-foreground mb-1">총 지출</div>
-        <div class="text-xl md:text-2xl font-bold text-foreground">
-          {{ formatCurrency(displayTotalExpense)
-          }}<span class="text-sm font-normal text-muted-foreground ml-1"
-            >원</span
-          >
-        </div>
-      </div>
-      <div>
-        <div class="text-sm text-muted-foreground mb-1">합계</div>
-        <div class="text-xl md:text-2xl font-bold text-foreground">
-          {{ formatCurrency(displayNetAmount)
-          }}<span class="text-sm font-normal text-muted-foreground ml-1"
-            >원</span
-          >
-        </div>
-      </div>
-    </div>
-
-    <!-- 유형 필터 -->
-    <div class="text-sm text-muted-foreground mb-3">유형</div>
-    <div class="flex gap-2 mb-8">
-      <button
-        v-for="type in [
-          '전체',
-          TRANSACTION_TYPE.INCOME,
-          TRANSACTION_TYPE.EXPENSE,
-        ]"
-        :key="type"
-        :class="
-          cn(
-            'px-4 py-1.5 rounded-full text-sm font-medium transition-colors hover:opacity-80',
-            activeType === type
-              ? 'bg-accent-ui text-accent-ui-foreground' // 활성: 오렌지 배경 + 흰색 글자
-              : 'bg-button-dark text-button-dark-foreground', // 비활성: 가이드의 진한 버튼 토큰 (#243047)
-          )
-        "
-        @click="activeType = type"
-      >
-        {{ type }}
-      </button>
-    </div>
-
-    <!-- 카테고리 필터 -->
-    <div class="text-sm text-muted-foreground mb-3">카테고리 (단일 선택)</div>
-    <div class="flex gap-4 items-center overflow-x-auto pb-2 scrollbar-hide">
-      <button
-        class="flex flex-col md:flex-row items-center gap-2 group min-w-max"
-        @click="activeCategory = '전체'"
-      >
+    <div class="grid gap-5">
+      <SectionCard>
+        <!-- 필터 카드 -->
+        <!-- 기간 탭 -->
+        <div class="text-sm text-muted-foreground mb-3">기간</div>
         <div
-          :class="
-            cn(
-              'w-10 h-10 rounded-full flex items-center justify-center text-xs transition-colors',
-              activeCategory === '전체'
-                ? 'bg-accent-ui text-accent-ui-foreground' // 활성: 강조 토큰
-                : 'bg-chip-muted text-chip-muted-foreground group-hover:bg-chip-muted/80', // 비활성: 회색 칩 토큰
-            )
-          "
+          class="flex gap-4 md:gap-6 border-b border-border pb-2 mb-6 overflow-x-auto whitespace-nowrap"
         >
-          전체
-        </div>
-        <span
-          :class="
-            cn(
-              'text-xs md:text-sm transition-colors',
-              activeCategory === '전체'
-                ? 'text-accent-ui font-medium'
-                : 'text-text-primary',
-            )
-          "
-          >전체</span
-        >
-      </button>
-      <button
-        v-for="(cat, index) in [
-          { name: CATEGORY.FOOD, icon: CATEGORY_ICON_MAP[CATEGORY.FOOD] },
-          {
-            name: CATEGORY.TRANSPORT,
-            icon: CATEGORY_ICON_MAP[CATEGORY.TRANSPORT],
-          },
-          { name: CATEGORY.CULTURE, icon: CATEGORY_ICON_MAP[CATEGORY.CULTURE] },
-          {
-            name: CATEGORY.HOSPITAL,
-            icon: CATEGORY_ICON_MAP[CATEGORY.HOSPITAL],
-          },
-          { name: CATEGORY.LIVING, icon: CATEGORY_ICON_MAP[CATEGORY.LIVING] },
-          { name: CATEGORY.EVENT, icon: CATEGORY_ICON_MAP[CATEGORY.EVENT] },
-          { name: CATEGORY.ETC, icon: CATEGORY_ICON_MAP[CATEGORY.ETC] },
-        ]"
-        :key="index"
-        class="flex flex-col md:flex-row items-center gap-2 group min-w-max"
-        @click="activeCategory = cat.name"
-      >
-        <div
-          :class="
-            cn(
-              'w-10 h-10 rounded-full flex items-center justify-center text-lg transition-colors',
-              activeCategory === cat.name
-                ? 'bg-accent-ui text-accent-ui-foreground' // 활성: 강조 배경 + 그 위 글자색
-                : 'bg-chip-muted text-chip-muted-foreground group-hover:bg-chip-muted/80', // 비활성: 칩 배경 + 칩 글자색
-            )
-          "
-        >
-          {{ cat.icon }}
-        </div>
-        <span
-          :class="
-            cn(
-              'text-xs md:text-sm transition-colors',
-              activeCategory === cat.name
-                ? 'text-accent-ui font-medium' // 활성: 강조 텍스트 색상
-                : 'text-text-primary', // 비활성: 기본 텍스트 색상
-            )
-          "
-        >
-          {{ cat.name }}</span
-        >
-      </button>
-    </div>
-    <!-- <div class="bg-card rounded-lg p-4 md:p-8 mb-4 md:mb-6 border border-border shadow-sm">
-
-      
-    </div> -->
-
-    <!-- 거래 목록 -->
-    <!-- <div class="bg-card rounded-lg border border-border shadow-sm p-4 md:p-6"> -->
-    <!-- 로딩 -->
-    <div v-if="isLoading" class="flex justify-center items-center py-12">
-      <span class="text-muted-foreground text-sm">불러오는 중...</span>
-    </div>
-
-    <!-- 데이터 없음 -->
-    <div
-      v-else-if="displayTransactions.length === 0"
-      class="flex justify-center items-center py-12"
-    >
-      <span class="text-muted-foreground text-sm"
-        >해당 조건의 거래내역이 없습니다.</span
-      >
-    </div>
-
-    <!-- 목록 -->
-    <template v-else>
-      <div
-        v-for="item in displayTransactions"
-        :key="item.id"
-        class="flex items-center justify-between py-4 border-b border-border last:border-0"
-      >
-        <div class="flex items-center gap-4">
-          <div
+          <button
+            v-for="period in [
+              FILTER_PERIOD.DAILY,
+              FILTER_PERIOD.WEEKLY,
+              FILTER_PERIOD.MONTHLY,
+              FILTER_PERIOD.CUSTOM,
+            ]"
+            :key="period"
             :class="
               cn(
-                'w-12 h-12 rounded-full flex items-center justify-center text-xl shrink-0',
-                'bg-accent-ui text-accent-ui-foreground',
+                'pb-2 text-sm text-muted-foreground relative',
+                activePeriod === period &&
+                  'text-primary font-medium after:content-[\'\'] after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-primary',
               )
             "
+            @click="activePeriod = period"
           >
-            {{ CATEGORY_ICON_MAP[item.category] ?? '💳' }}
-          </div>
+            <span v-if="period === FILTER_PERIOD.CUSTOM" class="mr-1">📅</span
+            >{{ period }}
+          </button>
+        </div>
 
+        <!-- 사용자 지정 날짜 입력 -->
+        <div
+          v-if="activePeriod === FILTER_PERIOD.CUSTOM"
+          class="flex flex-col sm:flex-row items-center gap-2 md:gap-3 bg-secondary/20 p-4 rounded-lg mb-8"
+        >
+          <input
+            v-model="customStart"
+            type="date"
+            class="w-full sm:w-[150px] h-10 border border-border rounded-md px-3 bg-background text-sm text-foreground"
+          />
+          <span class="text-muted-foreground">~</span>
+          <input
+            v-model="customEnd"
+            type="date"
+            class="w-full sm:w-[150px] h-10 border border-border rounded-md px-3 bg-background text-sm text-foreground"
+          />
+        </div>
+
+        <!-- 요약 -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
           <div>
-            <div class="flex items-center gap-2 mb-1">
-              <span class="font-bold text-foreground text-sm md:text-base">{{
-                item.category
-              }}</span>
-            
-              <span
-                :class="
-                  cn(
-                    'text-[10px] md:text-xs px-1.5 py-0.5 rounded transition-colors',
-                    item.type === TRANSACTION_TYPE.INCOME
-                      ? 'bg-accent-ui/20 text-accent-ui' // 수입: 강조색 연하게 배경 + 강조색 글자
-                      : 'bg-chip-muted text-chip-muted-foreground', // 지출: 회색 칩 토큰 사용
-                  )
-                "
+            <div class="text-sm text-muted-foreground mb-1">총 수입</div>
+            <div class="text-xl md:text-2xl font-bold text-foreground">
+              {{ formatCurrency(displayTotalIncome)
+              }}<span class="text-sm font-normal text-muted-foreground ml-1"
+                >원</span
               >
-                {{ item.type }}
-              </span>
             </div>
-            <div class="text-xs md:text-sm text-muted-foreground">
-              {{ item.memo }}
+          </div>
+          <div>
+            <div class="text-sm text-muted-foreground mb-1">총 지출</div>
+            <div class="text-xl md:text-2xl font-bold text-foreground">
+              {{ formatCurrency(displayTotalExpense)
+              }}<span class="text-sm font-normal text-muted-foreground ml-1"
+                >원</span
+              >
+            </div>
+          </div>
+          <div>
+            <div class="text-sm text-muted-foreground mb-1">합계</div>
+            <div class="text-xl md:text-2xl font-bold text-foreground">
+              {{ formatCurrency(displayNetAmount)
+              }}<span class="text-sm font-normal text-muted-foreground ml-1"
+                >원</span
+              >
             </div>
           </div>
         </div>
 
-        <div class="flex items-center gap-3">
-          <div class="text-right">
+        <!-- 유형 필터 -->
+        <div class="text-sm text-muted-foreground mb-3">유형</div>
+        <div class="flex gap-2 mb-8">
+          <button
+            v-for="type in [
+              '전체',
+              TRANSACTION_TYPE.INCOME,
+              TRANSACTION_TYPE.EXPENSE,
+            ]"
+            :key="type"
+            :class="
+              cn(
+                'px-4 py-1.5 rounded-full text-sm font-medium transition-colors hover:opacity-80',
+                activeType === type
+                  ? 'bg-accent-ui text-accent-ui-foreground' // 활성: 오렌지 배경 + 흰색 글자
+                  : 'bg-button-dark text-button-dark-foreground', // 비활성: 가이드의 진한 버튼 토큰 (#243047)
+              )
+            "
+            @click="activeType = type"
+          >
+            {{ type }}
+          </button>
+        </div>
+
+        <!-- 카테고리 필터 -->
+        <div class="text-sm text-muted-foreground mb-3">
+          카테고리 (단일 선택)
+        </div>
+        <div
+          class="flex gap-4 items-center overflow-x-auto pb-2 scrollbar-hide"
+        >
+          <button
+            class="flex flex-col md:flex-row items-center gap-2 group min-w-max"
+            @click="activeCategory = '전체'"
+          >
             <div
               :class="
                 cn(
-                  'font-bold text-sm md:text-base mb-1',
-                  item.type === TRANSACTION_TYPE.INCOME
-                    ? 'text-accent-ui'
-                    : 'text-text-primary',
+                  'w-10 h-10 rounded-full flex items-center justify-center text-xs transition-colors',
+                  activeCategory === '전체'
+                    ? 'bg-accent-ui text-accent-ui-foreground' // 활성: 강조 토큰
+                    : 'bg-chip-muted text-chip-muted-foreground group-hover:bg-chip-muted/80', // 비활성: 회색 칩 토큰
                 )
               "
             >
-              {{ item.type === TRANSACTION_TYPE.INCOME ? '+' : '-'
-              }}{{ formatCurrency(item.amount) }}원
+              전체
             </div>
-            <div class="text-xs text-muted-foreground">{{ item.date }}</div>
-          </div>
+            <span
+              :class="
+                cn(
+                  'text-xs md:text-sm transition-colors',
+                  activeCategory === '전체'
+                    ? 'text-accent-ui font-medium'
+                    : 'text-text-primary',
+                )
+              "
+              >전체</span
+            >
+          </button>
+          <button
+            v-for="(cat, index) in [
+              { name: CATEGORY.FOOD, icon: CATEGORY_ICON_MAP[CATEGORY.FOOD] },
+              {
+                name: CATEGORY.TRANSPORT,
+                icon: CATEGORY_ICON_MAP[CATEGORY.TRANSPORT],
+              },
+              {
+                name: CATEGORY.CULTURE,
+                icon: CATEGORY_ICON_MAP[CATEGORY.CULTURE],
+              },
+              {
+                name: CATEGORY.HOSPITAL,
+                icon: CATEGORY_ICON_MAP[CATEGORY.HOSPITAL],
+              },
+              {
+                name: CATEGORY.LIVING,
+                icon: CATEGORY_ICON_MAP[CATEGORY.LIVING],
+              },
+              { name: CATEGORY.EVENT, icon: CATEGORY_ICON_MAP[CATEGORY.EVENT] },
+              { name: CATEGORY.ETC, icon: CATEGORY_ICON_MAP[CATEGORY.ETC] },
+            ]"
+            :key="index"
+            class="flex flex-col md:flex-row items-center gap-2 group min-w-max"
+            @click="activeCategory = cat.name"
+          >
+            <div
+              :class="
+                cn(
+                  'w-10 h-10 rounded-full flex items-center justify-center text-lg transition-colors',
+                  activeCategory === cat.name
+                    ? 'bg-accent-ui text-accent-ui-foreground' // 활성: 강조 배경 + 그 위 글자색
+                    : 'bg-chip-muted text-chip-muted-foreground group-hover:bg-chip-muted/80', // 비활성: 칩 배경 + 칩 글자색
+                )
+              "
+            >
+              {{ cat.icon }}
+            </div>
+            <span
+              :class="
+                cn(
+                  'text-xs md:text-sm transition-colors',
+                  activeCategory === cat.name
+                    ? 'text-accent-ui font-medium' // 활성: 강조 텍스트 색상
+                    : 'text-text-primary', // 비활성: 기본 텍스트 색상
+                )
+              "
+            >
+              {{ cat.name }}</span
+            >
+          </button>
+        </div>
+      </SectionCard>
+      <SectionCard>
+        <!-- 거래 목록 -->
+        <!-- <div class="bg-card rounded-lg border border-border shadow-sm p-4 md:p-6"> -->
+        <!-- 로딩 -->
+        <div v-if="isLoading" class="flex justify-center items-center py-12">
+          <span class="text-muted-foreground text-sm">불러오는 중...</span>
+        </div>
 
-          <!-- 수정/삭제, 추후 넣을 경우 사용 -->
-          <!-- <div class="flex flex-col gap-1 shrink-0">
+        <!-- 데이터 없음 -->
+        <div
+          v-else-if="displayTransactions.length === 0"
+          class="flex justify-center items-center py-12"
+        >
+          <span class="text-muted-foreground text-sm"
+            >해당 조건의 거래내역이 없습니다.</span
+          >
+        </div>
+
+        <!-- 목록 -->
+        <template v-else>
+          <div
+            v-for="item in displayTransactions"
+            :key="item.id"
+            class="flex items-center justify-between py-4 border-b border-border last:border-0"
+          >
+            <div class="flex items-center gap-4">
+              <div
+                :class="
+                  cn(
+                    'w-12 h-12 rounded-full flex items-center justify-center text-xl shrink-0',
+                    'bg-accent-ui text-accent-ui-foreground',
+                  )
+                "
+              >
+                {{ CATEGORY_ICON_MAP[item.category] ?? '💳' }}
+              </div>
+
+              <div>
+                <div class="flex items-center gap-2 mb-1">
+                  <span
+                    class="font-bold text-foreground text-sm md:text-base"
+                    >{{ item.category }}</span
+                  >
+
+                  <span
+                    :class="
+                      cn(
+                        'text-[10px] md:text-xs px-1.5 py-0.5 rounded transition-colors',
+                        item.type === TRANSACTION_TYPE.INCOME
+                          ? 'bg-accent-ui/20 text-accent-ui' // 수입: 강조색 연하게 배경 + 강조색 글자
+                          : 'bg-chip-muted text-chip-muted-foreground', // 지출: 회색 칩 토큰 사용
+                      )
+                    "
+                  >
+                    {{ item.type }}
+                  </span>
+                </div>
+                <div class="text-xs md:text-sm text-muted-foreground">
+                  {{ item.memo }}
+                </div>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <div class="text-right">
+                <div
+                  :class="
+                    cn(
+                      'font-bold text-sm md:text-base mb-1',
+                      item.type === TRANSACTION_TYPE.INCOME
+                        ? 'text-accent-ui'
+                        : 'text-text-primary',
+                    )
+                  "
+                >
+                  {{ item.type === TRANSACTION_TYPE.INCOME ? '+' : '-'
+                  }}{{ formatCurrency(item.amount) }}원
+                </div>
+                <div class="text-xs text-muted-foreground">{{ item.date }}</div>
+              </div>
+
+              <!-- 수정/삭제, 추후 넣을 경우 사용 -->
+              <!-- <div class="flex flex-col gap-1 shrink-0">
               <button
                 class="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-secondary"
                 @click="handleEdit(item)"
@@ -724,23 +735,30 @@ function handleEdit(item) {
                 삭제
               </button>
             </div> -->
-        </div>
-      </div>
-    </template>
-    <!-- </div> -->
+            </div>
+          </div>
+        </template>
+        <!-- </div> -->
 
-    <!-- 무한스크롤 sentinel & 상태 표시 -->
-    <div ref="sentinel" class="h-10 flex justify-center items-center mt-4">
-      <span v-if="isFetchingMore" class="text-muted-foreground text-sm"
-        >불러오는 중...</span
-      >
-      <span
-        v-else-if="!displayHasMore && displayTotalCount > 0"
-        class="text-muted-foreground text-xs"
-      >
-        모두 불러왔습니다 (총 {{ displayTotalCount }}개)
-      </span>
+        <!-- 무한스크롤 sentinel & 상태 표시 -->
+        <div ref="sentinel" class="h-10 flex justify-center items-center mt-4">
+          <span v-if="isFetchingMore" class="text-muted-foreground text-sm"
+            >불러오는 중...</span
+          >
+          <span
+            v-else-if="!displayHasMore && displayTotalCount > 0"
+            class="text-muted-foreground text-xs"
+          >
+            모두 불러왔습니다 (총 {{ displayTotalCount }}개)
+          </span>
+        </div>
+      </SectionCard>
     </div>
+
+    <!-- <div class="bg-card rounded-lg p-4 md:p-8 mb-4 md:mb-6 border border-border shadow-sm">
+
+      
+    </div> -->
   </PageSectionLayout>
 </template>
 
