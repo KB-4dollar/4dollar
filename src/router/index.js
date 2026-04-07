@@ -26,7 +26,7 @@ const publicRoutes = [
       {
         path: '/transaction/:id',
         name: 'detail',
-        component: import('../pages/TransactionDetailPage.vue'),
+        component: () => import('../pages/TransactionDetailPage.vue'),
       },
     ],
   },
