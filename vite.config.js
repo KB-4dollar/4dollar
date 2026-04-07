@@ -7,6 +7,7 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/4dollar/', // 레포 이름으로
   plugins: [vue(), vueDevTools(), tailwindcss()],
   resolve: {
     alias: {

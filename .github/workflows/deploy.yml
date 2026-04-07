@@ -1,0 +1,44 @@
+# 워크플로우 이름 (GitHub Actions 탭에서 보이는 이름)
+name: Deploy
+
+# 언제 실행할지 — dev 브랜치에 push하면 자동 실행
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  # ----------------------------------------
+  # Job 1: Vue 빌드 → GitHub Pages 배포
+  # ----------------------------------------
+  deploy-frontend:
+    runs-on: ubuntu-latest # GitHub이 제공하는 가상 컴퓨터에서 실행
+
+    steps:
+      # 1. 내 코드를 가상 컴퓨터로 가져오기
+      - name: 코드 체크아웃
+        uses: actions/checkout@v4
+
+      # 2. Node.js 설치
+      - name: Node.js 설정
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm' # 패키지 캐시 → 다음 실행부터 빠름
+
+      # 3. 패키지 설치 (npm install이랑 같지만 더 엄격한 버전)
+      - name: 패키지 설치
+        run: npm ci
+
+      # 4. Vue 빌드 — 실패하면 여기서 멈추고 배포 안 됨 (CI의 핵심!)
+      - name: Vue 빌드
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ secrets.VITE_API_URL }} # Railway URL을 환경변수로 주입
+
+      # 5. 빌드 결과물(dist/)을 gh-pages 브랜치에 올리기
+      - name: GitHub Pages 배포
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # GitHub이 자동으로 제공, 따로 설정 불필요
+          publish_dir: ./dist
