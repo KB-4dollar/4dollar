@@ -1,40 +1,36 @@
 <script setup>
 import { ref } from 'vue';
-import axios from 'axios';
+import { authService } from '@/api/services/authService';
 import router from '@/router';
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
-const passwordConfrim = ref('');
+const passwordConfirm = ref('');
 const errorMsg = ref('');
 
 const signup = async () => {
   try {
-    //1. 비밀번호를 확인한다.
-    if (password.value !== passwordConfrim.value) {
-      errorMsg.value = '비밀번호가 일치하지 않습니다. ';
+    if (!email.value || !password.value) {
+      errorMsg.value = '이메일과 비밀번호를 입력하세요';
       return;
     }
-    //2.이메일 중복을 체크한다.
-    const response = await axios.get(
-      `http://localhost:3000/users?email=${email.value}`
-    );
-    if (response.data.length > 0) {
-      errorMsg.value = '이미 존재하는 이메일입니다.';
+    if (password.value !== passwordConfirm.value) {
+      errorMsg.value = '비밀번호가 일치하지 않습니다.';
       return;
     }
-    //3. 회원을 생성한다.
-    const newUser = {
-      name: name.value,
+
+    await authService.register({
       email: email.value,
       password: password.value,
-    };
-    await axios.post('http://localhost:3000/users', newUser);
+      username: name.value, // 내부용
+      name: name.value, // UI용
+    });
+
     router.push('/login');
   } catch (error) {
-    console.error(error);
-    errorMsg.value = '회원가입 중 오류가 발생했습니다. ';
+    console.log(error.response?.data);
+    errorMsg.value = error.message;
   }
 };
 </script>

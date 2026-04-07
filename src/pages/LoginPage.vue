@@ -1,8 +1,9 @@
 <script setup>
-import axios from 'axios';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
+import { authService } from '@/api/services/authService';
 import { ref } from 'vue';
+
 const authStore = useAuthStore();
 
 const email = ref('');
@@ -11,24 +12,19 @@ const errorMsg = ref('');
 
 const login = async () => {
   try {
-    const response = await axios.get(
-      `http://localhost:3000/users?email=${email.value}`
-    );
-    const user = response.data[0];
+    if (!email.value || !password.value) {
+      errorMsg.value = '이메일과 비밀번호를 입력해주세요.';
+      return;
+    }
+    const user = await authService.login({
+      email: email.value,
+      password: password.value,
+    });
 
-    if (!user) {
-      errorMsg.value = '존재하지 않는 이메일입니다.';
-      return;
-    }
-    if (user.password !== password.value) {
-      errorMsg.value = '비밀번호가 일치하지 않습니다.';
-      return;
-    }
     authStore.login(user);
     router.push('/');
   } catch (error) {
-    console.error(error);
-    errorMsg.value = '로그인 중 오류가 발생했습니다. ';
+    errorMsg.value = error.message;
   }
 };
 </script>
@@ -43,7 +39,7 @@ const login = async () => {
 
     <div class="form-group">
       <label>비밀번호</label>
-      <input v-model="password" type="password" />
+      <input v-model="password" type="password" @keyup.enter="login" />
     </div>
 
     <button @click="login">로그인</button>
@@ -54,8 +50,4 @@ const login = async () => {
     </div>
   </div>
 </template>
-<style scoped>
-.login {
-  width: 448px;
-}
-</style>
+<style scoped></style>
