@@ -31,10 +31,20 @@ const publicRoutes = [
 /**본인 담당 라우터 추가 */
 const authRoutes = []; //로그인, 회원가입
 const userRoutes = [];
+const transactionRoutes = [
+  {
+    path: '/list',
+    name: 'transactionList',
+    component: () => import('@/pages/TransactionListPage.vue'),
+    meta: { requiresAuth: false },
+    // 더미 모드 활성화: API 없이 UI 테스트 시 props: { dummyMode: true } 로 변경
+    props: { dummyMode: true },
+  },
+];
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [...publicRoutes, ...authRoutes, ...userRoutes],
+  routes: [...publicRoutes, ...authRoutes, ...userRoutes, ...transactionRoutes],
 });
 
 //네비게이션 가드

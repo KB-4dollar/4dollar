@@ -7,8 +7,15 @@ export const transactionService = {
    * @param {Object} params - 페이지네이션, 정렬, 필터 조건
    */
   async getTransactions(userId, params) {
-    // TODO: json-server에서는 특정 유저의 데이터를 가져오기 위해
-    // params 객체에 { userId: userId, ... } 형태로 합쳐서 GET 요청을 보냅니다.
+    const response = await apiClient.get('/transactions', {
+      params: {
+        userId,
+        _sort: 'date',
+        _order: 'desc',
+        ...params,
+      },
+    });
+    return response;
   },
 
   /**
