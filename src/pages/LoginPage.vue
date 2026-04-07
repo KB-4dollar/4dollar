@@ -15,7 +15,6 @@ const login = async () => {
   try {
     errorMsg.value = '';
 
-    // ✅ validation
     if (!email.value || !password.value) {
       errorMsg.value = ErrorCode.REQUIRED.msg;
       return;
@@ -29,7 +28,7 @@ const login = async () => {
     authStore.login(user);
     router.push('/');
   } catch (error) {
-    errorMsg.value = error.message; // interceptor에서 처리된 메시지
+    errorMsg.value = error.message;
   }
 };
 </script>
