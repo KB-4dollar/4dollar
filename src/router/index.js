@@ -5,14 +5,9 @@ import NotFound from '@/pages/NotFoundPage.vue';
 import Dashboard from '@/pages/DashboardPage.vue';
 import Layout from '@/layouts/DefaultLayout.vue';
 import Login from '@/pages/LoginPage.vue';
+import Signup from '@/pages/SignupPage.vue';
 
 const publicRoutes = [
-  {
-    path: '/login',
-    name: 'login',
-    component: Login,
-    meta: { guestOnly: true },
-  },
   {
     path: '/',
     component: Layout,
@@ -41,9 +36,24 @@ const publicRoutes = [
 ];
 
 /**본인 담당 라우터 추가 */
-const authRoutes = []; //로그인, 회원가입
+
 const userRoutes = [];
 const transactionRoutes = [];
+
+const authRoutes = [
+  {
+    path: '/login',
+    name: 'login',
+    component: Login,
+    meta: { guestOnly: true },
+  },
+  {
+    path: '/signup',
+    name: 'signup',
+    component: Signup,
+    meta: { guestOnly: true },
+  },
+];
 
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),

@@ -1,11 +1,10 @@
 import axios from 'axios';
-const API_URL = import.meta.env.VITE_API_URL; //railway server URL
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL; //기본 json-server URL
-/**
- * 기본 API 인스턴스 생성
- */
+import { ErrorCode } from '@/api/constants/errorCode';
+import { AppError } from '@/utils/customError';
+
+const API_URL = import.meta.env.VITE_API_URL;
+
 const apiClient = axios.create({
-  // 환경변수로 관리하는 것을 권장하며, 기본값으로 json-server 주소 세팅
   baseURL: API_URL || 'http://localhost:3000',
   headers: {
     'Content-Type': 'application/json',
@@ -13,20 +12,63 @@ const apiClient = axios.create({
   timeout: 5000,
 });
 
+/**
+ * 요청 interceptor (토큰)
+ */
 apiClient.interceptors.request.use(
   (config) => {
-    // TODO: [F-00-2] 토큰 주입 로직
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
     return config;
   },
-  (error) => Promise.reject(error),
+  (error) => Promise.reject(error)
 );
 
+/**
+ * 응답 interceptor (🔥 핵심)
+ */
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    // TODO: [F-04-1, F-00-2] 에러 및 토큰 만료 처리
-    return Promise.reject(error);
-  },
+    // 1️⃣ 네트워크 오류
+    if (!error.response) {
+      return Promise.reject(new AppError(ErrorCode.NETWORK));
+    }
+
+    const status = error.response.status;
+    const data = error.response.data;
+
+    // 2️⃣ timeout
+    if (error.code === 'ECONNABORTED') {
+      return Promise.reject(new AppError(ErrorCode.TIMEOUT));
+    }
+
+    // 3️⃣ 인증 에러
+    if (status === 401) {
+      localStorage.removeItem('token');
+      return Promise.reject(new AppError(ErrorCode.SESSION_EXPIRED));
+    }
+
+    if (status === 403) {
+      return Promise.reject(new AppError(ErrorCode.FORBIDDEN));
+    }
+
+    // 4️⃣ 회원가입 / 로그인 (json-server-auth)
+    if (status === 400) {
+      if (typeof data === 'string' && data.includes('already exists')) {
+        return Promise.reject(new AppError(ErrorCode.EMAIL_EXISTS));
+      }
+
+      return Promise.reject(new AppError(ErrorCode.LOGIN_FAILED));
+    }
+
+    // 5️⃣ 기본 fallback
+    return Promise.reject(new AppError(ErrorCode.UNKNOWN));
+  }
 );
 
 export default apiClient;
