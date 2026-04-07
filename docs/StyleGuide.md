@@ -95,32 +95,31 @@ import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 
 ### 색상 스와치 예시
 
-문서에서 실제 색을 바로 보고 싶으면 아래 표를 참고한다. 토큰명, 실제 값, Tailwind 클래스, 대표 사용처를 같이 확인할 수 있다.
+GitHub에서 바로 보이는 미리보기는 아래 SVG를 참고한다.
 
-| 토큰                       | 값        | 미리보기                                                                                                                         | Tailwind 클래스 예시             | 사용처                     |
-| -------------------------- | --------- | -------------------------------------------------------------------------------------------------------------------------------- | -------------------------------- | -------------------------- |
-| `--page-bg`                | `#faf3f1` | <span style="display:inline-block;width:18px;height:18px;background:#faf3f1;border:1px solid #d1d5db;border-radius:4px;"></span> | `bg-page-bg`                     | 페이지 전체 배경           |
-| `--surface`                | `#ffffff` | <span style="display:inline-block;width:18px;height:18px;background:#ffffff;border:1px solid #d1d5db;border-radius:4px;"></span> | `bg-surface`                     | 카드, 흰색 섹션            |
-| `--surface-muted`          | `#f3f4f6` | <span style="display:inline-block;width:18px;height:18px;background:#f3f4f6;border:1px solid #d1d5db;border-radius:4px;"></span> | `bg-surface-muted`               | 입력 박스, 연한 영역       |
-| `--line`                   | `#e5e7eb` | <span style="display:inline-block;width:18px;height:18px;background:#e5e7eb;border:1px solid #d1d5db;border-radius:4px;"></span> | `border-line`                    | 구분선, 테두리             |
-| `--text-primary`           | `#111827` | <span style="display:inline-block;width:18px;height:18px;background:#111827;border:1px solid #d1d5db;border-radius:4px;"></span> | `text-text-primary`              | 제목, 금액, 핵심 텍스트    |
-| `--text-secondary`         | `#6b7280` | <span style="display:inline-block;width:18px;height:18px;background:#6b7280;border:1px solid #d1d5db;border-radius:4px;"></span> | `text-text-secondary`            | 라벨, 날짜, 보조 설명      |
-| `--text-muted`             | `#9ca3af` | <span style="display:inline-block;width:18px;height:18px;background:#9ca3af;border:1px solid #d1d5db;border-radius:4px;"></span> | `text-text-muted`                | 비활성 텍스트, 아이콘      |
-| `--accent-ui`              | `#ee8567` | <span style="display:inline-block;width:18px;height:18px;background:#ee8567;border:1px solid #d1d5db;border-radius:4px;"></span> | `bg-accent-ui`, `text-accent-ui` | 활성 버튼, 탭, 강조 텍스트 |
-| `--accent-ui-foreground`   | `#ffffff` | <span style="display:inline-block;width:18px;height:18px;background:#ffffff;border:1px solid #d1d5db;border-radius:4px;"></span> | `text-accent-ui-foreground`      | 오렌지 버튼 위 글자        |
-| `--button-dark`            | `#243047` | <span style="display:inline-block;width:18px;height:18px;background:#243047;border:1px solid #d1d5db;border-radius:4px;"></span> | `bg-button-dark`                 | 진한 버튼 배경             |
-| `--button-dark-foreground` | `#ffffff` | <span style="display:inline-block;width:18px;height:18px;background:#ffffff;border:1px solid #d1d5db;border-radius:4px;"></span> | `text-button-dark-foreground`    | 진한 버튼 위 글자          |
-| `--chip-muted`             | `#eef2f7` | <span style="display:inline-block;width:18px;height:18px;background:#eef2f7;border:1px solid #d1d5db;border-radius:4px;"></span> | `bg-chip-muted`                  | 회색 칩, 배지 배경         |
-| `--chip-muted-foreground`  | `#6b7280` | <span style="display:inline-block;width:18px;height:18px;background:#6b7280;border:1px solid #d1d5db;border-radius:4px;"></span> | `text-chip-muted-foreground`     | 회색 칩 글자               |
+![공통 색상 토큰 미리보기](./attach/style-color-palette.svg)
+
+아래 표에서는 토큰명, 실제 값, Tailwind 클래스, 대표 사용처를 같이 확인할 수 있다.
+
+| 토큰 | 값 | Tailwind 클래스 예시 | 사용처 |
+| --- | --- | --- | --- |
+| `--page-bg` | `#faf3f1` | `bg-page-bg` | 페이지 전체 배경 |
+| `--surface` | `#ffffff` | `bg-surface` | 카드, 흰색 섹션 |
+| `--surface-muted` | `#f3f4f6` | `bg-surface-muted` | 입력 박스, 연한 영역 |
+| `--line` | `#e5e7eb` | `border-line` | 구분선, 테두리 |
+| `--text-primary` | `#111827` | `text-text-primary` | 제목, 금액, 핵심 텍스트 |
+| `--text-secondary` | `#6b7280` | `text-text-secondary` | 라벨, 날짜, 보조 설명 |
+| `--text-muted` | `#9ca3af` | `text-text-muted` | 비활성 텍스트, 아이콘 |
+| `--accent-ui` | `#ee8567` | `bg-accent-ui`, `text-accent-ui` | 활성 버튼, 탭, 강조 텍스트 |
+| `--accent-ui-foreground` | `#ffffff` | `text-accent-ui-foreground` | 오렌지 버튼 위 글자 |
+| `--button-dark` | `#243047` | `bg-button-dark` | 진한 버튼 배경 |
+| `--button-dark-foreground` | `#ffffff` | `text-button-dark-foreground` | 진한 버튼 위 글자 |
+| `--chip-muted` | `#eef2f7` | `bg-chip-muted` | 회색 칩, 배지 배경 |
+| `--chip-muted-foreground` | `#6b7280` | `text-chip-muted-foreground` | 회색 칩 글자 |
 
 ### 토큰 적용 예시 미리보기
 
-- 오렌지 활성 버튼
-  <span style="display:inline-block;padding:6px 12px;background:#ee8567;color:#ffffff;border-radius:999px;font-weight:600;">전체</span>
-- 진한 버튼
-  <span style="display:inline-block;padding:6px 12px;background:#243047;color:#ffffff;border-radius:999px;font-weight:600;">지출</span>
-- 연한 칩
-  <span style="display:inline-block;padding:6px 12px;background:#eef2f7;color:#6b7280;border-radius:999px;font-weight:600;">고정지출</span>
+위 SVG에서 실제 색상 사용 예시까지 함께 확인할 수 있다.
 
 ### 사용 원칙
 
@@ -209,14 +208,9 @@ import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 
 ### 버튼 UI 미리보기
 
-- Primary
-  <span style="display:inline-flex;align-items:center;justify-content:center;min-width:120px;height:48px;padding:0 20px;border-radius:14px;background:#243047;color:#ffffff;font-weight:600;">추가</span>
-- Outline
-  <span style="display:inline-flex;align-items:center;justify-content:center;min-width:120px;height:48px;padding:0 20px;border-radius:14px;background:#ffffff;color:#111827;border:1px solid #e5e7eb;font-weight:600;">취소</span>
-- Danger
-  <span style="display:inline-flex;align-items:center;justify-content:center;min-width:120px;height:48px;padding:0 20px;border-radius:14px;background:#ee8567;color:#ffffff;font-weight:600;">삭제</span>
-- Ghost
-  <span style="display:inline-flex;align-items:center;justify-content:center;min-width:120px;height:48px;padding:0 20px;border-radius:14px;background:transparent;color:#6b7280;font-weight:600;">닫기</span>
+GitHub에서 바로 보이는 버튼 미리보기는 아래 SVG를 참고한다.
+
+![공통 버튼 미리보기](./attach/button-preview.svg)
 
 ### 사용 예시
 
@@ -249,10 +243,7 @@ import Button from '@/components/common/Button.vue';
 
 ### 삭제 모달 버튼 배치 미리보기
 
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:360px;">
-  <span style="display:inline-flex;align-items:center;justify-content:center;height:56px;border-radius:14px;background:#ffffff;color:#111827;border:1px solid #e5e7eb;font-weight:600;">취소</span>
-  <span style="display:inline-flex;align-items:center;justify-content:center;height:56px;border-radius:14px;background:#ee8567;color:#ffffff;font-weight:600;">삭제</span>
-</div>
+위 버튼 SVG 아래쪽 예시를 참고한다.
 
 ### 사용 원칙
 
