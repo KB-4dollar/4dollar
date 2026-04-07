@@ -21,6 +21,9 @@ const logout = () => {
       <div>
         <a href="#"><RouterLink to="/list">거래내역</RouterLink></a>
       </div>
+      <div>
+        <a href="#"><RouterLink to="/transaction/new">입출금</RouterLink></a>
+      </div>
     </nav>
     <div>
       <button @click="logout">로그아웃</button>
