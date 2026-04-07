@@ -1,5 +1,8 @@
 // src/stores/transaction.js
 import { defineStore } from 'pinia';
+import { useAuthStore } from '@/stores/auth';
+import { transactionService } from '@/api/services/transactionService';
+import { TRANSACTION_TYPE } from '@/api/constants/enumConstants';
 
 export const useTransactionStore = defineStore('transaction', {
   state: () => ({
@@ -9,29 +12,57 @@ export const useTransactionStore = defineStore('transaction', {
     selectedTransaction: null,
     // 로딩 상태
     loading: false,
+    // 페이지네이션
+    totalCount: 0,
   }),
 
   getters: {
-    // 수입 합계
+    // 수입 합계 (현재 로드된 목록 기준)
     totalIncome: (state) =>
       state.transactions
-        .filter((t) => t.type === 'income')
+        .filter((t) => t.type === TRANSACTION_TYPE.INCOME)
         .reduce((sum, t) => sum + t.amount, 0),
 
-    // 지출 합계
+    // 지출 합계 (현재 로드된 목록 기준)
     totalExpense: (state) =>
       state.transactions
-        .filter((t) => t.type === 'expense')
+        .filter((t) => t.type === TRANSACTION_TYPE.EXPENSE)
         .reduce((sum, t) => sum + t.amount, 0),
 
     // 순이익 (수입 - 지출)
     netAmount: (state) => state.totalIncome - state.totalExpense,
+
+    // 무한스크롤: 아직 불러올 항목이 있는지
+    hasMore: (state) => state.transactions.length < state.totalCount,
   },
 
   actions: {
-    // 거래 내역 전체 조회
-    async fetchTransactions() {
-      // TODO: GET /api/transactions
+    // 거래 내역 조회 (필터/페이지네이션 포함)
+    // append=true 이면 기존 목록에 이어붙임 (무한스크롤용)
+    async fetchTransactions(params = {}, append = false) {
+      // TODO: authStore.user가 null일 수 있음 — checkAuth()는 user 객체를 복원하지 않음
+      // 로그인 플로우에서 user를 저장하는 로직이 추가되어야 함
+      const authStore = useAuthStore();
+      const userId = authStore.user?.id;
+
+      this.loading = true;
+      try {
+        const response = await transactionService.getTransactions(userId, params);
+        // json-server v1 페이지네이션: { data: [...], items: N, pages: N }
+        // v1이 아닌 경우(배열 직접 반환) 대비 fallback 처리
+        let newItems, total;
+        if (Array.isArray(response.data)) {
+          newItems = response.data;
+          total = response.data.length;
+        } else {
+          newItems = response.data.data ?? [];
+          total = response.data.items ?? 0;
+        }
+        this.transactions = append ? [...this.transactions, ...newItems] : newItems;
+        this.totalCount = total;
+      } finally {
+        this.loading = false;
+      }
     },
 
     // 거래 등록
