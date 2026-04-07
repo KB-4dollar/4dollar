@@ -10,7 +10,7 @@
     "dev": "concurrently npm:dev:*",
     "dev:api": "json-server --watch db.json --port 3000 --host 0.0.0.0",
     "dev:web": "vite --host 0.0.0.0",
-    "start": "json-server --watch db.json --port ${PORT:-3000} --host 0.0.0.0"
+    "start": "node server.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",
