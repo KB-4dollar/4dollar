@@ -37,3 +37,10 @@ __screenshots__/
 
 # Vite
 *.timestamp-*-*.mjs
+
+.env.development
+.env.production
+
+# omc
+.omc/
+.claude/
