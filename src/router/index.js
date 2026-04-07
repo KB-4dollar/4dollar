@@ -23,6 +23,11 @@ const publicRoutes = [
         name: 'dashboard',
         component: Dashboard,
       },
+      {
+        path: '/transaction/:id',
+        name: 'detail',
+        component: import('../pages/TransactionDetailPage.vue'),
+      },
     ],
   },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
