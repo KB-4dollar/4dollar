@@ -3,7 +3,7 @@ import PageSectionLayout from '../common/PageSectionLayout.vue';
 import SectionCard from '../common/SectionCard.vue';
 </script>
 <template>
-  <PageSectionLayout title="거래 상세">
+  <PageSectionLayout title="입출금 입력">
     <div class="grid gap-5 md:grid-cols-3">
       <SectionCard
         title="섹션 1"

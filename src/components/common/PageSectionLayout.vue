@@ -16,11 +16,9 @@ defineProps({
         {{ title }}
       </h1>
 
-      <section
-        class="rounded-[14px] border border-line bg-surface p-[18px] shadow-[0_8px_24px_var(--panel-shadow)] md:p-6"
-      >
+      <div class="space-y-5 md:space-y-6">
         <slot />
-      </section>
+      </div>
     </div>
   </div>
 </template>
