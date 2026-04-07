@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { authService } from '@/api/services/authService';
 import router from '@/router';
+import { validateSignup } from '@/utils/validation';
 
 const name = ref('');
 const email = ref('');
@@ -11,25 +12,24 @@ const errorMsg = ref('');
 
 const signup = async () => {
   try {
-    if (!email.value || !password.value) {
-      errorMsg.value = '이메일과 비밀번호를 입력하세요';
-      return;
-    }
-    if (password.value !== passwordConfirm.value) {
-      errorMsg.value = '비밀번호가 일치하지 않습니다.';
-      return;
-    }
+    errorMsg.value = '';
+
+    validateSignup({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      confirm: passwordConfirm.value,
+    });
 
     await authService.register({
       email: email.value,
       password: password.value,
-      username: name.value, // 내부용
-      name: name.value, // UI용
+      username: name.value,
+      name: name.value,
     });
 
     router.push('/login');
   } catch (error) {
-    console.log(error.response?.data);
     errorMsg.value = error.message;
   }
 };
@@ -38,7 +38,6 @@ const signup = async () => {
 <template>
   <div class="min-h-screen flex items-center justify-center bg-[#f5f2ef]">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-      <!-- 제목 -->
       <h1 class="text-2xl font-bold text-center mb-6">회원가입</h1>
 
       <!-- 이름 -->
@@ -97,12 +96,12 @@ const signup = async () => {
       <button
         @click="signup"
         :disabled="!name || !email || !password || !passwordConfirm"
-        class="w-full py-3 rounded-lg bg-gray-300 text-white font-semibold disabled:opacity-50"
+        class="w-full py-3 rounded-lg bg-gray-300 text-white font-semibold disabled:opacity-50 enabled:bg-black"
       >
         회원가입
       </button>
 
-      <!-- 에러 메시지 -->
+      <!-- 에러 -->
       <p v-if="errorMsg" class="text-red-500 text-sm mt-3 text-center">
         {{ errorMsg }}
       </p>
@@ -117,4 +116,3 @@ const signup = async () => {
     </div>
   </div>
 </template>
-<style scoped></style>

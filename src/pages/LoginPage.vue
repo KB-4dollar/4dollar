@@ -2,6 +2,7 @@
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { authService } from '@/api/services/authService';
+import { ErrorCode } from '@/api/constants/errorCode';
 import { ref } from 'vue';
 
 const authStore = useAuthStore();
@@ -12,10 +13,14 @@ const errorMsg = ref('');
 
 const login = async () => {
   try {
+    errorMsg.value = '';
+
+    // ✅ validation
     if (!email.value || !password.value) {
-      errorMsg.value = '이메일과 비밀번호를 입력해주세요.';
+      errorMsg.value = ErrorCode.REQUIRED.msg;
       return;
     }
+
     const user = await authService.login({
       email: email.value,
       password: password.value,
@@ -24,14 +29,14 @@ const login = async () => {
     authStore.login(user);
     router.push('/');
   } catch (error) {
-    errorMsg.value = error.message;
+    errorMsg.value = error.message; // interceptor에서 처리된 메시지
   }
 };
 </script>
+
 <template>
   <div class="min-h-screen flex items-center justify-center bg-[#f5f2ef]">
     <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-      <!-- 제목 -->
       <h1 class="text-2xl font-bold text-center mb-6">로그인</h1>
 
       <!-- 이메일 -->
@@ -65,7 +70,7 @@ const login = async () => {
       <button
         @click="login"
         :disabled="!email || !password"
-        class="w-full py-3 rounded-lg bg-gray-300 text-white font-semibold disabled:opacity-50"
+        class="w-full py-3 rounded-lg bg-gray-300 text-white font-semibold disabled:opacity-50 enabled:bg-black"
       >
         로그인
       </button>
@@ -85,4 +90,3 @@ const login = async () => {
     </div>
   </div>
 </template>
-<style scoped></style>
