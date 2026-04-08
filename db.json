@@ -5,6 +5,19 @@
       "email": "test@example.com",
       "password": "hashed_password_123",
       "name": "홍길동"
+    },
+    {
+      "email": "qwe@naver.com",
+      "password": "$2a$10$mGVkec/cH6AeIlbaqtQ9beap3TTmxr62IYnMyYwqZ5N1phlpgutxi",
+      "username": "qwe",
+      "name": "qwe",
+      "id": "kBkl03x"
+    },
+    {
+      "email": "testasd@example.com",
+      "password": "$2a$10$BJzMGof16AYsXzJV0Q1Zc.W78wcyOnsK78XLky66MGvHr.VuyhOlC",
+      "name": "123123123",
+      "id": "0R31nA_"
     }
   ],
   "transactions": [
