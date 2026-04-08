@@ -113,7 +113,7 @@ function formatCurrency(value) {
         </SectionCard>
       </div>
 
-      <SectionCard title="소비 패턴 분석">
+      <SectionCard>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-2">
           
           <div class="flex flex-col rounded-lg border border-line p-4">
@@ -135,10 +135,6 @@ function formatCurrency(value) {
                   {{ tab.name }}
                 </button>
               </div>
-            </div>
-
-            <div class="text-right mb-4">
-              <span class="text-xs text-text-muted">{{ currentYearMonth }} 기준</span>
             </div>
             
             <div class="h-[280px] w-full">
