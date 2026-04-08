@@ -23,6 +23,15 @@ const CATEGORY_OPTIONS = [
   '기타',
 ];
 
+const props = defineProps({
+  initialTransaction: {
+    type: Object,
+    default: null,
+  },
+});
+
+const emit = defineEmits(['saved']);
+
 const MAX_AMOUNT = 999999999;
 const MAX_MEMO_LENGTH = 100;
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
@@ -31,6 +40,7 @@ const ACCEPTED_FILE_TYPES = ['image/jpeg', 'image/png'];
 const today = new Date().toISOString().slice(0, 10);
 const router = useRouter();
 const transactionStore = useTransactionStore();
+const isEditMode = computed(() => Boolean(props.initialTransaction?.id));
 
 const form = ref({
   type: 'expense',
@@ -41,6 +51,25 @@ const form = ref({
   memo: '',
   photo: null,
 });
+
+const applyTransactionToForm = (transaction) => {
+  if (!transaction) {
+    return;
+  }
+
+  form.value = {
+    type: transaction.type === '수입' ? 'income' : 'expense',
+    amount: String(transaction.amount ?? ''),
+    date: transaction.date ?? today,
+    category: transaction.category ?? '',
+    tags: Array.isArray(transaction.tags) ? [...transaction.tags] : [],
+    memo: transaction.memo ?? '',
+    photo: transaction.photo ?? null,
+  };
+  tagInput.value = Array.isArray(transaction.tags)
+    ? transaction.tags.map((tag) => `#${tag}`).join(' ')
+    : '';
+};
 
 // const photoError = ref('');
 // const fileInputRef = ref(null);
@@ -213,6 +242,10 @@ onBeforeUnmount(() => {
   }
 });
 
+if (props.initialTransaction) {
+  applyTransactionToForm(props.initialTransaction);
+}
+
 const submitTransaction = async () => {
   submitError.value = '';
   submitAttempted.value = true;
@@ -222,11 +255,22 @@ const submitTransaction = async () => {
   }
 
   try {
-    await transactionStore.addTransaction({
+    const payload = {
       ...form.value,
       tags: [...form.value.tags],
-    });
+    };
 
+    if (isEditMode.value) {
+      const updatedTransaction = await transactionStore.updateTransaction(
+        props.initialTransaction.id,
+        payload,
+      );
+
+      emit('saved', updatedTransaction);
+      return;
+    }
+
+    await transactionStore.addTransaction(payload);
     resetForm();
     await router.push({ name: 'transactionList' });
   } catch (error) {
@@ -329,7 +373,9 @@ const submitTransaction = async () => {
             <p
               class="text-xs"
               :class="
-                shouldShowError('amount') ? 'text-accent-ui' : 'text-text-secondary'
+                shouldShowError('amount')
+                  ? 'text-accent-ui'
+                  : 'text-text-secondary'
               "
             >
               {{ formattedAmountHint }}
@@ -354,9 +400,6 @@ const submitTransaction = async () => {
               class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
               @input="handleTagInput"
             />
-            <p class="text-xs text-text-secondary">
-              #와 공백으로 구분되며, 특수문자와 중복 태그는 제외됩니다.
-            </p>
           </div>
 
           <div v-else class="space-y-3">
@@ -378,7 +421,10 @@ const submitTransaction = async () => {
                 <span class="text-lg text-text-secondary">›</span>
               </span>
             </button>
-            <p v-if="shouldShowError('category')" class="text-xs text-accent-ui">
+            <p
+              v-if="shouldShowError('category')"
+              class="text-xs text-accent-ui"
+            >
               {{ fieldErrors.category }}
             </p>
           </div>
@@ -414,7 +460,13 @@ const submitTransaction = async () => {
               :disabled="!isRequiredValid || transactionStore.loading"
               @click="submitTransaction"
             >
-              {{ transactionStore.loading ? '저장 중...' : '추가' }}
+              {{
+                transactionStore.loading
+                  ? '저장 중...'
+                  : isEditMode
+                    ? '수정'
+                    : '추가'
+              }}
             </Button>
           </div>
         </div>
