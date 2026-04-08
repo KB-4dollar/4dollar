@@ -7,7 +7,10 @@ console.log(auth);
 const app = jsonServer.create();
 const router = jsonServer.router('db.json');
 const corsOptions = {
-  origin: "https://kb-4dollar.github.io",
+  origin: [
+    "https://kb-4dollar.github.io",
+    "https://kb-4dollar.github.io/4dollar"
+  ],
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
