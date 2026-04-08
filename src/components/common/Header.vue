@@ -15,7 +15,7 @@ const goToSetting = () => {
 
 <template>
   <header
-    class="h-16 px-6 flex items-center justify-between bg-[#d97a5f] text-white"
+    class="hidden md:flex h-16 px-6 items-center justify-between bg-[#d97a5f] text-white"
   >
     <RouterLink to="/" class="text-xl font-bold">4DOLLAR</RouterLink>
 
