@@ -37,10 +37,14 @@ const updateName = async () => {
   }
 };
 
-// 비밀번호 변경
 const changePassword = async () => {
   try {
     passwordMsg.value = '';
+
+    if (!currentPassword.value) {
+      passwordMsg.value = MessageCode.PASSWORD_REQUIRED.msg;
+      return;
+    }
 
     if (!newPassword.value || !confirmPassword.value) {
       passwordMsg.value = MessageCode.PASSWORD_REQUIRED.msg;
@@ -51,7 +55,23 @@ const changePassword = async () => {
       passwordMsg.value = MessageCode.PASSWORD_MISMATCH.msg;
       return;
     }
+    if (!user.value?.id) {
+      passwordMsg.value = MessageCode.USER_NOT_FOUND.msg;
+      return;
+    }
 
+    // 현재비밀번호 검증
+    try {
+      await authService.login({
+        email: user.value.email,
+        password: currentPassword.value,
+      });
+    } catch {
+      passwordMsg.value = MessageCode.PASSWORD_INCORRECT.msg;
+      return;
+    }
+
+    // 검증 통과 후 변경
     const updatedUser = await authService.updateUser(user.value.id, {
       password: newPassword.value,
     });
@@ -68,7 +88,6 @@ const changePassword = async () => {
     passwordMsg.value = error.message;
   }
 };
-
 const logout = () => {
   authStore.logout();
   router.push('/login');
