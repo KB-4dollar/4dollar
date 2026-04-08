@@ -2,23 +2,22 @@ import jsonServer from 'json-server';
 import auth from 'json-server-auth';
 import cors from 'cors';
 
-console.log("auth type:", typeof auth);
+console.log('auth type:', typeof auth);
 console.log(auth);
 const app = jsonServer.create();
 const router = jsonServer.router('db.json');
 const corsOptions = {
   origin: [
-    "https://kb-4dollar.github.io",
-    "https://kb-4dollar.github.io/4dollar"
+    'http://localhost:5173',
+    'https://kb-4dollar.github.io',
+    'https://kb-4dollar.github.io/4dollar',
   ],
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 };
 
-
 app.use(cors(corsOptions));
-
 
 app.options('*', cors(corsOptions));
 
@@ -33,6 +32,6 @@ app.use(auth);
 app.use(router);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT,'0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log('Server running');
 });

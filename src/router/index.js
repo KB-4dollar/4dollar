@@ -23,14 +23,13 @@ const publicRoutes = [
         path: 'transaction/:id',
         name: 'transactionDetail',
         component: () => import('../pages/TransactionDetailPage.vue'),
-        meta: { requiresAuth: false }, // 테스트를 위해 우선 false
       },
       {
         path: 'list',
         name: 'transactionList',
         component: () => import('@/pages/TransactionListPage.vue'),
         meta: { requiresAuth: false }, // 테스트를 위해 우선 false
-        props: { dummyMode: true },
+        props: { dummyMode: false },
       },
     ],
   },
@@ -67,11 +66,6 @@ router.beforeEach(async (to) => {
   const authStore = useAuthStore();
   // ✅ 더미 테스트를 위해 'transactionList'는 가드를 통과시킴
   if (to.name === 'transactionList') {
-    return true;
-  }
-
-  // ✅ 더미 테스트를 위해 'transactionDetail'는 가드를 통과시킴
-  if (to.name === 'transactionDetail') {
     return true;
   }
 
