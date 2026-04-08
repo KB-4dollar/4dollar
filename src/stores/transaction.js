@@ -49,7 +49,10 @@ export const useTransactionStore = defineStore('transaction', {
 
       this.loading = true;
       try {
-        const response = await transactionService.getTransactions(userId, params);
+        const response = await transactionService.getTransactions(
+          userId,
+          params,
+        );
         // json-server v1 페이지네이션: { data: [...], items: N, pages: N }
         // v1이 아닌 경우(배열 직접 반환) 대비 fallback 처리
         let newItems, total;
@@ -60,7 +63,9 @@ export const useTransactionStore = defineStore('transaction', {
           newItems = response.data.data ?? [];
           total = response.data.items ?? 0;
         }
-        this.transactions = append ? [...this.transactions, ...newItems] : newItems;
+        this.transactions = append
+          ? [...this.transactions, ...newItems]
+          : newItems;
         this.totalCount = total;
       } finally {
         this.loading = false;
@@ -71,7 +76,10 @@ export const useTransactionStore = defineStore('transaction', {
     async fetchMonthlyStats(userId, yearMonth) {
       this.loading = true;
       try {
-        const stats = await transactionService.getMonthlyStats(userId, yearMonth);
+        const stats = await transactionService.getMonthlyStats(
+          userId,
+          yearMonth,
+        );
         this.monthlyStats = stats; // 성공하면 상태에 저장
       } catch (error) {
         console.error('통계 로드 실패:', error);
@@ -82,7 +90,34 @@ export const useTransactionStore = defineStore('transaction', {
 
     // 거래 등록
     async addTransaction(transaction) {
-      // TODO: POST /api/transactions
+      const authStore = useAuthStore();
+      const userId = authStore.user?.id;
+
+      if (!userId) {
+        throw new Error('로그인한 사용자 정보가 없습니다.');
+      }
+
+      this.loading = true;
+      try {
+        const savedTransaction = await transactionService.createTransaction(
+          userId,
+          transaction,
+        );
+
+        this.transactions = [savedTransaction, ...this.transactions];
+        this.totalCount += 1;
+
+        return savedTransaction;
+      } catch (error) {
+        console.error('[transactionStore.addTransaction] failed', {
+          userId,
+          transaction,
+          message: error.message,
+        });
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     },
 
     // 거래 수정

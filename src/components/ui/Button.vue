@@ -3,6 +3,18 @@ import { computed } from 'vue';
 
 import { cn } from '@/lib/utils';
 
+/**
+ * Button props
+ * @prop {string} variant 버튼 시각 스타일입니다. primary, danger, outline, ghost를 지원합니다.
+ * @prop {string} size 버튼 크기입니다. sm, md, lg를 지원합니다.
+ * @prop {string} type 네이티브 button type 속성입니다. 기본값은 button입니다.
+ * @prop {boolean} disabled 비활성화 여부입니다.
+ * @prop {boolean} fullWidth true면 버튼이 부모 너비를 가득 채웁니다.
+ *
+ * Notes
+ * 이 컴포넌트는 $attrs를 button 요소에 그대로 전달하므로 class, id, aria-*,
+ * click 이벤트 같은 일반 속성을 함께 사용할 수 있습니다.
+ */
 const props = defineProps({
   variant: {
     type: String,
