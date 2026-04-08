@@ -1,11 +1,15 @@
 <script setup>
 import { onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import TransactionForm from '@/components/transaction/TransactionForm.vue';
 import TransactionDetail from '@/components/transaction/TransactionDetail.vue';
 import { useRoute } from 'vue-router';
 import { transactionService } from '@/api/services/transactionService';
+import { useTransactionStore } from '@/stores/transaction';
 
 const route = useRoute();
+const router = useRouter();
+const transactionStore = useTransactionStore();
 const transaction = ref(null);
 const isLoading = ref(false);
 const errorMessage = ref('');
@@ -53,6 +57,25 @@ const handleUpdated = (updatedTransaction) => {
   transaction.value = updatedTransaction;
   isEditMode.value = false;
 };
+
+const handleDelete = async () => {
+  if (!transaction.value?.id) {
+    return;
+  }
+
+  const confirmed = window.confirm('이 거래 내역을 삭제하시겠습니까?');
+
+  if (!confirmed) {
+    return;
+  }
+
+  try {
+    await transactionStore.deleteTransaction(transaction.value.id);
+    await router.push({ name: 'transactionList' });
+  } catch (error) {
+    errorMessage.value = error.message || '거래 내역을 삭제하지 못했습니다.';
+  }
+};
 </script>
 <template>
   <TransactionForm
@@ -79,5 +102,6 @@ const handleUpdated = (updatedTransaction) => {
     v-else-if="transaction"
     :transaction="transaction"
     @edit="openEditMode"
+    @delete="handleDelete"
   />
 </template>

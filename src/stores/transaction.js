@@ -166,7 +166,38 @@ export const useTransactionStore = defineStore('transaction', {
 
     // 거래 삭제
     async deleteTransaction(id) {
-      // TODO: DELETE /api/transactions/:id
+      const authStore = useAuthStore();
+      const userId = authStore.user?.id;
+
+      if (!userId) {
+        throw new Error('로그인한 사용자 정보가 없습니다.');
+      }
+
+      this.loading = true;
+      try {
+        await transactionService.deleteTransaction(id);
+
+        this.transactions = this.transactions.filter(
+          (item) => String(item.id) !== String(id),
+        );
+        this.totalCount = Math.max(0, this.totalCount - 1);
+
+        if (
+          this.selectedTransaction &&
+          String(this.selectedTransaction.id) === String(id)
+        ) {
+          this.selectedTransaction = null;
+        }
+      } catch (error) {
+        console.error('[transactionStore.deleteTransaction] failed', {
+          id,
+          userId,
+          message: error.message,
+        });
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     },
   },
 });
