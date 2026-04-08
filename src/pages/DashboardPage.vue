@@ -1,28 +1,34 @@
 <script setup>
 // 1. import
-import { onMounted, computed, watch } from 'vue';
+import { shallowRef, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTransactionStore } from '@/stores/transaction';
+
+// 공통 컴포넌트 임포트
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 import SectionCard from '@/components/common/SectionCard.vue';
 
-// echarts 임포트 및 모듈 등록
-import { use } from 'echarts/core';
-import { CanvasRenderer } from 'echarts/renderers';
-import { PieChart } from 'echarts/charts';
-import { TitleComponent, TooltipComponent, LegendComponent } from 'echarts/components';
-import VChart from 'vue-echarts';
-
-use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent, LegendComponent]);
+// 대시보드 전용 컴포넌트 임포트 (DevGuide 규칙 준수)
+import OverviewChart from '@/components/dashboard/OverviewChart.vue';
+import IncomeChart from '@/components/dashboard/IncomeChart.vue';
+import ExpenseChart from '@/components/dashboard/ExpenseChart.vue';
 
 // 2. store/router
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
 // 4. reactive state
-// 현재 날짜 기준으로 월을 가져옴
 const today = new Date();
 const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+
+// 탭 관리를 위한 상태 (shallowRef를 써서 컴포넌트 객체의 불필요한 반응성 오버헤드를 막음)
+const currentTabComponent = shallowRef(OverviewChart);
+
+const tabs = [
+  { id: 'overview', name: '전체 요약', component: OverviewChart },
+  { id: 'income', name: '수입 분석', component: IncomeChart },
+  { id: 'expense', name: '지출 분석', component: ExpenseChart }
+];
 
 // 5. computed
 const stats = computed(() => transactionStore.monthlyStats);
@@ -32,49 +38,6 @@ const dashboardTitle = computed(() => {
   const userName = authStore.user?.name || '사용자';
   const currentMonth = today.getMonth() + 1;
   return `${userName}님의 ${currentMonth}월의 소비는`;
-});
-
-// 디자인 토큰 기반 차트 옵션 설정
-const chartOption = computed(() => {
-  const income = stats.value?.totals?.income || 0;
-  const expense = stats.value?.totals?.expense || 0;
-
-  return {
-    tooltip: {
-      trigger: 'item',
-      // 문자열 대신 콜백 함수를 써서 formatCurrency를 적용
-      formatter: (params) => {
-        const formattedMoney = formatCurrency(params.value);
-        return `${params.name}: <strong>${formattedMoney}원</strong> (${params.percent}%)`;
-      }
-    },
-    legend: {
-      orient: 'vertical',
-      right: '5%',
-      top: 'center',
-      itemGap: 20,
-      textStyle: { color: '#6b7280', fontSize: 13 } // --text-secondary
-    },
-    series: [
-      {
-        name: '재정 현황',
-        type: 'pie',
-        radius: ['45%', '70%'],
-        avoidLabelOverlap: true,
-        label: {
-          show: true,
-          position: 'outside',
-          formatter: '{d}%',
-          color: '#111827' // --text-primary
-        },
-        labelLine: { show: true },
-        data: [
-          { value: income, name: '총 수입', itemStyle: { color: '#ee8567' } }, // --accent-ui
-          { value: expense, name: '총 지출', itemStyle: { color: '#243047' } }  // --button-dark
-        ]
-      }
-    ]
-  };
 });
 
 // 6. lifecycle hooks
@@ -149,24 +112,30 @@ function formatCurrency(value) {
         </SectionCard>
       </div>
 
-      <!-- 추후 차트 부분은 별도의 컴포넌트로 분리 예정 -->
       <SectionCard>
-        <div class="flex items-center justify-between mb-8">
+        <div class="flex items-center justify-between mb-6">
           <h2 class="text-lg font-bold text-text-primary">{{ dashboardTitle }}</h2>
           <span class="text-xs text-text-muted">{{ currentYearMonth }} 기준</span>
         </div>
+
+        <div class="flex gap-4 mb-6 border-b border-line">
+          <button
+            v-for="tab in tabs"
+            :key="tab.id"
+            @click="currentTabComponent = tab.component"
+            :class="[
+              'pb-2 text-sm font-bold transition-colors border-b-2',
+              currentTabComponent === tab.component
+                ? 'border-accent-ui text-accent-ui' 
+                : 'border-transparent text-text-muted hover:text-text-primary'
+            ]"
+          >
+            {{ tab.name }}
+          </button>
+        </div>
         
         <div class="h-[350px] w-full">
-          <v-chart 
-            v-if="stats?.totals?.income || stats?.totals?.expense"
-            class="chart" 
-            :option="chartOption" 
-            autoresize 
-          />
-          <div v-else class="flex h-full flex-col items-center justify-center gap-2">
-            <span class="text-4xl">📉</span>
-            <span class="text-sm text-text-muted">표시할 거래 데이터가 없습니다.</span>
-          </div>
+          <component :is="currentTabComponent" />
         </div>
       </SectionCard>
     </template>
