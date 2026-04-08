@@ -7,6 +7,7 @@ const sectionEl = ref(null);
 
 const goLogin = () => {
   router.push('/login');
+  alert('클릭됨');
 };
 
 defineExpose({
@@ -30,7 +31,9 @@ defineExpose({
       );
     "
   >
-    <div class="flex flex-col items-center text-center fade-up show">
+    <div
+      class="relative z-10 flex flex-col items-center text-center fade-up show"
+    >
       <div
         class="mb-6 px-4 py-1 rounded-full bg-[#e26d5c] text-white text-sm font-medium shadow-sm"
       >
@@ -42,7 +45,7 @@ defineExpose({
       </p>
       <button
         @click="goLogin"
-        class="bg-[#e26d5c] text-white px-8 py-3 rounded-xl shadow-md transition-all duration-300 hover:bg-[#d85745] hover:shadow-lg hover:scale-105 active:scale-95"
+        class="relative z-20 bg-[#e26d5c] text-white px-8 py-3 rounded-xl shadow-md transition-all duration-300 hover:bg-[#d85745] hover:shadow-lg hover:scale-105 active:scale-95"
       >
         바로가기
       </button>
