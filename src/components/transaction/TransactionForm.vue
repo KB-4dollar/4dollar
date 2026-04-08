@@ -30,13 +30,15 @@ const form = ref({
   amount: '',
   date: today,
   category: '',
+  tags: [],
   memo: '',
   photo: null,
 });
 
-const photoError = ref('');
-const fileInputRef = ref(null);
+// const photoError = ref('');
+// const fileInputRef = ref(null);
 const isCategoryModalOpen = ref(false);
+const tagInput = ref('');
 
 const amountNumber = computed(() => Number(form.value.amount));
 const isAmountValid = computed(
@@ -52,14 +54,23 @@ const isRequiredValid = computed(
     Boolean(form.value.type) &&
     isAmountValid.value &&
     Boolean(form.value.date) &&
-    Boolean(form.value.category),
+    (form.value.type === 'income' || Boolean(form.value.category)),
 );
 
 const memoLength = computed(() => form.value.memo.length);
-const photoName = computed(() => form.value.photo?.name ?? '첨부된 파일 없음');
+// const photoName = computed(() => form.value.photo?.name ?? '첨부된 파일 없음');
 
 const selectType = (type) => {
   form.value.type = type;
+
+  if (type === 'income') {
+    form.value.category = '';
+    closeCategoryModal();
+    return;
+  }
+
+  form.value.tags = [];
+  tagInput.value = '';
 };
 
 const openCategoryModal = () => {
@@ -82,6 +93,14 @@ const handleAmountInput = (event) => {
 
 const handleMemoInput = (event) => {
   form.value.memo = event.target.value.slice(0, MAX_MEMO_LENGTH);
+};
+
+const handleTagInput = (event) => {
+  tagInput.value = event.target.value;
+  form.value.tags = event.target.value
+    .split(',')
+    .map((tag) => tag.trim())
+    .filter(Boolean);
 };
 
 const clearPhoto = () => {
@@ -133,13 +152,32 @@ const formattedAmountHint = computed(() => {
   <PageSectionLayout title="입출금 입력">
     <div class="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
       <SectionCard title="날짜 선택">
-        <DateCalendar v-model="form.date" />
+        <div class="space-y-4">
+          <DateCalendar v-model="form.date" />
+        </div>
       </SectionCard>
       <SectionCard
         title="거래 정보 입력"
         description="필수 항목을 모두 입력해야 추가 버튼이 활성화됩니다."
       >
         <div class="space-y-6">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label
+                for="transaction-date"
+                class="text-sm font-semibold text-text-primary"
+              >
+                날짜
+              </label>
+              <span class="text-xs text-accent-ui">필수</span>
+            </div>
+            <input
+              id="transaction-date"
+              v-model="form.date"
+              type="date"
+              class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary focus:border-accent-ui focus:outline-none"
+            />
+          </div>
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-semibold text-text-primary"
@@ -202,7 +240,27 @@ const formattedAmountHint = computed(() => {
             </p>
           </div>
 
-          <div class="space-y-3">
+          <div v-if="form.type === 'income'" class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label
+                for="transaction-tags"
+                class="text-sm font-semibold text-text-primary"
+              >
+                태그
+              </label>
+              <span class="text-xs text-text-secondary">선택</span>
+            </div>
+            <input
+              id="transaction-tags"
+              :value="tagInput"
+              type="text"
+              placeholder="쉼표(,)로 여러 태그를 입력하세요"
+              class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
+              @input="handleTagInput"
+            />
+          </div>
+
+          <div v-else class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-semibold text-text-primary">
                 카테고리
