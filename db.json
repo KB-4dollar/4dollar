@@ -18,6 +18,12 @@
       "password": "$2a$10$BJzMGof16AYsXzJV0Q1Zc.W78wcyOnsK78XLky66MGvHr.VuyhOlC",
       "name": "123123123",
       "id": "0R31nA_"
+    },
+    {
+      "email": "testasad@example.com",
+      "password": "$2a$10$heibhIxvxzvPdyPi6SAKPuD0HU.aFJxocHGE1YR3B.Bgxq.9ThQwe",
+      "name": "123123123",
+      "id": "vHLhXTU"
     }
   ],
   "transactions": [
