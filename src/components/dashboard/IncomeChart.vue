@@ -40,6 +40,17 @@ const chartOption = computed(() => {
         radius: ['45%', '70%'],
         // 수입 차트는 오렌지(--accent-ui) 계열로 통일감을 줌
         color: ['#ee8567', '#f4a28c', '#f9c0b1'], 
+        itemStyle: {
+          borderRadius: 10, // 모서리를 더 둥글게
+          borderColor: '#ffffff', // 배경색과 똑같은 흰색으로 조각 사이를 띄움
+          borderWidth: 4,     // 조각 사이 간격
+          
+          // ✨ 여기가 핵심! CSS의 box-shadow 효과를 ECharts 방식으로 주는 곳이야
+          shadowBlur: 10,                 // 그림자가 퍼지는 정도 (CSS: blur)
+          shadowColor: 'rgba(0, 0, 0, 0.1)', // 그림자 색상과 투명도
+          shadowOffsetX: 2,               // X축으로 밀기
+          shadowOffsetY: 4                // Y축으로 밀기 (약간 아래로 그림자가 깔림)
+        },
         label: { show: true, formatter: '{b}\n{d}%', color: '#111827' },
         data: dummyIncomeTags
       }

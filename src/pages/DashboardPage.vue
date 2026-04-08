@@ -1,4 +1,4 @@
-<script setup>
+<!-- <script setup>
 // 1. import
 import { shallowRef, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
@@ -80,9 +80,9 @@ function formatCurrency(value) {
 </script>
 
 <template>
-  <PageSectionLayout>
+  <PageSectionLayout title="대시보드">
     <div v-if="isLoading" class="flex justify-center py-20">
-      <span class="text-text-secondary">재정 데이터를 분석 중입니다...</span>
+      <span class="text-text-secondary"> 재정 데이터를 분석 중입니다...</span>
     </div>
 
     <template v-else>
@@ -113,25 +113,29 @@ function formatCurrency(value) {
       </div>
 
       <SectionCard>
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-bold text-text-primary">{{ dashboardTitle }}</h2>
-          <span class="text-xs text-text-muted">{{ currentYearMonth }} 기준</span>
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between border-b border-line pb-3 mb-2 gap-3 sm:gap-0">
+          
+          <h2 class="text-lg font-bold text-text-primary leading-none">{{ dashboardTitle }}</h2>
+
+          <div class="flex gap-4">
+            <button
+              v-for="tab in tabs"
+              :key="tab.id"
+              @click="currentTabComponent = tab.component"
+              :class="[
+                'text-sm font-bold transition-colors',
+                currentTabComponent === tab.component
+                  ? 'text-accent-ui' 
+                  : 'text-text-muted hover:text-text-primary'
+              ]"
+            >
+              {{ tab.name }}
+            </button>
+          </div>
         </div>
 
-        <div class="flex gap-4 mb-6 border-b border-line">
-          <button
-            v-for="tab in tabs"
-            :key="tab.id"
-            @click="currentTabComponent = tab.component"
-            :class="[
-              'pb-2 text-sm font-bold transition-colors border-b-2',
-              currentTabComponent === tab.component
-                ? 'border-accent-ui text-accent-ui' 
-                : 'border-transparent text-text-muted hover:text-text-primary'
-            ]"
-          >
-            {{ tab.name }}
-          </button>
+        <div class="text-right mb-6">
+          <span class="text-xs text-text-muted">{{ currentYearMonth }} 기준</span>
         </div>
         
         <div class="h-[350px] w-full">
@@ -143,4 +147,60 @@ function formatCurrency(value) {
 </template>
 
 <style scoped>
+</style> -->
+
+
+<script setup>
+import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
+import SectionCard from '@/components/common/SectionCard.vue';
+
+// TODO: 개발이 완료되면 아래 컴포넌트들의 주석을 해제하고 import 합니다.
+// import SummaryMentCard from '@/components/dashboard/SummaryMentCard.vue';
+// import CompareBriefingCard from '@/components/dashboard/CompareBriefingCard.vue';
+// import OverviewChart from '@/components/dashboard/OverviewChart.vue';
+// import ConsumptionHeatmap from '@/components/dashboard/ConsumptionHeatmap.vue';
+</script>
+
+<template>
+  <PageSectionLayout title="대시보드">
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
+      <SectionCard title="총 수입">
+        <div class="flex h-32 items-center justify-center">
+          <p class="text-text-secondary text-sm">총 지출 데이터 표시 부분입니다.</p>
+        </div>
+      </SectionCard>
+      
+      <SectionCard title="총 지출">
+        <div class="flex h-32 items-center justify-center">
+          <p class="text-text-secondary text-sm">총 수입 데이터 표시 부분입니다.</p>
+        </div>
+      </SectionCard>
+      
+      <SectionCard title="순수익">
+        <div class="flex h-32 items-center justify-center">
+          <p class="text-text-secondary text-sm">순수익 데이터 표시 부분입니다.</p>
+        </div>
+      </SectionCard>
+    </div>
+
+    <SectionCard title="소비 패턴 분석">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+        
+        <div class="flex min-h-[300px] items-center justify-center rounded-lg border border-line bg-surface-muted p-4">
+          <p class="text-text-secondary text-sm">차트 컴포넌트 구현 부분입니다.</p>
+        </div>
+        
+        <div class="flex min-h-[300px] items-center justify-center rounded-lg border border-line bg-surface-muted p-4">
+          <p class="text-text-secondary text-sm">잔디형 소비 패턴 히트맵 구현 부분입니다.</p>
+        </div>
+
+      </div>
+    </SectionCard>
+
+  </PageSectionLayout>
+</template>
+
+<style scoped>
+/* Tailwind 유틸리티 클래스를 사용하므로 추가 CSS는 최소화합니다. */
 </style>
