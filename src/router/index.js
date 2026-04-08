@@ -7,7 +7,7 @@ import Login from '@/pages/LoginPage.vue';
 import Signup from '@/pages/SignupPage.vue';
 
 const publicRoutes = [
-  // ✅ 랜딩
+  // 랜딩페이지먼저로딩
   {
     path: '/',
     name: 'landing',
