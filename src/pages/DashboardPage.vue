@@ -138,7 +138,7 @@ function formatCurrency(value) {
             </div>
             
             <div class="h-[280px] w-full">
-              <component :is="currentTabComponent" />
+              <component :is="currentTabComponent" :stats="stats" />
             </div>
           </div>
 

@@ -4,20 +4,45 @@ import { computed } from 'vue';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart } from 'echarts/charts';
-// ✨ ScrollComponent를 LegendScrollComponent로 변경!
+
 import { TitleComponent, TooltipComponent, LegendComponent, LegendScrollComponent } from 'echarts/components'; 
 import VChart from 'vue-echarts';
 
 // ✨ use 배열에 LegendScrollComponent 추가
 use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent, LegendComponent, LegendScrollComponent]);
 
+// DashboardPage로부터 실제 통계 데이터 받기
+const props = defineProps({
+  stats : {
+    type: Object,
+    default: () => ({})
+  }
+})
+
+const INCOME_COLORS = ['#ee8567', '#f4a28c', '#f9c0b1', '#fbc5b9', '#fdd8d0'];
+
 // reactive state
-// TODO: 서버 연동 시 수입 태그 통계 데이터로 교체
-const dummyIncomeTags = [
-  { value: 2000000, name: '#월급' },
-  { value: 300000, name: '#용돈' },
-  { value: 200000, name: '#중고거래' }
-];
+// 로그인한 유저의 데이터를 차트 포맷에 맞게 변환 (더미 데이터 대체)
+const chartData = computed(() => {
+  // 1. 서비스에서 넘어온 객체 형태의 태그 데이터 가져오기 { "#월급": 1010000, "#기타": 50000 }
+  // (옵셔널 체이닝으로 breakdown.incomeByTag 안전하게 접근)
+  const tagsObj = props.stats?.breakdown?.incomeByTag || {};
+
+  // 2. 객체를 차트용 배열로 변환 [ { name: '#월급', value: 1010000 } ]
+  const categories = Object.keys(tagsObj).map(key => ({
+    name: key,
+    value: tagsObj[key]
+  }));
+
+  // 3. 수입액이 큰 순서대로 내림차순 정렬 후, 색상을 순차적으로 매핑
+  return categories
+    .sort((a, b) => b.value - a.value)
+    .map((item, index) => ({
+      ...item,
+      color: INCOME_COLORS[index % INCOME_COLORS.length]
+    }))
+    .filter(item => item.value > 0); // 금액이 0원인 항목은 그리지 않음
+});
 
 // computed
 const chartOption = computed(() => {
@@ -94,7 +119,7 @@ const chartOption = computed(() => {
             color: '#d1d5db'
           }
         },
-        data: dummyIncomeTags
+        data: chartData.value
       }
     ]
   };
