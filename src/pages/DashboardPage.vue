@@ -1,5 +1,4 @@
 <script setup>
-// 1. import
 import { shallowRef, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTransactionStore } from '@/stores/transaction';
@@ -13,11 +12,14 @@ import OverviewChart from '@/components/dashboard/OverviewChart.vue';
 import IncomeChart from '@/components/dashboard/IncomeChart.vue';
 import ExpenseChart from '@/components/dashboard/ExpenseChart.vue';
 
-// 2. store/router
+// TODO: 개발이 완료되면 아래 명언 위젯 컴포넌트의 주석을 해제하고 우측 영역에 교체합니다.
+// import SummaryMentCard from '@/components/dashboard/SummaryMentCard.vue';
+
+// 2. store setup
 const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
-// 4. reactive state
+// 3. reactive state
 const today = new Date();
 const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
@@ -30,17 +32,17 @@ const tabs = [
   { id: 'expense', name: '지출 분석', component: ExpenseChart }
 ];
 
-// 5. computed
+// 4. computed
 const stats = computed(() => transactionStore.monthlyStats);
 const isLoading = computed(() => transactionStore.loading);
 
 const dashboardTitle = computed(() => {
   const userName = authStore.user?.name || '사용자';
   const currentMonth = today.getMonth() + 1;
-  return `${userName}님의 ${currentMonth}월의 소비는`;
+  return `${userName}님의 ${currentMonth}월 소비`;
 });
 
-// 6. lifecycle hooks
+// 5. lifecycle hooks
 watch(
   () => authStore.user?.id, 
   (newId) => {
@@ -58,15 +60,14 @@ onMounted(() => {
   authStore.user = { id: "1", name: "박신형" };
 });
 
-// 7. functions
-// 선언 위치가 라이프사이클 아래로 내려갔으므로, 오류 방지를 위해 일반 함수로 선언
+// 6. functions
 async function fetchStats() {
   const userId = authStore.user?.id ? String(authStore.user.id) : null;
   
   console.log("🔍 fetchStats 실행 시도 - 현재 유저ID:", userId); 
 
   if (userId) {
-    console.log("🚀 트랜잭션 데이터 요청을 보냅니다! (대상 날짜: " + currentYearMonth + ")");
+    console.log("🚀 트랜잭션 데이터 요청 (대상 날짜: " + currentYearMonth + ")");
     await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
   } else {
     console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
@@ -80,9 +81,9 @@ function formatCurrency(value) {
 </script>
 
 <template>
-  <PageSectionLayout>
+  <PageSectionLayout title="대시보드">
     <div v-if="isLoading" class="flex justify-center py-20">
-      <span class="text-text-secondary">재정 데이터를 분석 중입니다...</span>
+      <span class="text-text-secondary"> 재정 데이터를 분석 중입니다...</span>
     </div>
 
     <template v-else>
@@ -112,30 +113,58 @@ function formatCurrency(value) {
         </SectionCard>
       </div>
 
-      <SectionCard>
-        <div class="flex items-center justify-between mb-6">
-          <h2 class="text-lg font-bold text-text-primary">{{ dashboardTitle }}</h2>
-          <span class="text-xs text-text-muted">{{ currentYearMonth }} 기준</span>
-        </div>
+      <SectionCard title="소비 패턴 분석">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-2">
+          
+          <div class="flex flex-col rounded-lg border border-line p-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-line pb-3 mb-3 gap-3 sm:gap-0">
+              <h3 class="text-base font-bold text-text-primary">{{ dashboardTitle }}</h3>
 
-        <div class="flex gap-4 mb-6 border-b border-line">
-          <button
-            v-for="tab in tabs"
-            :key="tab.id"
-            @click="currentTabComponent = tab.component"
-            :class="[
-              'pb-2 text-sm font-bold transition-colors border-b-2',
-              currentTabComponent === tab.component
-                ? 'border-accent-ui text-accent-ui' 
-                : 'border-transparent text-text-muted hover:text-text-primary'
-            ]"
-          >
-            {{ tab.name }}
-          </button>
-        </div>
-        
-        <div class="h-[350px] w-full">
-          <component :is="currentTabComponent" />
+              <div class="flex gap-3">
+                <button
+                  v-for="tab in tabs"
+                  :key="tab.id"
+                  @click="currentTabComponent = tab.component"
+                  :class="[
+                    'text-sm font-bold transition-colors',
+                    currentTabComponent === tab.component
+                      ? 'text-accent-ui' 
+                      : 'text-text-muted hover:text-text-primary'
+                  ]"
+                >
+                  {{ tab.name }}
+                </button>
+              </div>
+            </div>
+
+            <div class="text-right mb-4">
+              <span class="text-xs text-text-muted">{{ currentYearMonth }} 기준</span>
+            </div>
+            
+            <div class="h-[280px] w-full">
+              <component :is="currentTabComponent" />
+            </div>
+          </div>
+
+          <div class="relative flex flex-col min-h-[300px] items-center justify-center rounded-lg border border-line bg-surface-muted p-6">
+            <button class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 2v6h-6"></path>
+                <path d="M3 12a9 9 0 1 0 2.13-5.85L21 8"></path>
+              </svg>
+            </button>
+
+            <div class="text-center">
+              <span class="inline-block px-2 py-1 mb-4 text-xs font-bold rounded-full bg-line text-text-secondary">
+                💡 이번 달 팩폭 알림
+              </span>
+              <p class="text-lg md:text-xl font-bold text-text-primary leading-relaxed break-keep">
+                "카페인 중독이 의심되네요.<br/>텀블러와 친해져 보는 건 어떨까요?"
+              </p>
+              <p class="mt-4 text-sm text-text-muted">가장 지출이 큰 카테고리: <strong class="text-text-secondary">식비</strong></p>
+            </div>
+          </div>
+
         </div>
       </SectionCard>
     </template>
@@ -143,4 +172,5 @@ function formatCurrency(value) {
 </template>
 
 <style scoped>
+/* Tailwind 유틸리티를 활용하므로 추가 CSS 작성 생략 */
 </style>
