@@ -55,7 +55,7 @@ watch(
 onMounted(() => {
   console.log("✅ 대시보드 마운트 완료");
   // authStore 에 user 저장 (회원가입 화면 구현 완료 후 주석 처리 예정)
-  authStore.user = { id: "1", name: "박신형" };
+  // authStore.user = { id: "1", name: "박신형" };
 });
 
 // 7. functions

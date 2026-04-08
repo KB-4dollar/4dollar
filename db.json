@@ -35,7 +35,8 @@
       "date": "2026-04-06",
       "category": "식비",
       "memo": "강남역 점심 식사",
-      "imageUrl": ""
+      "imageUrl": "",
+      "tags": []
     },
     {
       "id": "2",
@@ -45,7 +46,8 @@
       "date": "2026-04-05",
       "category": "기타",
       "memo": "4월 급여",
-      "imageUrl": ""
+      "imageUrl": "",
+      "tags": ["월급"]
     },
     {
       "id": "3",
@@ -55,7 +57,8 @@
       "date": "2026-04-06",
       "category": "교통",
       "memo": "지하철 충전",
-      "imageUrl": ""
+      "imageUrl": "",
+      "tags": []
     }
   ]
 }

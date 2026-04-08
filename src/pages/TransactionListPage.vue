@@ -8,6 +8,7 @@ import SectionCard from '@/components/common/SectionCard.vue';
 // 2. store/router
 import { useTransactionStore } from '@/stores/transaction';
 import { useRouter } from 'vue-router';
+
 // 3. constants
 import {
   TRANSACTION_TYPE,
@@ -32,8 +33,8 @@ const customStart = ref('');
 const customEnd = ref('');
 
 // 무한스크롤 관련
-const scrollContainer = ref(null); // 스크롤이 발생하는 컨테이너
-const sentinel = ref(null); // 바닥 감지용
+const scrollContainer = ref(null); 
+const sentinel = ref(null); 
 const isFetchingMore = ref(false);
 let currentPage = 1;
 
@@ -47,62 +48,48 @@ const CATEGORY_ICON_MAP = {
   [CATEGORY.ETC]: '📌',
 };
 
-// ── 더미 데이터 ──────────────────────────────────────
-const DUMMY_TRANSACTIONS = Array.from({ length: 25 }, (_, i) => ({
-  id: String(i + 1),
-  type: i % 5 === 0 ? TRANSACTION_TYPE.INCOME : TRANSACTION_TYPE.EXPENSE,
-  category: Object.values(CATEGORY)[i % 7],
-  memo: `테스트 항목 ${i + 1}`,
-  amount: (i + 1) * 1000,
-  date: '2026-04-06',
-}));
+// ── 데이터 관리 핵심 로직 (Dummy vs API) ─────────────────────────
 
-const dummyLoading = ref(false);
-const dummyFilteredList = ref([]);
+// dummyMode일 때만 실행될 데이터 생성 함수
+const generateDummyData = () => {
+  return Array.from({ length: 25 }, (_, i) => ({
+    id: `dummy-${i + 1}`,
+    type: i % 5 === 0 ? TRANSACTION_TYPE.INCOME : TRANSACTION_TYPE.EXPENSE,
+    category: Object.values(CATEGORY)[i % 7],
+    memo: `테스트 항목 ${i + 1}`,
+    amount: (i + 1) * 1000,
+    date: '2026-04-06',
+    tags: i % 3 === 0 ? ['필수', '식비'] : []
+  }));
+};
+
+const dummyFilteredList = ref([]); 
 const dummyDisplayCount = ref(PAGE_LIMIT);
+const dummyLoading = ref(false);
 
-const dummyTransactions = computed(() =>
-  dummyFilteredList.value.slice(0, dummyDisplayCount.value),
-);
-const dummyHasMore = computed(
-  () => dummyDisplayCount.value < dummyFilteredList.value.length,
-);
-
-function applyDummyFilters() {
-  dummyLoading.value = true;
-  dummyDisplayCount.value = PAGE_LIMIT;
-  setTimeout(() => {
-    let list = [...DUMMY_TRANSACTIONS];
-    if (activeType.value !== '전체') {
-      list = list.filter((t) => t.type === activeType.value);
-    }
-    if (activeCategory.value !== '전체') {
-      list = list.filter((t) => t.category === activeCategory.value);
-    }
-    dummyFilteredList.value = list;
-    dummyLoading.value = false;
-    // 필터 변경 시 스크롤 상단 이동
-    if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
-  }, 300);
-}
-
-function loadMoreDummy() {
-  dummyDisplayCount.value += PAGE_LIMIT;
-}
-// ───────────────────────────────────────────────────
-
+// [Computed] 현재 로딩 상태
 const isLoading = computed(() =>
-  props.dummyMode ? dummyLoading.value : transactionStore.loading,
+  props.dummyMode ? dummyLoading.value : transactionStore.loading
 );
+
+// [Computed] 화면에 표시할 리스트
 const displayTransactions = computed(() =>
-  props.dummyMode ? dummyTransactions.value : transactionStore.transactions,
+  props.dummyMode 
+    ? dummyFilteredList.value.slice(0, dummyDisplayCount.value) 
+    : transactionStore.transactions
 );
-const displayTotalCount = computed(() =>
-  props.dummyMode ? dummyFilteredList.value.length : transactionStore.totalCount,
-);
+
+// [Computed] 더 불러올 데이터 존재 여부
 const displayHasMore = computed(() =>
-  props.dummyMode ? dummyHasMore.value : transactionStore.hasMore,
+  props.dummyMode 
+    ? dummyDisplayCount.value < dummyFilteredList.value.length 
+    : transactionStore.hasMore
 );
+
+// [Computed] 데이터가 완전히 비어있는지 확인
+const isListEmpty = computed(() => !isLoading.value && displayTransactions.value.length === 0);
+
+// [Computed] 통계 데이터
 const displayTotalIncome = computed(() => {
   const list = props.dummyMode ? dummyFilteredList.value : transactionStore.transactions;
   return list.filter((t) => t.type === TRANSACTION_TYPE.INCOME).reduce((s, t) => s + t.amount, 0);
@@ -112,6 +99,8 @@ const displayTotalExpense = computed(() => {
   return list.filter((t) => t.type === TRANSACTION_TYPE.EXPENSE).reduce((s, t) => s + t.amount, 0);
 });
 const displayNetAmount = computed(() => displayTotalIncome.value - displayTotalExpense.value);
+
+// ── 필터 및 데이터 요청 ──────────────────────────────────────
 
 function getDateRange(period) {
   const today = new Date();
@@ -137,79 +126,91 @@ function getDateRange(period) {
     ...(customEnd.value ? { date_lte: customEnd.value } : {}),
   };
 }
-const goToDetail = (id) => {
-  router.push({ 
-    name: 'detail', 
-    params: { id } 
-  });
-};
+
 async function fetchWithFilters() {
   if (props.dummyMode) {
-    applyDummyFilters();
-    return;
+    // 1. Dummy Mode 로직
+    dummyLoading.value = true;
+    dummyDisplayCount.value = PAGE_LIMIT;
+    
+    // API 지연 시뮬레이션
+    setTimeout(() => {
+      let list = generateDummyData();
+      if (activeType.value !== '전체') {
+        list = list.filter((t) => t.type === activeType.value);
+      }
+      if (activeCategory.value !== '전체') {
+        list = list.filter((t) => t.category === activeCategory.value);
+      }
+      dummyFilteredList.value = list;
+      dummyLoading.value = false;
+      if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
+    }, 300);
+  } else {
+    // 2. Real API Mode 로직
+    currentPage = 1;
+    const params = {
+      _page: currentPage,
+      _per_page: PAGE_LIMIT,
+      ...getDateRange(activePeriod.value),
+      ...(activeType.value !== '전체' ? { type: activeType.value } : {}),
+      ...(activeCategory.value !== '전체' ? { category: activeCategory.value } : {}),
+    };
+    await transactionStore.fetchTransactions(params, false);
+    if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
   }
-  currentPage = 1;
-  const params = {
-    _page: currentPage,
-    _per_page: PAGE_LIMIT,
-    ...getDateRange(activePeriod.value),
-    ...(activeType.value !== '전체' ? { type: activeType.value } : {}),
-    ...(activeCategory.value !== '전체' ? { category: activeCategory.value } : {}),
-  };
-  await transactionStore.fetchTransactions(params, false);
-  if (scrollContainer.value) scrollContainer.value.scrollTop = 0;
 }
 
 async function loadMore() {
-  if (isFetchingMore.value) return;
-  isFetchingMore.value = true;
-  currentPage += 1;
-  const params = {
-    _page: currentPage,
-    _per_page: PAGE_LIMIT,
-    ...getDateRange(activePeriod.value),
-    ...(activeType.value !== '전체' ? { type: activeType.value } : {}),
-    ...(activeCategory.value !== '전체' ? { category: activeCategory.value } : {}),
-  };
-  await transactionStore.fetchTransactions(params, true);
-  isFetchingMore.value = false;
+  if (props.dummyMode) {
+    if (displayHasMore.value) dummyDisplayCount.value += PAGE_LIMIT;
+  } else {
+    if (isFetchingMore.value || !displayHasMore.value) return;
+    isFetchingMore.value = true;
+    currentPage += 1;
+    const params = {
+      _page: currentPage,
+      _per_page: PAGE_LIMIT,
+      ...getDateRange(activePeriod.value),
+      ...(activeType.value !== '전체' ? { type: activeType.value } : {}),
+      ...(activeCategory.value !== '전체' ? { category: activeCategory.value } : {}),
+    };
+    await transactionStore.fetchTransactions(params, true);
+    isFetchingMore.value = false;
+  }
 }
+
 async function handleDelete(id) {
   if (!confirm('정말 삭제하시겠습니까?')) return;
-
   if (props.dummyMode) {
-    // 더미 모드: 필터링된 리스트에서 즉시 제거
     dummyFilteredList.value = dummyFilteredList.value.filter((t) => t.id !== id);
   } else {
-    // 실제 모드: Store 액션 호출
     await transactionStore.deleteTransaction(id);
   }
 }
 
+const goToDetail = (id) => {
+  router.push({ name: 'transactionDetail', params: { id } });
+};
+
+const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs(value));
+
+// Watchers
 watch([activePeriod, activeType, activeCategory, customStart, customEnd], () => {
   fetchWithFilters();
 });
 
+// Lifecycle
 let observer = null;
-
 onMounted(() => {
   fetchWithFilters();
-
   observer = new IntersectionObserver(
     (entries) => {
-      if (
-        entries[0].isIntersecting &&
-        !isLoading.value &&
-        !isFetchingMore.value &&
-        displayHasMore.value
-      ) {
-        props.dummyMode ? loadMoreDummy() : loadMore();
+      if (entries[0].isIntersecting && !isLoading.value && displayHasMore.value) {
+        loadMore();
       }
     },
-    { 
-      root: scrollContainer.value, // 뷰포트가 아닌 내부 컨테이너 기준
-      threshold: 0.1 
-    }
+    { root: scrollContainer.value, threshold: 0.1 }
   );
   if (sentinel.value) observer.observe(sentinel.value);
 });
@@ -217,8 +218,6 @@ onMounted(() => {
 onUnmounted(() => {
   observer?.disconnect();
 });
-
-const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs(value));
 </script>
 
 <template>
@@ -253,11 +252,11 @@ const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs
         </div>
 
         <div class="text-sm text-muted-foreground mb-3">유형</div>
-        <div class="flex gap-2 mb-8">
+        <div class="flex gap-2">
           <button
             v-for="type in ['전체', TRANSACTION_TYPE.INCOME, TRANSACTION_TYPE.EXPENSE]"
             :key="type"
-            :class="cn('px-4 py-1.5 rounded-full text-sm font-medium', activeType === type ? 'bg-accent-ui text-accent-ui-foreground' : 'bg-button-dark text-button-dark-foreground')"
+            :class="cn('px-4 py-1.5 rounded-full text-sm font-medium transition-colors', activeType === type ? 'bg-accent-ui text-accent-ui-foreground' : 'bg-button-dark text-button-dark-foreground')"
             @click="activeType = type"
           >
             {{ type }}
@@ -266,15 +265,13 @@ const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs
       </SectionCard>
 
       <SectionCard>
-        <div 
-          ref="scrollContainer" 
-          class="overflow-y-auto max-h-[500px] pr-2 custom-scroll"
-        >
-          <div v-if="isLoading" class="flex justify-center items-center py-12">
-            <span class="text-muted-foreground text-sm">불러오는 중...</span>
+        <div ref="scrollContainer" class="overflow-y-auto max-h-[500px] pr-2 custom-scroll">
+          <div v-if="isLoading && displayTransactions.length === 0" class="flex justify-center items-center py-12">
+            <span class="text-muted-foreground text-sm">데이터를 불러오는 중...</span>
           </div>
 
-          <div v-else-if="displayTransactions.length === 0" class="flex justify-center items-center py-12">
+          <div v-else-if="isListEmpty" class="flex flex-col justify-center items-center py-16">
+            <div class="text-4xl mb-3">📁</div>
             <span class="text-muted-foreground text-sm">내역이 없습니다.</span>
           </div>
 
@@ -282,8 +279,8 @@ const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs
             <div
               v-for="item in displayTransactions"
               :key="item.id"
+              class="flex items-center justify-between py-4 border-b border-border last:border-0 hover:bg-accent/5 transition-colors cursor-pointer group"
               @click="goToDetail(item.id)"
-              class="flex items-center justify-between py-4 border-b border-border last:border-0"
             >
               <div class="flex items-center gap-4">
                 <div class="w-10 h-10 rounded-full flex items-center justify-center bg-accent-ui text-accent-ui-foreground text-lg">
@@ -295,10 +292,18 @@ const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs
                     <span :class="cn('text-[10px] px-1.5 py-0.5 rounded', item.type === TRANSACTION_TYPE.INCOME ? 'bg-accent-ui/20 text-accent-ui' : 'bg-chip-muted text-chip-muted-foreground')">
                       {{ item.type }}
                     </span>
+                    <span 
+                      v-for="(tag, index) in item.tags" 
+                      :key="index"
+                      class="text-[10px] text-blue-600 font-medium whitespace-nowrap"
+                    >
+                      #{{ tag }}
+                    </span>
                   </div>
                   <div class="text-xs text-muted-foreground">{{ item.memo }}</div>
                 </div>
               </div>
+              
               <div class="text-right">
                 <div :class="cn('font-bold text-sm', item.type === TRANSACTION_TYPE.INCOME ? 'text-accent-ui' : 'text-text-primary')">
                   {{ item.type === TRANSACTION_TYPE.INCOME ? '+' : '-' }}{{ formatCurrency(item.amount) }}원
@@ -306,20 +311,18 @@ const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs
                 <div class="text-[10px] text-muted-foreground">{{ item.date }}</div>
                 <button 
                   @click.stop="handleDelete(item.id)"
-                  class="p-2 rounded-md hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
-                  title="삭제"
+                  class="mt-1 p-1 px-2 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
                 >
-                  <p class="text-xs">삭제</p>
+                  <p class="text-[10px]">삭제</p>
                 </button>
               </div>
             </div>
-            
           </template>
 
           <div ref="sentinel" class="h-12 flex justify-center items-center mt-2">
-            <span v-if="isFetchingMore" class="text-muted-foreground text-xs italic">데이터를 더 가져오고 있어요...</span>
-            <span v-else-if="!displayHasMore && displayTotalCount > 0" class="text-muted-foreground text-[10px]">
-              모든 내역을 확인했습니다 (총 {{ displayTotalCount }}개)
+            <span v-if="isFetchingMore" class="text-muted-foreground text-xs italic">데이터를 더 가져오는 중...</span>
+            <span v-else-if="!displayHasMore && !isListEmpty" class="text-muted-foreground text-[10px]">
+              모든 내역을 확인했습니다
             </span>
           </div>
         </div>
@@ -332,13 +335,8 @@ const formatCurrency = (value) => new Intl.NumberFormat('ko-KR').format(Math.abs
 .scrollbar-hide::-webkit-scrollbar { display: none; }
 .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* 내부 스크롤바 커스텀 */
-.custom-scroll::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scroll::-webkit-scrollbar-track {
-  background: transparent;
-}
+.custom-scroll::-webkit-scrollbar { width: 4px; }
+.custom-scroll::-webkit-scrollbar-track { background: transparent; }
 .custom-scroll::-webkit-scrollbar-thumb {
   background: #d1d5db;
   border-radius: 10px;
