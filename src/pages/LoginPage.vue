@@ -34,55 +34,55 @@ const login = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-[#f5f2ef]">
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-md p-8">
-      <h1 class="text-2xl font-bold text-center mb-6">로그인</h1>
+  <div class="min-h-screen flex items-center justify-center bg-page-bg px-4">
+    <div
+      class="w-full max-w-md bg-surface border border-line rounded-xl p-8 shadow-[0_8px_24px_var(--panel-shadow)]"
+    >
+      <h1
+        class="text-xl md:text-2xl font-bold text-text-primary text-center mb-6"
+      >
+        로그인
+      </h1>
 
-      <!-- 이메일 -->
       <div class="mb-4">
-        <label class="block text-sm font-medium mb-1">
-          이메일 <span class="text-red-500">*</span>
+        <label class="block text-sm text-text-secondary mb-1">
+          이메일 <span class="text-accent-ui">*</span>
         </label>
         <input
           v-model="email"
           type="email"
           placeholder="이메일을 입력하세요"
-          class="w-full px-4 py-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
-
-      <!-- 비밀번호 -->
       <div class="mb-6">
-        <label class="block text-sm font-medium mb-1">
-          비밀번호 <span class="text-red-500">*</span>
+        <label class="block text-sm text-text-secondary mb-1">
+          비밀번호 <span class="text-accent-ui">*</span>
         </label>
         <input
           v-model="password"
           type="password"
-          placeholder="비밀번호를 입력하세요 (8자 이상)"
+          placeholder="비밀번호를 입력하세요"
           @keyup.enter="login"
-          class="w-full px-4 py-3 border rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-300"
+          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
-
-      <!-- 버튼 -->
       <button
         @click="login"
         :disabled="!email || !password"
-        class="w-full py-3 rounded-lg bg-gray-300 text-white font-semibold disabled:opacity-50 enabled:bg-black"
+        class="w-full py-3 rounded-lg font-semibold transition bg-accent-ui text-accent-ui-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
       >
         로그인
       </button>
-
-      <!-- 에러 -->
-      <p v-if="errorMsg" class="text-red-500 text-sm mt-3 text-center">
+      <p v-if="errorMsg" class="text-sm text-accent-ui mt-3 text-center">
         {{ errorMsg }}
       </p>
-
-      <!-- 회원가입 -->
-      <div class="text-center mt-6 text-sm text-gray-500">
+      <div class="text-center mt-6 text-sm text-text-secondary">
         계정이 없으신가요?
-        <RouterLink to="/signup" class="text-gray-700 font-medium ml-1">
+        <RouterLink
+          to="/signup"
+          class="text-text-primary font-medium ml-1 hover:underline"
+        >
           회원가입
         </RouterLink>
       </div>

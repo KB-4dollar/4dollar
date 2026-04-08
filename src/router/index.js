@@ -39,6 +39,12 @@ const publicRoutes = [
         meta: { requiresAuth: false }, // 테스트를 위해 우선 false
         props: { dummyMode: false },
       },
+      {
+        path: '/setting',
+        name: 'setting',
+        component: () => import('@/pages/SettingPage.vue'),
+        meta: { requiresAuth: true },
+      },
     ],
   },
   { path: '/:pathMatch(.*)*', name: 'NotFound', component: NotFound },
