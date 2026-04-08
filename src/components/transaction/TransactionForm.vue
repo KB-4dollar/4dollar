@@ -1,9 +1,14 @@
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, onBeforeUnmount, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useTransactionStore } from '@/stores/transaction';
 
 import Button from '../ui/Button.vue';
+import ToastMessage from '../ui/ToastMessage.vue';
 import PageSectionLayout from '../common/PageSectionLayout.vue';
 import SectionCard from '../common/SectionCard.vue';
+import { parseHashTags, sanitizeTagInput } from '@/utils/tagParser';
+import { validateTransactionForm } from '@/utils/validation';
 import CategorySelectModal from './CategoryModal.vue';
 import DateCalendar from './DateCalendar.vue';
 
@@ -24,42 +29,64 @@ const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ACCEPTED_FILE_TYPES = ['image/jpeg', 'image/png'];
 
 const today = new Date().toISOString().slice(0, 10);
+const router = useRouter();
+const transactionStore = useTransactionStore();
 
 const form = ref({
   type: 'expense',
   amount: '',
   date: today,
   category: '',
+  tags: [],
   memo: '',
   photo: null,
 });
 
-const photoError = ref('');
-const fileInputRef = ref(null);
+// const photoError = ref('');
+// const fileInputRef = ref(null);
 const isCategoryModalOpen = ref(false);
+const tagInput = ref('');
+const submitError = ref('');
+const toastMessage = ref('');
+const isToastOpen = ref(false);
+const submitAttempted = ref(false);
+const touchedFields = ref({
+  type: false,
+  amount: false,
+  date: false,
+  category: false,
+});
 
+let toastTimerId = null;
+
+const validationResult = computed(() => validateTransactionForm(form.value));
+const fieldErrors = computed(() => validationResult.value.errors);
+const isRequiredValid = computed(() => validationResult.value.isValid);
 const amountNumber = computed(() => Number(form.value.amount));
-const isAmountValid = computed(
-  () =>
-    form.value.amount !== '' &&
-    Number.isInteger(amountNumber.value) &&
-    amountNumber.value >= 1 &&
-    amountNumber.value <= MAX_AMOUNT,
-);
-
-const isRequiredValid = computed(
-  () =>
-    Boolean(form.value.type) &&
-    isAmountValid.value &&
-    Boolean(form.value.date) &&
-    Boolean(form.value.category),
-);
 
 const memoLength = computed(() => form.value.memo.length);
-const photoName = computed(() => form.value.photo?.name ?? '첨부된 파일 없음');
+// const photoName = computed(() => form.value.photo?.name ?? '첨부된 파일 없음');
+
+const setFieldTouched = (field) => {
+  touchedFields.value[field] = true;
+};
+
+const shouldShowError = (field) =>
+  Boolean(fieldErrors.value[field]) &&
+  (submitAttempted.value || touchedFields.value[field]);
 
 const selectType = (type) => {
   form.value.type = type;
+  setFieldTouched('type');
+
+  if (type === 'income') {
+    form.value.category = '';
+    closeCategoryModal();
+    return;
+  }
+
+  form.value.tags = [];
+  tagInput.value = '';
 };
 
 const openCategoryModal = () => {
@@ -72,16 +99,24 @@ const closeCategoryModal = () => {
 
 const selectCategory = (category) => {
   form.value.category = category;
+  setFieldTouched('category');
   closeCategoryModal();
 };
 
 const handleAmountInput = (event) => {
   const digitsOnly = event.target.value.replace(/\D/g, '');
   form.value.amount = digitsOnly.slice(0, 9);
+  setFieldTouched('amount');
 };
 
 const handleMemoInput = (event) => {
   form.value.memo = event.target.value.slice(0, MAX_MEMO_LENGTH);
+};
+
+const handleTagInput = (event) => {
+  const sanitizedValue = sanitizeTagInput(event.target.value);
+  tagInput.value = sanitizedValue;
+  form.value.tags = parseHashTags(sanitizedValue);
 };
 
 const clearPhoto = () => {
@@ -121,25 +156,119 @@ const handlePhotoChange = (event) => {
 };
 
 const formattedAmountHint = computed(() => {
-  if (!isAmountValid.value) {
+  if (shouldShowError('amount')) {
+    return fieldErrors.value.amount;
+  }
+
+  if (
+    form.value.amount === '' ||
+    !Number.isInteger(amountNumber.value) ||
+    amountNumber.value < 1 ||
+    amountNumber.value > MAX_AMOUNT
+  ) {
     return '최소 1원 ~ 최대 10억원 미만';
   }
 
   return `${amountNumber.value.toLocaleString('ko-KR')}원`;
 });
+
+const resetForm = () => {
+  form.value = {
+    type: 'expense',
+    amount: '',
+    date: today,
+    category: '',
+    tags: [],
+    memo: '',
+    photo: null,
+  };
+  tagInput.value = '';
+  isCategoryModalOpen.value = false;
+  submitAttempted.value = false;
+  touchedFields.value = {
+    type: false,
+    amount: false,
+    date: false,
+    category: false,
+  };
+};
+
+const showToast = (message) => {
+  toastMessage.value = message;
+  isToastOpen.value = true;
+
+  if (toastTimerId) {
+    window.clearTimeout(toastTimerId);
+  }
+
+  toastTimerId = window.setTimeout(() => {
+    isToastOpen.value = false;
+    toastMessage.value = '';
+  }, 2500);
+};
+
+onBeforeUnmount(() => {
+  if (toastTimerId) {
+    window.clearTimeout(toastTimerId);
+  }
+});
+
+const submitTransaction = async () => {
+  submitError.value = '';
+  submitAttempted.value = true;
+
+  if (!isRequiredValid.value) {
+    return;
+  }
+
+  try {
+    await transactionStore.addTransaction({
+      ...form.value,
+      tags: [...form.value.tags],
+    });
+
+    resetForm();
+    await router.push({ name: 'transactionList' });
+  } catch (error) {
+    submitError.value = error.message || '거래 저장에 실패했습니다.';
+  }
+};
 </script>
 
 <template>
   <PageSectionLayout title="입출금 입력">
     <div class="grid gap-5 lg:grid-cols-[0.9fr_1.1fr]">
       <SectionCard title="날짜 선택">
-        <DateCalendar v-model="form.date" />
+        <div class="space-y-4">
+          <DateCalendar v-model="form.date" />
+        </div>
       </SectionCard>
       <SectionCard
         title="거래 정보 입력"
         description="필수 항목을 모두 입력해야 추가 버튼이 활성화됩니다."
       >
         <div class="space-y-6">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label
+                for="transaction-date"
+                class="text-sm font-semibold text-text-primary"
+              >
+                날짜
+              </label>
+              <span class="text-xs text-accent-ui">필수</span>
+            </div>
+            <input
+              id="transaction-date"
+              v-model="form.date"
+              type="date"
+              class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary focus:border-accent-ui focus:outline-none"
+              @blur="setFieldTouched('date')"
+            />
+            <p v-if="shouldShowError('date')" class="text-xs text-accent-ui">
+              {{ fieldErrors.date }}
+            </p>
+          </div>
           <div class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-semibold text-text-primary"
@@ -173,6 +302,9 @@ const formattedAmountHint = computed(() => {
                 지출
               </button>
             </div>
+            <p v-if="shouldShowError('type')" class="text-xs text-accent-ui">
+              {{ fieldErrors.type }}
+            </p>
           </div>
 
           <div class="space-y-3">
@@ -196,13 +328,38 @@ const formattedAmountHint = computed(() => {
             />
             <p
               class="text-xs"
-              :class="isAmountValid ? 'text-text-secondary' : 'text-accent-ui'"
+              :class="
+                shouldShowError('amount') ? 'text-accent-ui' : 'text-text-secondary'
+              "
             >
               {{ formattedAmountHint }}
             </p>
           </div>
 
-          <div class="space-y-3">
+          <div v-if="form.type === 'income'" class="space-y-3">
+            <div class="flex items-center justify-between">
+              <label
+                for="transaction-tags"
+                class="text-sm font-semibold text-text-primary"
+              >
+                태그
+              </label>
+              <span class="text-xs text-text-secondary">선택</span>
+            </div>
+            <input
+              id="transaction-tags"
+              :value="tagInput"
+              type="text"
+              placeholder="#월급 #용돈"
+              class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
+              @input="handleTagInput"
+            />
+            <p class="text-xs text-text-secondary">
+              #와 공백으로 구분되며, 특수문자와 중복 태그는 제외됩니다.
+            </p>
+          </div>
+
+          <div v-else class="space-y-3">
             <div class="flex items-center justify-between">
               <label class="text-sm font-semibold text-text-primary">
                 카테고리
@@ -214,12 +371,16 @@ const formattedAmountHint = computed(() => {
               class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary focus:border-accent-ui focus:outline-none"
               :class="form.category ? 'text-text-primary' : 'text-text-muted'"
               @click="openCategoryModal"
+              @blur="setFieldTouched('category')"
             >
               <span class="flex items-center justify-between">
                 <span>{{ form.category || '카테고리 선택' }}</span>
                 <span class="text-lg text-text-secondary">›</span>
               </span>
             </button>
+            <p v-if="shouldShowError('category')" class="text-xs text-accent-ui">
+              {{ fieldErrors.category }}
+            </p>
           </div>
 
           <div class="space-y-3">
@@ -242,14 +403,18 @@ const formattedAmountHint = computed(() => {
               class="w-full rounded-[14px] border border-line bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
               @input="handleMemoInput"
             />
+            <p v-if="submitError" class="text-sm text-accent-ui">
+              {{ submitError }}
+            </p>
             <Button
               type="button"
               variant="danger"
               full-width="true"
               size="lg"
-              :disabled="!isRequiredValid"
+              :disabled="!isRequiredValid || transactionStore.loading"
+              @click="submitTransaction"
             >
-              추가
+              {{ transactionStore.loading ? '저장 중...' : '추가' }}
             </Button>
           </div>
         </div>
