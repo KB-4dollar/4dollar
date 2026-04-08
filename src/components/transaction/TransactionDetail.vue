@@ -7,7 +7,7 @@ import PageSectionLayout from '../common/PageSectionLayout.vue';
 import SectionCard from '../common/SectionCard.vue';
 
 const router = useRouter();
-const emit = defineEmits(['edit']);
+const emit = defineEmits(['edit', 'delete']);
 
 const props = defineProps({
   transaction: {
@@ -52,6 +52,10 @@ const moveToList = () => {
 const moveToEdit = () => {
   emit('edit');
 };
+
+const deleteTransaction = () => {
+  emit('delete');
+};
 </script>
 
 <template>
@@ -66,9 +70,14 @@ const moveToEdit = () => {
           <span class="text-lg leading-none">‹</span>
           <span>목록으로</span>
         </button>
-        <Button type="button" variant="danger" size="sm" @click="moveToEdit"
-          >수정</Button
-        >
+        <div class="flex items-center gap-2">
+          <Button type="button" variant="outline" size="sm" @click="deleteTransaction">
+            삭제
+          </Button>
+          <Button type="button" variant="danger" size="sm" @click="moveToEdit">
+            수정
+          </Button>
+        </div>
       </div>
 
       <SectionCard>

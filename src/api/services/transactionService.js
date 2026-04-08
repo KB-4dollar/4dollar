@@ -163,7 +163,24 @@ export const transactionService = {
    * @param {Number|String} id - 내역 고유 ID
    */
   async deleteTransaction(id) {
-    // TODO: 특정 내역 삭제 로직
+    if (!id) {
+      throw new Error('삭제할 거래 ID가 없습니다.');
+    }
+
+    try {
+      await apiClient.delete(`/transactions/${id}`);
+    } catch (error) {
+      console.error('[transactionService.deleteTransaction] delete failed', {
+        baseURL: apiClient.defaults.baseURL,
+        endpoint: `/transactions/${id}`,
+        message: error.message,
+        code: error.code,
+        status: error.response?.status,
+        responseData: error.response?.data,
+      });
+
+      throw error;
+    }
   },
 
   /**
