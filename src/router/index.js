@@ -24,7 +24,7 @@ const publicRoutes = [
         path: '',
         name: 'dashboard',
         component: Dashboard,
-        meta: { requiresAuth: false }, // 테스트를 위해 저도 false 해둘게요,,
+        // meta: { requiresAuth: false }, // 테스트를 위해 저도 false 해둘게요,,
       },
       {
         path: '/transaction/:id',

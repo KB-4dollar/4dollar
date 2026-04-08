@@ -182,42 +182,38 @@ export const transactionService = {
       throw error;
     }
   },
-
   /**
    * 대시보드 월별 재정 통계 조회 (F-03-1)
    * @param {Number|String} userId - 현재 로그인한 사용자 ID (필수)
    * @param {String} yearMonth - 조회할 연월 (예: '2026-04')
    */
-
-  // 추후 검색 파라미터 기능이 구현 후 API 요청 방식으로 리팩토링할 예정
-  // 현재는 전체 데이터를 불러와 필터링하는 방식으로 구현해둠
   async getMonthlyStats(userId, yearMonth) {
     const [yearStr, monthStr] = String(yearMonth).split('-');
     const year = Number(yearStr);
     const month = Number(monthStr);
 
-    // 1. 날짜 범위 계산 (기존 로직 유지)
+    // 1. 날짜 범위 계산
     const pad2 = (n) => String(n).padStart(2, '0');
     const startDate = `${yearStr}-${pad2(month)}-01`;
     const lastDay = new Date(year, month, 0).getDate();
     const endDate = `${yearStr}-${pad2(month)}-${pad2(lastDay)}`;
 
-    // 2. [변경] 필터링 없이 해당 사용자의 모든 데이터를 가져옴
-    // (userId 필터링 불가능 '/transactions'만 호출)
-    const { data: allTransactions } = await apiClient.get('/transactions');
-
-    // 3. [핵심] 자바스크립트 filter로 직접 거르기
-    const transactions = allTransactions.filter((t) => {
-      const isUserMatch = String(t.userId) === String(userId);
-      const isDateInRange = t.date >= startDate && t.date <= endDate;
-      return isUserMatch && isDateInRange;
+    // 2. ✨ [최적화 완료] json-server에 쿼리 파라미터를 보내 서버단에서 필터링된 데이터만 받음
+    const { data: transactions } = await apiClient.get('/transactions', {
+      params: {
+        userId: userId,
+        date_gte: startDate, // startDate 크거나 같은(>=) 데이터
+        date_lte: endDate    // endDate 작거나 같은(<=) 데이터
+      }
     });
 
+    // 3. 서버에서 거르고 가져온 딱 '이번 달 데이터'만 순회하며 통계 계산
     let totalIncome = 0;
     let totalExpense = 0;
     let incomeCount = 0;
     let expenseCount = 0;
     const expenseByCategory = Object.create(null);
+    const incomeByTag = Object.create(null); // 수입 태그 집계용
 
     for (let i = 0; i < transactions.length; i += 1) {
       const t = transactions[i];
@@ -226,16 +222,23 @@ export const transactionService = {
       if (t.type === TRANSACTION_TYPE.INCOME) {
         totalIncome += amount;
         incomeCount += 1;
+        
+        // 수입 태그 합산 로직
+        const tags = (t.tags && t.tags.length > 0) ? t.tags : ['기타'];
+        tags.forEach(tag => {
+          const tagName = tag.startsWith('#') ? tag : `#${tag}`;
+          incomeByTag[tagName] = (incomeByTag[tagName] || 0) + amount;
+        });
+
       } else if (t.type === TRANSACTION_TYPE.EXPENSE) {
         totalExpense += amount;
         expenseCount += 1;
         const category = t.category || CATEGORY.ETC;
-        expenseByCategory[category] =
-          (expenseByCategory[category] || 0) + amount;
+        expenseByCategory[category] = (expenseByCategory[category] || 0) + amount;
       }
     }
-    // 콘솔 확인
-    console.log('필터링된 결과:', transactions);
+
+    console.log('서버에서 필터링되어 도착한 이번 달 데이터:', transactions);
 
     return {
       userId,
@@ -253,6 +256,7 @@ export const transactionService = {
       },
       breakdown: {
         expenseByCategory,
+        incomeByTag, 
       },
     };
   },
