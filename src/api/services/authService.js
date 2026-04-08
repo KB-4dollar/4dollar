@@ -45,4 +45,15 @@ export const authService = {
     localStorage.removeItem('token');
     window.location.href = '/login';
   },
+
+  // 설정 : 회원정보수정
+  async updateUser(id, data) {
+    try {
+      const response = await apiClient.patch(`/users/${id}`, data);
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || '사용자 정보 수정 실패';
+      throw new Error(message);
+    }
+  },
 };
