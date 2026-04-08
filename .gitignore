@@ -42,6 +42,8 @@ __screenshots__/
 .env.development
 .env.production
 
+db.json
+
 # omc
 .omc/
 .claude/
