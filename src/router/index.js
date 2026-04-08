@@ -64,7 +64,7 @@ const authRoutes = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: [...publicRoutes, ...authRoutes, ...userRoutes, ...transactionRoutes],
 });
 
