@@ -11,7 +11,7 @@ const menus = [
 </script>
 
 <template>
-  <aside class="w-60 bg-gray-100 p-5 flex flex-col">
+  <aside class="w-60 bg-white p-5 flex flex-col">
     <nav class="flex flex-col gap-3">
       <RouterLink
         v-for="menu in menus"

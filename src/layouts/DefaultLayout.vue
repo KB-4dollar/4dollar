@@ -12,7 +12,7 @@ import Sidebar from '@/components/common/Sidebar.vue';
     <div class="pt-16 flex">
       <Sidebar />
 
-      <main class="flex-1 bg-gray-50 p-6 overflow-auto">
+      <main class="flex-1 bg-gray-50 overflow-auto">
         <RouterView />
       </main>
     </div>
