@@ -1,12 +1,18 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const sectionEl = ref(null);
+const authStore = useAuthStore();
 
 const goLogin = () => {
-  router.push('/login');
+  if (authStore.isLogin) {
+    router.push('/app'); // ⭐ 로그인 상태면 대시보드
+  } else {
+    router.push('/login'); // ⭐ 아니면 로그인
+  }
 };
 
 defineExpose({
@@ -46,7 +52,7 @@ defineExpose({
         @click="goLogin"
         class="relative z-20 bg-[#e26d5c] text-white px-8 py-3 rounded-xl shadow-md transition-all duration-300 hover:bg-[#d85745] hover:shadow-lg hover:scale-105 active:scale-95"
       >
-        바로가기
+        {{ authStore.isLogin ? '대시보드로 이동' : '바로가기' }}
       </button>
     </div>
     <div
