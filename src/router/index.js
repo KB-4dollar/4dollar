@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
-
 import NotFound from '@/pages/NotFoundPage.vue';
 import Dashboard from '@/pages/DashboardPage.vue';
 import Layout from '@/layouts/DefaultLayout.vue';
@@ -8,6 +7,13 @@ import Login from '@/pages/LoginPage.vue';
 import Signup from '@/pages/SignupPage.vue';
 
 const publicRoutes = [
+  // ✅ 랜딩
+  {
+    path: '/',
+    name: 'landing',
+    component: () => import('@/pages/LandingPage.vue'),
+  },
+
   {
     path: '/',
     component: Layout,
