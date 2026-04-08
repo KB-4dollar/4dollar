@@ -11,6 +11,21 @@ export const ErrorCode = {
   },
   EMAIL_EXISTS: { code: 'A002', msg: '이미 사용중인 이메일입니다.' },
   SESSION_EXPIRED: { code: 'A003', msg: '로그인 세션이 만료되었습니다.' },
+  //회원가입실패->이메일 중복 처리로 변경
+  REGISTER_FAILED: {
+    code: 'A004',
+    msg: '중복된 이메일 입니다.',
+  },
+
+  LOGIN_FAILED: {
+    code: 'A001',
+    msg: '이메일 또는 비밀번호가 올바르지 않습니다.',
+  },
+
+  USER_UPDATE_FAILED: {
+    code: 'U008',
+    msg: '사용자 정보 수정에 실패했습니다.',
+  },
 
   // 회원가입 validation
   REQUIRED: { code: 'V000', msg: '필수 입력 항목을 입력해주세요.' },
