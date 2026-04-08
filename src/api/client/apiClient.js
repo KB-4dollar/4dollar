@@ -25,7 +25,7 @@ apiClient.interceptors.request.use(
 
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
 /**
@@ -68,7 +68,7 @@ apiClient.interceptors.response.use(
 
     // 5️⃣ 기본 fallback
     return Promise.reject(new AppError(ErrorCode.UNKNOWN));
-  }
+  },
 );
 
 export default apiClient;
