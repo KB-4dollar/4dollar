@@ -12,6 +12,7 @@ const publicRoutes = [
     path: '/',
     name: 'landing',
     component: () => import('@/pages/LandingPage.vue'),
+    exact: true,
   },
 
   {
@@ -64,8 +65,8 @@ const authRoutes = [
 ];
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes: [...publicRoutes, ...authRoutes, ...userRoutes, ...transactionRoutes],
+  history: createWebHashHistory(import.meta.env.BASE_URL),
+  routes: [...authRoutes, ...publicRoutes, ...userRoutes, ...transactionRoutes],
 });
 
 //네비게이션 가드
