@@ -15,7 +15,7 @@ const publicRoutes = [
   },
 
   {
-    path: '/',
+    path: '/app',
     component: Layout,
     meta: { requiresAuth: true },
     children: [
@@ -26,7 +26,7 @@ const publicRoutes = [
         meta: { requiresAuth: false }, // 테스트를 위해 저도 false 해둘게요,,
       },
       {
-        path: '/transaction/:id',
+        path: 'transaction/:id',
         name: 'detail',
         component: () => import('../pages/TransactionDetailPage.vue'),
       },
