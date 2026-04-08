@@ -1,10 +1,12 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue';
 import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 
 const authStore = useAuthStore();
 const isOpen = ref(false);
+
+const userName = computed(() => authStore.user?.name || '사용자');
 
 const logout = () => {
   authStore.logout();
@@ -41,7 +43,7 @@ onBeforeUnmount(() => {
     <!-- 프로필: 아직 스타일만 적용 -->
     <div id="profile-dropdown" class="relative">
       <button @click.stop="toggleDropdown" class="flex items-center gap-2">
-        <span class="text-sm">박신형</span>
+        <span class="text-sm">{{ userName }}</span>
         <div
           class="w-8 h-8 rounded-full bg-white/30 flex items-center justify-center"
         >
