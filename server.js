@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
 // 기본 미들웨어
-app.use(jsonServer.defaults());
+app.use(jsonServer.defaults({ cors: false }));
 
 // 🔥 이 2줄이 핵심
 app.db = router.db;
@@ -33,6 +33,6 @@ app.use(auth);
 app.use(router);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT,'0.0.0.0', () => {
   console.log('Server running');
 });
