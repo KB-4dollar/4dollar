@@ -1,22 +1,19 @@
 import jsonServer from 'json-server';
 import auth from 'json-server-auth';
+import cors from 'cors';
 
 console.log("auth type:", typeof auth);
 console.log(auth);
 const app = jsonServer.create();
 const router = jsonServer.router('db.json');
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", "https://kb-4dollar.github.io");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-  res.header("Access-Control-Allow-Credentials", "true");
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
+app.use(cors({
+  origin: "https://kb-4dollar.github.io/4dollar",
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true
+}));
 
-  next();
-});
 
 
 // 기본 미들웨어
