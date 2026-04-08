@@ -1,0 +1,17 @@
+@reference "tailwindcss";
+
+/* landing 전용 공통 */
+.section {
+  @apply h-screen snap-start flex items-center justify-center;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease;
+}
+
+.fade-up.show {
+  opacity: 1;
+  transform: translateY(0);
+}
