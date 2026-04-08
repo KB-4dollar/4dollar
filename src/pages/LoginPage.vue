@@ -26,7 +26,7 @@ const login = async () => {
     });
 
     authStore.login(user);
-    router.push('/');
+    router.push('/app');
   } catch (error) {
     errorMsg.value = error.message;
   }
