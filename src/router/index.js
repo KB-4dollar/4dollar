@@ -15,7 +15,7 @@ const publicRoutes = [
   },
 
   {
-    path: '/',
+    path: '/app',
     component: Layout,
     meta: { requiresAuth: true },
     children: [
@@ -27,6 +27,7 @@ const publicRoutes = [
       },
       {
         path: 'transaction/:id',
+        name: 'detail',
         name: 'transactionDetail',
         component: () => import('../pages/TransactionDetailPage.vue'),
       },
