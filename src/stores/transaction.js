@@ -122,7 +122,46 @@ export const useTransactionStore = defineStore('transaction', {
 
     // 거래 수정
     async updateTransaction(id, transaction) {
-      // TODO: PUT /api/transactions/:id
+      const authStore = useAuthStore();
+      const userId = authStore.user?.id;
+
+      if (!userId) {
+        throw new Error('로그인한 사용자 정보가 없습니다.');
+      }
+
+      this.loading = true;
+      try {
+        const updatedTransaction = await transactionService.updateTransaction(
+          id,
+          {
+            ...transaction,
+            userId,
+          },
+        );
+
+        this.transactions = this.transactions.map((item) =>
+          String(item.id) === String(id) ? updatedTransaction : item,
+        );
+
+        if (
+          this.selectedTransaction &&
+          String(this.selectedTransaction.id) === String(id)
+        ) {
+          this.selectedTransaction = updatedTransaction;
+        }
+
+        return updatedTransaction;
+      } catch (error) {
+        console.error('[transactionStore.updateTransaction] failed', {
+          id,
+          userId,
+          transaction,
+          message: error.message,
+        });
+        throw error;
+      } finally {
+        this.loading = false;
+      }
     },
 
     // 거래 삭제
