@@ -7,7 +7,6 @@ const sectionEl = ref(null);
 
 const goLogin = () => {
   router.push('/login');
-  alert('클릭됨');
 };
 
 defineExpose({
