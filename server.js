@@ -6,15 +6,18 @@ console.log("auth type:", typeof auth);
 console.log(auth);
 const app = jsonServer.create();
 const router = jsonServer.router('db.json');
-
-app.use(cors({
+const corsOptions = {
   origin: "https://kb-4dollar.github.io",
   methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true
-}));
+};
 
 
+app.use(cors(corsOptions));
+
+
+app.options('*', cors(corsOptions));
 
 // 기본 미들웨어
 app.use(jsonServer.defaults());
