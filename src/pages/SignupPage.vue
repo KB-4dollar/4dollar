@@ -1,17 +1,17 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, onBeforeUnmount } from 'vue';
 import { authService } from '@/api/services/authService';
 import router from '@/router';
 import { validateSignup } from '@/utils/validation';
-import { MessageCode } from '@/api/constants/messageCode.js';
 import Button from '@/components/ui/Button.vue';
+import { MessageCode } from '@/api/constants/messageCode.js';
+import ToastMessage from '@/components/ui/ToastMessage.vue';
 
 const name = ref('');
 const email = ref('');
 const password = ref('');
 const passwordConfirm = ref('');
 const errorMsg = ref('');
-const successMsg = ref('');
 
 const signup = async () => {
   try {
@@ -30,15 +30,37 @@ const signup = async () => {
       username: name.value,
       name: name.value,
     });
-    successMsg.value = MessageCode.SIGNUP_SUCCESS.msg;
+    showToast(MessageCode.SIGNUP_SUCCESS.msg);
 
     setTimeout(() => {
       router.push('/login');
-    }, 1500);
+    }, 1000);
   } catch (error) {
     errorMsg.value = error.message;
   }
 };
+
+// 🔥 toast 템플릿 (복붙용)
+const toastMessage = ref('');
+const isToastOpen = ref(false);
+
+let toastTimerId = null;
+
+const showToast = (message) => {
+  toastMessage.value = message;
+  isToastOpen.value = true;
+
+  if (toastTimerId) clearTimeout(toastTimerId);
+
+  toastTimerId = setTimeout(() => {
+    isToastOpen.value = false;
+    toastMessage.value = '';
+  }, 2500);
+};
+
+onBeforeUnmount(() => {
+  if (toastTimerId) clearTimeout(toastTimerId);
+});
 </script>
 
 <template>
@@ -119,4 +141,5 @@ const signup = async () => {
       </div>
     </div>
   </div>
+  <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>

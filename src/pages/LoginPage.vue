@@ -3,13 +3,36 @@ import router from '@/router';
 import { useAuthStore } from '@/stores/auth';
 import { authService } from '@/api/services/authService';
 import { ErrorCode } from '@/api/constants/errorCode';
-import { ref } from 'vue';
+import { ref, onBeforeUnmount } from 'vue';
 import Button from '@/components/ui/Button.vue';
+import { MessageCode } from '@/api/constants/messageCode.js';
+import ToastMessage from '@/components/ui/ToastMessage.vue';
 const authStore = useAuthStore();
 
 const email = ref('');
 const password = ref('');
 const errorMsg = ref('');
+
+const toastMessage = ref('');
+const isToastOpen = ref(false);
+
+let timer = null;
+
+const showToast = (msg) => {
+  toastMessage.value = msg;
+  isToastOpen.value = true;
+
+  if (timer) clearTimeout(timer);
+
+  timer = setTimeout(() => {
+    isToastOpen.value = false;
+    toastMessage.value = '';
+  }, 2000);
+};
+
+onBeforeUnmount(() => {
+  if (timer) clearTimeout(timer);
+});
 
 const login = async () => {
   try {
@@ -26,7 +49,11 @@ const login = async () => {
     });
 
     authStore.login(user);
-    router.push('/app');
+    showToast(MessageCode.LOGIN_SUCCESS.msg);
+
+    setTimeout(() => {
+      router.push('/app');
+    }, 1000);
   } catch (error) {
     errorMsg.value = error.message;
   }
@@ -90,4 +117,5 @@ const login = async () => {
       </div>
     </div>
   </div>
+  <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>
