@@ -167,34 +167,6 @@ const clearPhoto = () => {
   }
 };
 
-const handlePhotoChange = (event) => {
-  const [file] = event.target.files ?? [];
-
-  if (!file) {
-    clearPhoto();
-    photoError.value = '';
-    return;
-  }
-
-  const isValidType = ACCEPTED_FILE_TYPES.includes(file.type);
-  const isValidSize = file.size <= MAX_FILE_SIZE;
-
-  if (!isValidType) {
-    photoError.value = 'JPG 또는 PNG 파일만 첨부할 수 있습니다.';
-    clearPhoto();
-    return;
-  }
-
-  if (!isValidSize) {
-    photoError.value = '사진 용량은 5MB 이하만 가능합니다.';
-    clearPhoto();
-    return;
-  }
-
-  form.value.photo = file;
-  photoError.value = '';
-};
-
 const formattedAmountHint = computed(() => {
   if (shouldShowError('amount')) {
     return fieldErrors.value.amount;

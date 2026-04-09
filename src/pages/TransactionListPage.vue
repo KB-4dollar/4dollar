@@ -5,6 +5,7 @@ import { cn } from '@/lib/utils';
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 import SectionCard from '@/components/common/SectionCard.vue';
 import TransactionFormModal from '@/components/transaction/TransactionFormModal.vue';
+import ToastMessage from '@/components/ui/ToastMessage.vue';
 
 // 2. store/router
 import { useTransactionStore } from '@/stores/transaction';
@@ -205,10 +206,24 @@ async function handleDelete(id) {
   } else {
     await transactionStore.deleteTransaction(id);
   }
+  showToast('삭제되었습니다.');
 }
 
 const selectedTransaction = ref(null);
 const isFormModalOpen = ref(false);
+const toastMessage = ref('');
+const isToastOpen = ref(false);
+let toastTimerId = null;
+
+const showToast = (message) => {
+  toastMessage.value = message;
+  isToastOpen.value = true;
+  if (toastTimerId) window.clearTimeout(toastTimerId);
+  toastTimerId = window.setTimeout(() => {
+    isToastOpen.value = false;
+    toastMessage.value = '';
+  }, 2500);
+};
 
 const goToDetail = (id) => {
   const transaction = transactionStore.transactions.find((t) => t.id === id);
@@ -456,6 +471,7 @@ onUnmounted(() => {
     @close="closeFormModal"
     @saved="closeFormModal"
   ></TransactionFormModal>
+  <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>
 
 <style scoped>
