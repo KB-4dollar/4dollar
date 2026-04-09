@@ -83,10 +83,6 @@ router.beforeEach(async (to) => {
     return true;
   }
 
-  if (!authStore.checked) {
-    await authStore.checkAuth();
-  }
-
   if (to.meta.requiresAuth && !authStore.isLogin) {
     return '/login';
   }
