@@ -22,10 +22,24 @@ defineProps({
   >
     <div
       v-if="open && message"
-      class="fixed right-4 top-4 z-[60] rounded-2xl bg-button-dark px-4 py-3 text-sm font-semibold text-button-dark-foreground shadow-[0_10px_30px_rgba(15,23,42,0.18)]"
+      class="fixed bottom-20 left-1/2 z-60 -translate-x-1/2 flex items-center gap-2.5 rounded-2xl border border-accent-ui bg-page px-5 py-3 text-sm font-semibold text-text-primary shadow-[0_10px_30px_rgba(15,23,42,0.12)]"
       role="status"
       aria-live="polite"
     >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="text-accent-ui shrink-0"
+      >
+        <polyline points="20 6 9 17 4 12" />
+      </svg>
       {{ message }}
     </div>
   </Transition>

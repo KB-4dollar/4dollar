@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, ref, watch } from 'vue';
 import { useTransactionStore } from '@/stores/transaction';
 
 import BaseModal from '@/components/ui/BaseModal.vue';
+import ToastMessage from '@/components/ui/ToastMessage.vue';
 import SectionCard from '../common/SectionCard.vue';
 import Button from '../ui/Button.vue';
 import { parseHashTags, sanitizeTagInput } from '@/utils/tagParser';
@@ -74,6 +75,8 @@ const applyTransactionToForm = (transaction) => {
 const isCategoryModalOpen = ref(false);
 const tagInput = ref('');
 const submitError = ref('');
+const toastMessage = ref('');
+const isToastOpen = ref(false);
 const submitAttempted = ref(false);
 const touchedFields = ref({
   type: false,
@@ -83,6 +86,16 @@ const touchedFields = ref({
 });
 
 let toastTimerId = null;
+
+const showToast = (message) => {
+  toastMessage.value = message;
+  isToastOpen.value = true;
+  if (toastTimerId) window.clearTimeout(toastTimerId);
+  toastTimerId = window.setTimeout(() => {
+    isToastOpen.value = false;
+    toastMessage.value = '';
+  }, 2500);
+};
 
 const validationResult = computed(() => validateTransactionForm(form.value));
 const fieldErrors = computed(() => validationResult.value.errors);
@@ -255,11 +268,13 @@ const submitTransaction = async () => {
         payload
       );
 
+      showToast('내역이 수정되었습니다.');
       emit('saved', updatedTransaction);
       return;
     }
 
     const savedTransaction = await transactionStore.addTransaction(payload);
+    showToast('내역이 추가되었습니다.');
     resetForm();
     emit('saved', savedTransaction);
   } catch (error) {
@@ -462,4 +477,5 @@ const submitTransaction = async () => {
     @close="closeCategoryModal"
     @select="selectCategory"
   />
+  <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>
