@@ -23,6 +23,8 @@ const transactionStore = useTransactionStore();
 // 3. reactive state
 const topCategory = ref('');
 const feedbackMessage = ref('');
+// 에러 메시지를 화면에 띄우기 위한 상태 변수
+const errorMessage = ref('');
 
 const today = new Date();
 const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
@@ -49,17 +51,32 @@ const dashboardTitle = computed(() => {
 async function fetchStats() {
   const userId = authStore.user?.id ? String(authStore.user.id) : null;
   
-  if (userId) {
-    // 1. 차트용 전체 통계 데이터 요청
+  if (!userId) {
+    console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
+    return;
+  }
+
+  // [리팩토링] 스토어와 서비스의 호출을 try-catch로 감쌉니다.
+  try {
+    errorMessage.value = ''; // 요청 시작 전 에러 초기화
+
+    // 1. 차트용 전체 통계 데이터 요청 (에러가 나면 여기서 throw 됨)
     await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
     
-    // ✨ 2. 팩폭 위젯 데이터 연동 로직 추가
+    // 2. 팩폭 위젯 데이터 연동
     const category = await summaryService.getTopExpenseCategory(userId, currentYearMonth);
     topCategory.value = category || '지출 없음';
     feedbackMessage.value = summaryService.getRandomFeedback(category);
     
-  } else {
-    console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
+  } catch (error) {
+    // [리팩토링] 스토어에서 던진 에러(D001 등)를 여기서 낚아챔
+    console.error('대시보드 데이터 로딩 실패:', error);
+    
+    // 사용자에게 보여줄 에러 메시지 세팅 (alert 대신 화면에 우아하게 띄우기 위함)
+    errorMessage.value = error.message || '데이터를 불러오는 중 문제가 발생했습니다.';
+    
+    //alert를 띄우기
+    alert(errorMessage.value);
   }
 }
 
@@ -82,7 +99,6 @@ onMounted(() => {
 });
 
 // 6. functions
-
 
 // ✨ 위젯 새로고침 버튼 클릭 시 실행할 함수 (카테고리는 유지하고 멘트만 다시 뽑기)
 function refreshFeedback() {
