@@ -6,7 +6,7 @@ import { validateSignup } from '@/utils/validation';
 import Button from '@/components/ui/Button.vue';
 import { MessageCode } from '@/api/constants/messageCode.js';
 import ToastMessage from '@/components/ui/ToastMessage.vue';
-
+import FormInput from '@/components/ui/FormInput.vue';
 const name = ref('');
 const email = ref('');
 const password = ref('');
@@ -62,7 +62,6 @@ onBeforeUnmount(() => {
   if (toastTimerId) clearTimeout(toastTimerId);
 });
 </script>
-
 <template>
   <div class="min-h-screen flex items-center justify-center bg-page-bg px-4">
     <div
@@ -73,50 +72,51 @@ onBeforeUnmount(() => {
       >
         회원가입
       </h1>
+
+      <!-- 이름 -->
       <div class="mb-4">
         <label class="block text-sm text-text-secondary mb-1">
           이름 <span class="text-accent-ui">*</span>
         </label>
-        <input
-          v-model="name"
-          type="text"
-          placeholder="이름을 입력하세요"
-          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
-        />
+        <FormInput v-model="name" placeholder="이름을 입력하세요" />
       </div>
+
+      <!-- 이메일 -->
       <div class="mb-4">
         <label class="block text-sm text-text-secondary mb-1">
           이메일 <span class="text-accent-ui">*</span>
         </label>
-        <input
+        <FormInput
           v-model="email"
           type="email"
           placeholder="이메일을 입력하세요"
-          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
+
+      <!-- 비밀번호 -->
       <div class="mb-4">
         <label class="block text-sm text-text-secondary mb-1">
           비밀번호 <span class="text-accent-ui">*</span>
         </label>
-        <input
+        <FormInput
           v-model="password"
           type="password"
           placeholder="비밀번호를 입력하세요"
-          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
+
+      <!-- 비밀번호 확인 -->
       <div class="mb-6">
         <label class="block text-sm text-text-secondary mb-1">
           비밀번호 확인 <span class="text-accent-ui">*</span>
         </label>
-        <input
+        <FormInput
           v-model="passwordConfirm"
           type="password"
           placeholder="비밀번호를 다시 입력하세요"
-          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
+
       <Button
         @click="signup"
         variant="danger"
@@ -127,9 +127,11 @@ onBeforeUnmount(() => {
       >
         회원가입
       </Button>
+
       <p v-if="errorMsg" class="text-sm text-accent-ui mt-3 text-center">
         {{ errorMsg }}
       </p>
+
       <div class="text-center mt-6 text-sm text-text-secondary">
         이미 계정이 있으신가요?
         <RouterLink
@@ -141,5 +143,6 @@ onBeforeUnmount(() => {
       </div>
     </div>
   </div>
+
   <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>

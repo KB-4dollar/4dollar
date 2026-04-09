@@ -9,6 +9,7 @@ import Button from '../ui/Button.vue';
 import { parseHashTags, sanitizeTagInput } from '@/utils/tagParser';
 import { validateTransactionForm } from '@/utils/validation';
 import CategorySelectModal from './CategoryModal.vue';
+import FormInput from '@/components/ui/FormInput.vue';
 
 const CATEGORY_OPTIONS = [
   '식비',
@@ -267,29 +268,20 @@ const submitTransaction = async () => {
     :show-close-button="true"
     @close="emit('close')"
   >
-    <!-- ❌ SectionCard 제거 -->
-    <!-- ✅ SectionStack 적용 -->
     <SectionStack gap="lg">
-      <!-- 날짜 -->
       <div class="space-y-3">
         <div class="flex items-center justify-between">
           <label class="text-sm font-semibold">날짜</label>
           <span class="text-xs text-accent-ui">필수</span>
         </div>
 
-        <input
-          v-model="form.date"
-          type="date"
-          class="h-12 w-full rounded-[14px] border border-line px-4 text-sm"
-          @blur="setFieldTouched('date')"
-        />
+        <FormInput v-model="form.date" @blur="setFieldTouched('date')" />
 
         <p v-if="shouldShowError('date')" class="text-xs text-accent-ui">
           {{ fieldErrors.date }}
         </p>
       </div>
 
-      <!-- 구분 -->
       <div class="space-y-3">
         <div class="flex justify-between">
           <label class="text-sm font-semibold">구분</label>
@@ -332,11 +324,9 @@ const submitTransaction = async () => {
           <span class="text-xs text-accent-ui">필수</span>
         </div>
 
-        <input
-          :value="form.amount"
-          type="text"
-          class="h-12 w-full rounded-[14px] border px-4"
-          @input="handleAmountInput"
+        <FormInput
+          :model-value="form.amount"
+          @update:modelValue="handleAmountInput"
         />
 
         <p class="text-xs">
@@ -350,12 +340,10 @@ const submitTransaction = async () => {
           <span class="text-xs text-text-secondary">선택</span>
         </div>
 
-        <input
-          :value="tagInput"
-          type="text"
+        <FormInput
+          :model-value="tagInput"
           placeholder="#월급 #용돈"
-          class="h-12 w-full rounded-[14px] border border-line px-4 text-sm"
-          @input="handleTagInput"
+          @update:modelValue="handleTagInput"
         />
       </div>
 

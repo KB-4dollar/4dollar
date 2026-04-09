@@ -9,7 +9,7 @@ import SectionCard from '@/components/common/SectionCard.vue';
 import SectionStack from '@/components/common/SectionStack.vue';
 import Button from '@/components/ui/Button.vue';
 import ToastMessage from '@/components/ui/ToastMessage.vue';
-
+import FormInput from '@/components/ui/FormInput.vue';
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 
@@ -106,13 +106,9 @@ const logout = () => {
       <!-- 프로필 -->
       <SectionCard title="프로필 정보">
         <div class="flex flex-col gap-3">
-          <input
-            :value="user?.email"
-            disabled
-            class="w-full px-3 py-2 border rounded-md bg-surface-muted"
-          />
+          <FormInput :model-value="user?.email" disabled />
 
-          <input v-model="name" class="w-full px-3 py-2 border rounded-md" />
+          <FormInput v-model="name" />
         </div>
 
         <Button @click="updateName" variant="danger" size="md" class="mt-4">
@@ -127,26 +123,10 @@ const logout = () => {
       <!-- 비밀번호 -->
       <SectionCard title="비밀번호 변경">
         <div class="flex flex-col gap-3">
-          <input
-            v-model="currentPassword"
-            type="password"
-            placeholder="현재 비밀번호"
-            class="w-full px-3 py-2 border border-line rounded-md bg-surface focus:ring-2 focus:ring-accent-ui outline-none"
-          />
+          <FormInput v-model="currentPassword" type="password" />
 
-          <input
-            v-model="newPassword"
-            type="password"
-            placeholder="새 비밀번호"
-            class="w-full px-3 py-2 border border-line rounded-md bg-surface focus:ring-2 focus:ring-accent-ui outline-none"
-          />
-
-          <input
-            v-model="confirmPassword"
-            type="password"
-            placeholder="확인"
-            class="w-full px-3 py-2 border border-line rounded-md bg-surface focus:ring-2 focus:ring-accent-ui outline-none"
-          />
+          <FormInput v-model="newPassword" type="password" />
+          <FormInput v-model="confirmPassword" type="password" />
         </div>
 
         <Button @click="changePassword" variant="danger" size="md" class="mt-4">
