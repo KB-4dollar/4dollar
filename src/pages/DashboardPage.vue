@@ -12,6 +12,7 @@ import SectionCard from '@/components/common/SectionCard.vue';
 import OverviewChart from '@/components/dashboard/OverviewChart.vue';
 import IncomeChart from '@/components/dashboard/IncomeChart.vue';
 import ExpenseChart from '@/components/dashboard/ExpenseChart.vue';
+import FeedbackWidget from '@/components/dashboard/FeedbackWidget.vue';
 
 //빠른 추가 모달
 import TransactionFormModal from '@/components/transaction/TransactionFormModal.vue';
@@ -199,67 +200,11 @@ function formatCurrency(value) {
               <component :is="currentTabComponent" :stats="stats" />
             </div>
           </div>
-
-          <div
-            class="cherry-bg cherry-border relative flex flex-col min-h-[300px] items-center justify-center rounded-2xl border p-6 overflow-hidden shadow-sm"
-          >
-            <div
-              class="absolute -top-4 -left-4 text-7xl opacity-20 select-none pointer-events-none"
-            >
-              🌸
-            </div>
-            <div
-              class="absolute -bottom-6 -right-2 text-8xl opacity-20 select-none pointer-events-none"
-            >
-              🌸
-            </div>
-
-            <button
-              type="button"
-              @click="refreshFeedback"
-              class="cherry-spin cherry-text-light hover:cherry-text cherry-icon-bg absolute top-4 right-4 transition-all z-10 p-2 rounded-full text-xl leading-none"
-              title="다른 팩폭 보기"
-            >
-              🌸
-            </button>
-
-            <div
-              class="text-center z-10 relative flex flex-col items-center w-full"
-            >
-              <span
-                class="cherry-badge cherry-text inline-block px-4 py-1.5 mb-6 text-xs font-bold rounded-full"
-              >
-                🌸 이번 달 팩폭 알림
-              </span>
-
-              <div class="relative px-6 w-full">
-                <span
-                  class="cherry-quote absolute -top-4 left-0 text-5xl leading-none"
-                  >"</span
-                >
-                <p
-                  class="text-lg md:text-xl font-bold text-text-primary leading-relaxed break-keep relative z-10"
-                >
-                  {{ feedbackMessage }}
-                </p>
-                <span
-                  class="cherry-quote absolute -bottom-8 right-0 text-5xl leading-none rotate-180"
-                  >"</span
-                >
-              </div>
-
-              <div
-                class="mt-8 inline-block bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-white shadow-sm"
-              >
-                <p class="text-sm text-text-muted">
-                  가장 지출이 큰 카테고리:
-                  <strong class="cherry-text font-extrabold">{{
-                    topCategory
-                  }}</strong>
-                </p>
-              </div>
-            </div>
-          </div>
+          <FeedbackWidget 
+            :top-category="topCategory" 
+            :feedback-message="feedbackMessage" 
+            @refresh="refreshFeedback" 
+          />
         </div>
       </SectionCard>
     </div>
