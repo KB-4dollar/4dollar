@@ -1,7 +1,8 @@
 <script setup>
-import { shallowRef, onMounted, computed, watch, ref } from 'vue';
+import { ref, shallowRef, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTransactionStore } from '@/stores/transaction';
+import { summaryService } from '@/api/services/summaryService';
 
 // 공통 컴포넌트 임포트
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
@@ -23,6 +24,10 @@ const transactionStore = useTransactionStore();
 
 // 3. reactive state
 const isFormModalOpen = ref(false);
+const topCategory = ref('');
+const feedbackMessage = ref('');
+// 에러 메시지를 화면에 띄우기 위한 상태 변수
+const errorMessage = ref('');
 const today = new Date();
 const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
@@ -44,6 +49,38 @@ const dashboardTitle = computed(() => {
   const currentMonth = today.getMonth() + 1;
   return `${userName}님의 ${currentMonth}월 소비`;
 });
+
+async function fetchStats() {
+  const userId = authStore.user?.id ? String(authStore.user.id) : null;
+  
+  if (!userId) {
+    console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
+    return;
+  }
+
+  // [리팩토링] 스토어와 서비스의 호출을 try-catch로 감쌉니다.
+  try {
+    errorMessage.value = ''; // 요청 시작 전 에러 초기화
+
+    // 1. 차트용 전체 통계 데이터 요청 (에러가 나면 여기서 throw 됨)
+    await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
+    
+    // 2. 팩폭 위젯 데이터 연동
+    const category = await summaryService.getTopExpenseCategory(userId, currentYearMonth);
+    topCategory.value = category || '지출 없음';
+    feedbackMessage.value = summaryService.getRandomFeedback(category);
+    
+  } catch (error) {
+    // [리팩토링] 스토어에서 던진 에러(D001 등)를 여기서 낚아챔
+    console.error('대시보드 데이터 로딩 실패:', error);
+    
+    // 사용자에게 보여줄 에러 메시지 세팅 (alert 대신 화면에 우아하게 띄우기 위함)
+    errorMessage.value = error.message || '데이터를 불러오는 중 문제가 발생했습니다.';
+    
+    //alert를 띄우기
+    alert(errorMessage.value);
+  }
+}
 
 // 5. lifecycle hooks
 watch(
@@ -76,7 +113,24 @@ async function fetchStats() {
     await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
   } else {
     console.warn('⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.');
+
+// ✨ 위젯 새로고침 버튼 클릭 시 실행할 함수 (카테고리는 유지하고 멘트만 다시 뽑기)
+function refreshFeedback() {
+  const categoryForRefresh = topCategory.value === '지출 없음' ? null : topCategory.value;
+  
+  // 디버깅용: 현재 어떤 카테고리로 멘트를 찾고 있는지 콘솔 확인
+  console.log("🔄 새로고침 시도 카테고리:", categoryForRefresh);
+
+  let newMessage = summaryService.getRandomFeedback(categoryForRefresh);
+
+  // 멘트 풀이 여러 개일 경우, 이전 멘트와 똑같은 게 나오면 다를 때까지 다시 뽑기
+  let attempts = 0;
+  while (newMessage === feedbackMessage.value && attempts < 5) {
+    newMessage = summaryService.getRandomFeedback(categoryForRefresh);
+    attempts++;
   }
+
+  feedbackMessage.value = newMessage;
 }
 
 // 숫자에 콤마 찍어주는 함수
@@ -188,6 +242,37 @@ function formatCurrency(value) {
                 가장 지출이 큰 카테고리:
                 <strong class="text-text-secondary">식비</strong>
               </p>
+          <div class="cherry-bg cherry-border relative flex flex-col min-h-[300px] items-center justify-center rounded-2xl border p-6 overflow-hidden shadow-sm">
+            
+            <div class="absolute -top-4 -left-4 text-7xl opacity-20 select-none pointer-events-none">🌸</div>
+            <div class="absolute -bottom-6 -right-2 text-8xl opacity-20 select-none pointer-events-none">🌸</div>
+
+            <button 
+                type="button" 
+                @click="refreshFeedback" 
+                class="cherry-spin cherry-text-light hover:cherry-text cherry-icon-bg absolute top-4 right-4 transition-all z-10 p-2 rounded-full text-xl leading-none"
+                title="다른 팩폭 보기">
+                🌸
+            </button>
+
+            <div class="text-center z-10 relative flex flex-col items-center w-full">
+              <span class="cherry-badge cherry-text inline-block px-4 py-1.5 mb-6 text-xs font-bold rounded-full">
+                🌸 이번 달 팩폭 알림
+              </span>
+              
+              <div class="relative px-6 w-full">
+                <span class="cherry-quote absolute -top-4 left-0 text-5xl leading-none">"</span>
+                <p class="text-lg md:text-xl font-bold text-text-primary leading-relaxed break-keep relative z-10">
+                  {{ feedbackMessage }}
+                </p>
+                <span class="cherry-quote absolute -bottom-8 right-0 text-5xl leading-none rotate-180">"</span>
+              </div>
+              
+              <div class="mt-8 inline-block bg-white/60 backdrop-blur-sm px-4 py-2 rounded-xl border border-white shadow-sm">
+                <p class="text-sm text-text-muted">
+                  가장 지출이 큰 카테고리: <strong class="cherry-text font-extrabold">{{ topCategory }}</strong>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -212,4 +297,57 @@ function formatCurrency(value) {
 
 <style scoped>
 /* Tailwind 유틸리티를 활용하므로 추가 CSS 작성 생략 */
+</style>
+/* 🌸 벚꽃 테마 전용 디자인 토큰 (Style Guide 준수: HTML 내 하드코딩 지양) */
+.cherry-bg {
+  background: linear-gradient(135deg, #fff5f8 0%, #fff0f5 100%);
+}
+.cherry-border {
+  border-color: #fbcfe8;
+}
+.cherry-text {
+  color: #db2777; /* 포인트 진한 핑크 */
+}
+.cherry-text-light {
+  color: #f472b6; /* 보조 연한 핑크 */
+}
+.hover\:cherry-text:hover {
+  color: #db2777;
+}
+.cherry-icon-bg:hover {
+  background-color: rgba(255, 255, 255, 0.7);
+}
+.cherry-badge {
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #fbcfe8;
+  box-shadow: 0 2px 4px rgba(219, 39, 119, 0.05);
+}
+.cherry-quote {
+  color: #fce7f3; /* 배경에 깔리는 연한 핑크색 따옴표 */
+  font-family: Georgia, serif;
+}
+/* 🌸 [추가] 벚꽃 새로고침 버튼 빙글빙글 애니메이션 정의 */
+@keyframes spin-cherry {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cherry-spin {
+  display: inline-block; /* 회전 애니메이션이 잘 작동하도록 설정 */
+  transform-origin: center center; /* 중앙을 기준으로 회전 */
+}
+
+/* 호버 시 애니메이션 실행 */
+.cherry-spin:hover {
+  animation: spin-cherry 1s linear infinite; /* 1초 동안 무한히 회전 */
+}
+
+/* 기존 스크롤바 스타일 유지 */
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
 </style>

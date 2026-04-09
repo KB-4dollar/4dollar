@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart } from 'echarts/charts';
@@ -8,7 +8,6 @@ import VChart from 'vue-echarts';
 
 use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent]);
 
-// ✨ 부모로부터 실제 통계 데이터를 받음
 const props = defineProps({
   stats: {
     type: Object,
@@ -16,17 +15,11 @@ const props = defineProps({
   }
 });
 
-// 지출 차트 전용 컬러 팔레트 (네이비 계열)
 const EXPENSE_COLORS = ['#243047', '#3b4a6b', '#576a8f', '#778db3', '#9baec8', '#bdcce0'];
 
-// 객체를 배열로 변환하고 색상 매핑
 const chartData = computed(() => {
   const categoryObj = props.stats?.breakdown?.expenseByCategory || {};
-
-  const categories = Object.keys(categoryObj).map(key => ({
-    name: key,
-    value: categoryObj[key]
-  }));
+  const categories = Object.keys(categoryObj).map(key => ({ name: key, value: categoryObj[key] }));
 
   return categories
     .sort((a, b) => b.value - a.value)
@@ -37,7 +30,6 @@ const chartData = computed(() => {
     .filter(item => item.value > 0);
 });
 
-// 차트 옵션 세팅
 const chartOption = computed(() => {
   return {
     tooltip: {
@@ -51,41 +43,84 @@ const chartOption = computed(() => {
       {
         name: '지출 카테고리',
         type: 'pie',
-        center: ['45%', '50%'], // 수입 차트와 동일한 비율 적용
-        radius: ['40%', '65%'],
-        avoidLabelOverlap: true,
-        // ✨ 여기서 계산된 chartData 사용
+        // 중앙 텍스트가 잘 보이도록 차트 위치를 가운데로 조금 조정
+        center: ['40%', '55%'], 
+        // ✨ 도넛 모양을 만들기 위해 안쪽 반지름(50%)을 넓게 설정
+        radius: ['40%', '75%'], 
+        // ✨ 중앙에 텍스트를 띄울 것이므로 오버랩 방지 기능 끄기
+        avoidLabelOverlap: false, 
         color: chartData.value.map(item => item.color), 
         itemStyle: {
-          borderRadius: 10,
-          borderColor: '#ffffff',
-          borderWidth: 4,
+          borderRadius: 2,
+          borderWidth: 0,
           shadowBlur: 10,
           shadowColor: 'rgba(0, 0, 0, 0.1)',
           shadowOffsetX: 2,
           shadowOffsetY: 4
         },
+        // ✨ 기본 상태에서는 텍스트 숨기기
         label: {
-          show: true,
-          formatter: '{name|{b}}\n{percent|{d}%}', 
-          rich: {
-            name: { fontSize: 12, fontWeight: 'bold', color: '#111827', padding: [0, 0, 4, 0] },
-            percent: { fontSize: 11, color: '#6b7280', backgroundColor: '#f3f4f6', borderRadius: 4, padding: [3, 4, 3, 4] }
+          show: false,
+          position: 'center'
+        },
+        // ✨ 마우스 호버(또는 강제 하이라이트) 시 설정
+        emphasis: {
+          scale: true,
+          scaleSize: 20, // 튀어나오는 크기
+          label: {
+            show: true, // 강조될 때만 중앙 텍스트 표시
+            formatter: (params) => {
+              const formattedMoney = formatCurrency(params.value);
+              return `{name|${params.name}}\n{value|${formattedMoney}원}`;
+            },
+            rich: {
+              name: { fontSize: 13, color: '#6b7280', padding: [0, 0, 6, 0] },
+              value: { fontSize: 18, fontWeight: 'bold', color: '#111827' }
+            }
           }
         },
         labelLine: {
-          show: true,
-          smooth: 0.2,
-          length: 10,
-          length2: 5, 
-          lineStyle: { width: 2, type: 'dashed', color: '#d1d5db' }
+          show: false
         },
-        // ✨ 여기서 계산된 chartData 사용
         data: chartData.value 
       }
     ]
   };
 });
+
+// ==========================================
+// 💡 [인터랙션 로직] 1위 항목 자동 강조
+// ==========================================
+const chartRef = ref(null);
+
+const highlightLargest = () => {
+  if (!chartRef.value || chartData.value.length === 0) return;
+  chartRef.value.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: 0 });
+};
+
+const downplayLargest = () => {
+  if (!chartRef.value || chartData.value.length === 0) return;
+  chartRef.value.dispatchAction({ type: 'downplay', seriesIndex: 0, dataIndex: 0 });
+};
+
+watch(
+  () => chartData.value,
+  async (newData) => {
+    if (newData.length > 0) {
+      await nextTick();
+      setTimeout(() => { highlightLargest(); }, 300);
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+function onChartMouseOver(params) {
+  if (params.dataIndex !== 0) { downplayLargest(); }
+}
+
+function onChartMouseOut() {
+  highlightLargest();
+}
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('ko-KR').format(Math.abs(value || 0));
@@ -100,34 +135,27 @@ function formatCurrency(value) {
     </div>
 
     <template v-else>
-      <v-chart class="h-full w-full" :option="chartOption" autoresize />
+      <v-chart
+        ref="chartRef"
+        class="h-full w-full"
+        :option="chartOption"
+        autoresize
+        @mouseover="onChartMouseOver"
+        @mouseout="onChartMouseOut"
+      />
 
-      <div class="custom-scrollbar absolute right-0 top-0 flex max-h-[140px] w-[110px] flex-col gap-2.5 overflow-y-auto rounded-md border border-line bg-surface p-2.5 shadow-sm">
-        
-        <div 
-          v-for="item in chartData" 
-          :key="item.name"
-          class="flex items-center gap-2"
-        >
+      <div class="custom-scrollbar absolute right-0 top-0 flex max-h-[110px] w-[110px] flex-col gap-2.5 overflow-y-auto rounded-md border border-line bg-surface p-2.5 shadow-sm">
+        <div v-for="item in chartData" :key="item.name" class="flex items-center gap-2">
           <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: item.color }"></span>
           <span class="truncate text-xs font-medium text-text-secondary">{{ item.name }}</span>
         </div>
-
       </div>
     </template>
   </div>
 </template>
 
 <style scoped>
-/* 얇고 예쁜 웹킷 커스텀 스크롤바 */
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d1d5db; /* 연한 회색 */
-  border-radius: 4px;
-}
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
 </style>
