@@ -5,6 +5,7 @@ import {
   CATEGORY,
   FILTER_PERIOD,
 } from '../constants/enumConstants';
+import { ErrorCode } from '../constants/errorCode';
 
 const normalizeTransactionType = (type) => {
   if (type === 'income' || type === TRANSACTION_TYPE.INCOME) {
@@ -184,80 +185,74 @@ export const transactionService = {
   },
   /**
    * 대시보드 월별 재정 통계 조회 (F-03-1)
-   * @param {Number|String} userId - 현재 로그인한 사용자 ID (필수)
-   * @param {String} yearMonth - 조회할 연월 (예: '2026-04')
    */
   async getMonthlyStats(userId, yearMonth) {
-    const [yearStr, monthStr] = String(yearMonth).split('-');
-    const year = Number(yearStr);
-    const month = Number(monthStr);
+    // [리팩토링] 로직 전체를 try-catch로 감싸서 예외 상황 통제
+    try {
+      const [yearStr, monthStr] = String(yearMonth).split('-');
+      const year = Number(yearStr);
+      const month = Number(monthStr);
 
-    // 1. 날짜 범위 계산
-    const pad2 = (n) => String(n).padStart(2, '0');
-    const startDate = `${yearStr}-${pad2(month)}-01`;
-    const lastDay = new Date(year, month, 0).getDate();
-    const endDate = `${yearStr}-${pad2(month)}-${pad2(lastDay)}`;
+      const pad2 = (n) => String(n).padStart(2, '0');
+      const startDate = `${yearStr}-${pad2(month)}-01`;
+      const lastDay = new Date(year, month, 0).getDate();
+      const endDate = `${yearStr}-${pad2(month)}-${pad2(lastDay)}`;
 
-    // 2. ✨ [최적화 완료] json-server에 쿼리 파라미터를 보내 서버단에서 필터링된 데이터만 받음
-    const { data: transactions } = await apiClient.get('/transactions', {
-      params: {
-        userId: userId,
-        date_gte: startDate, // startDate 크거나 같은(>=) 데이터
-        date_lte: endDate    // endDate 작거나 같은(<=) 데이터
+      const { data: transactions } = await apiClient.get('/transactions', {
+        params: {
+          userId: userId,
+          date_gte: startDate,
+          date_lte: endDate
+        }
+      });
+
+      let totalIncome = 0;
+      let totalExpense = 0;
+      let incomeCount = 0;
+      let expenseCount = 0;
+      const expenseByCategory = Object.create(null);
+      const incomeByTag = Object.create(null);
+
+      for (let i = 0; i < transactions.length; i += 1) {
+        const t = transactions[i];
+        const amount = Number(t.amount) || 0;
+
+        if (t.type === TRANSACTION_TYPE.INCOME) {
+          totalIncome += amount;
+          incomeCount += 1;
+          
+          const tags = (t.tags && t.tags.length > 0) ? t.tags : ['기타'];
+          tags.forEach(tag => {
+            const tagName = tag.startsWith('#') ? tag : `#${tag}`;
+            incomeByTag[tagName] = (incomeByTag[tagName] || 0) + amount;
+          });
+
+        } else if (t.type === TRANSACTION_TYPE.EXPENSE) {
+          totalExpense += amount;
+          expenseCount += 1;
+          const category = t.category || CATEGORY.ETC;
+          expenseByCategory[category] = (expenseByCategory[category] || 0) + amount;
+        }
       }
-    });
 
-    // 3. 서버에서 거르고 가져온 딱 '이번 달 데이터'만 순회하며 통계 계산
-    let totalIncome = 0;
-    let totalExpense = 0;
-    let incomeCount = 0;
-    let expenseCount = 0;
-    const expenseByCategory = Object.create(null);
-    const incomeByTag = Object.create(null); // 수입 태그 집계용
+      return {
+        userId,
+        yearMonth,
+        period: { startDate, endDate },
+        totals: { income: totalIncome, expense: totalExpense, net: totalIncome - totalExpense },
+        counts: { income: incomeCount, expense: expenseCount, total: incomeCount + expenseCount },
+        breakdown: { expenseByCategory, incomeByTag },
+      };
 
-    for (let i = 0; i < transactions.length; i += 1) {
-      const t = transactions[i];
-      const amount = Number(t.amount) || 0;
-
-      if (t.type === TRANSACTION_TYPE.INCOME) {
-        totalIncome += amount;
-        incomeCount += 1;
-        
-        // 수입 태그 합산 로직
-        const tags = (t.tags && t.tags.length > 0) ? t.tags : ['기타'];
-        tags.forEach(tag => {
-          const tagName = tag.startsWith('#') ? tag : `#${tag}`;
-          incomeByTag[tagName] = (incomeByTag[tagName] || 0) + amount;
-        });
-
-      } else if (t.type === TRANSACTION_TYPE.EXPENSE) {
-        totalExpense += amount;
-        expenseCount += 1;
-        const category = t.category || CATEGORY.ETC;
-        expenseByCategory[category] = (expenseByCategory[category] || 0) + amount;
-      }
+    } catch (error) {
+      // [리팩토링] 시스템 에러를 우리가 정의한 비즈니스 에러 상수로 변환하여 던짐
+      console.error('[transactionService.getMonthlyStats] failed:', error);
+      
+      const enhancedError = new Error(ErrorCode.DASHBOARD_FAILED.msg);
+      enhancedError.code = ErrorCode.DASHBOARD_FAILED.code;
+      enhancedError.originalError = error; // 디버깅용 원본 에러 보존
+      
+      throw enhancedError; // 스토어(Store)로 에러를 전달
     }
-
-    console.log('서버에서 필터링되어 도착한 이번 달 데이터:', transactions);
-
-    return {
-      userId,
-      yearMonth,
-      period: { startDate, endDate },
-      totals: {
-        income: totalIncome,
-        expense: totalExpense,
-        net: totalIncome - totalExpense,
-      },
-      counts: {
-        income: incomeCount,
-        expense: expenseCount,
-        total: incomeCount + expenseCount,
-      },
-      breakdown: {
-        expenseByCategory,
-        incomeByTag, 
-      },
-    };
   },
 };

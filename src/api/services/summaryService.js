@@ -1,6 +1,7 @@
 // src/api/services/summaryService.js
 import { transactionService } from './transactionService';
 import { CATEGORY } from '../constants/enumConstants';
+import { ErrorCode } from '../constants/errorCode';
 
 // ✨ 실제 enumConstants.js 에 정의된 변수명으로 완벽 매칭!
 const FEEDBACK_POOL = {
@@ -77,8 +78,14 @@ export const summaryService = {
 
       return topCategory; 
     } catch (error) {
+      // [리팩토링] 단순 null 반환 대신, 우리가 정의한 D002 에러로 포장해서 던짐
       console.error('[summaryService.getTopExpenseCategory] failed:', error);
-      return null;
+      
+      const customError = new Error(ErrorCode.SUMMARY_FAILED.msg);
+      customError.code = ErrorCode.SUMMARY_FAILED.code;
+      customError.originalError = error;
+      
+      throw customError; // DashboardPage의 try-catch가 이 에러를 잡아서 알림을 띄우게 됨
     }
   },
 

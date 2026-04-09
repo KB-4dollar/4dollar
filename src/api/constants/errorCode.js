@@ -52,4 +52,5 @@ export const ErrorCode = {
 
   // 대시보드
   DASHBOARD_FAILED: { code: 'D001', msg: '통계 데이터를 불러오지 못했습니다.' },
+  SUMMARY_FAILED: { code: 'D002', msg: '소비 패턴 분석 데이터를 불러오지 못했습니다.' },
 };
