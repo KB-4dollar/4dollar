@@ -131,7 +131,7 @@ function formatCurrency(value) {
       <span class="text-text-secondary"> 재정 데이터를 분석 중입니다...</span>
     </div>
 
-    <template v-else>
+    <div v-else>
       <div class="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-3">
         <SectionCard>
           <p class="mb-2 text-sm font-medium text-text-secondary">총 수입</p>
@@ -223,7 +223,7 @@ function formatCurrency(value) {
 
         </div>
       </SectionCard>
-    </template>
+    </div>
   </PageSectionLayout>
 </template>
 
