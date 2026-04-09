@@ -24,6 +24,13 @@
       "password": "$2a$10$heibhIxvxzvPdyPi6SAKPuD0HU.aFJxocHGE1YR3B.Bgxq.9ThQwe",
       "name": "123123123",
       "id": "vHLhXTU"
+    },
+    {
+      "email": "qwer@naver.com",
+      "password": "$2a$10$Z3Nelg1t4g8FPrTG8c5ETuipxWlUvd0iAr4GorANfG/YPTYVDRq9G",
+      "username": "고현석",
+      "name": "홍길동",
+      "id": "7qDneNy"
     }
   ],
   "transactions": [
@@ -47,7 +54,9 @@
       "category": "기타",
       "memo": "4월 급여",
       "imageUrl": "",
-      "tags": ["월급"]
+      "tags": [
+        "월급"
+      ]
     },
     {
       "id": "3",
@@ -59,6 +68,144 @@
       "memo": "지하철 충전",
       "imageUrl": "",
       "tags": []
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "수입",
+      "amount": 10000,
+      "date": "2026-04-08",
+      "category": "",
+      "memo": "",
+      "tags": [
+        "월급"
+      ],
+      "id": "pp9oZcl"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "수입",
+      "amount": 1000000,
+      "date": "2026-04-08",
+      "category": "",
+      "memo": "",
+      "tags": [
+        "월급"
+      ],
+      "id": "B9OyPOr"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 100123,
+      "date": "2026-04-08",
+      "category": "기타",
+      "memo": "",
+      "tags": [],
+      "id": "rxtfsT4"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "수입",
+      "amount": 4235,
+      "date": "2026-04-08",
+      "category": "",
+      "memo": "",
+      "tags": [
+        "용돈"
+      ],
+      "id": "-JDsO6n"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "수입",
+      "amount": 1223332,
+      "date": "2026-04-08",
+      "category": "",
+      "memo": "",
+      "tags": [
+        "배당금"
+      ],
+      "id": "wPCSOlR"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 80000,
+      "date": "2026-04-08",
+      "category": "경조사비",
+      "memo": "",
+      "tags": [],
+      "id": "yI0B7GH"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 213,
+      "date": "2026-04-08",
+      "category": "편의점/마트",
+      "memo": "",
+      "tags": [],
+      "id": "DgqBd9O"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 1600,
+      "date": "2026-04-09",
+      "category": "식비",
+      "memo": "",
+      "tags": [],
+      "id": "ZU7BNa9"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 4000,
+      "date": "2026-04-09",
+      "category": "병원",
+      "memo": "",
+      "tags": [],
+      "id": "kcpcnes"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 70000,
+      "date": "2026-04-09",
+      "category": "교통",
+      "memo": "",
+      "tags": [],
+      "id": "L_aFNVC"
+    },
+    {
+      "userId": "7qDneNy",
+      "type": "지출",
+      "amount": 100000000,
+      "date": "2026-04-09",
+      "category": "병원",
+      "memo": "",
+      "tags": [],
+      "id": "o-D3zMC"
+    },
+    {
+      "userId": "oQ1lekb",
+      "type": "수입",
+      "amount": 100000,
+      "date": "2026-04-09",
+      "category": "",
+      "memo": "",
+      "tags": [],
+      "id": "yUjfwFZ"
+    },
+    {
+      "userId": "oQ1lekb",
+      "type": "지출",
+      "amount": 4000,
+      "date": "2026-04-09",
+      "category": "식비",
+      "memo": "칼국수",
+      "tags": [],
+      "id": "_GMDF1S"
     }
   ]
 }

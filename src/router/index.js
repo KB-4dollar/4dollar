@@ -27,12 +27,6 @@ const publicRoutes = [
         // meta: { requiresAuth: false }, // 테스트를 위해 저도 false 해둘게요,,
       },
       {
-        path: '/transaction/:id',
-        name: 'detail',
-        name: 'transactionDetail',
-        component: () => import('../pages/TransactionDetailPage.vue'),
-      },
-      {
         path: '/list',
         name: 'transactionList',
         component: () => import('@/pages/TransactionListPage.vue'),

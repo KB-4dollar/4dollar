@@ -1,50 +1,37 @@
 <script setup>
-// import
-import { computed } from 'vue';
+import { computed, ref, watch, nextTick } from 'vue';
 import { use } from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { PieChart } from 'echarts/charts';
-
-import { TitleComponent, TooltipComponent, LegendComponent, LegendScrollComponent } from 'echarts/components'; 
+import { TitleComponent, TooltipComponent } from 'echarts/components';
 import VChart from 'vue-echarts';
 
-// ✨ use 배열에 LegendScrollComponent 추가
-use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent, LegendComponent, LegendScrollComponent]);
+use([CanvasRenderer, PieChart, TitleComponent, TooltipComponent]);
 
-// DashboardPage로부터 실제 통계 데이터 받기
 const props = defineProps({
-  stats : {
+  stats: {
     type: Object,
     default: () => ({})
   }
-})
+});
 
+// 수입 차트 전용 컬러 팔레트 (포인트 컬러: --accent-ui 계열)
 const INCOME_COLORS = ['#ee8567', '#f4a28c', '#f9c0b1', '#fbc5b9', '#fdd8d0'];
 
-// reactive state
-// 로그인한 유저의 데이터를 차트 포맷에 맞게 변환 (더미 데이터 대체)
 const chartData = computed(() => {
-  // 1. 서비스에서 넘어온 객체 형태의 태그 데이터 가져오기 { "#월급": 1010000, "#기타": 50000 }
-  // (옵셔널 체이닝으로 breakdown.incomeByTag 안전하게 접근)
+  // 지출(expenseByCategory) 대신 수입(incomeByTag) 객체 사용
   const tagsObj = props.stats?.breakdown?.incomeByTag || {};
+  const categories = Object.keys(tagsObj).map(key => ({ name: key, value: tagsObj[key] }));
 
-  // 2. 객체를 차트용 배열로 변환 [ { name: '#월급', value: 1010000 } ]
-  const categories = Object.keys(tagsObj).map(key => ({
-    name: key,
-    value: tagsObj[key]
-  }));
-
-  // 3. 수입액이 큰 순서대로 내림차순 정렬 후, 색상을 순차적으로 매핑
   return categories
     .sort((a, b) => b.value - a.value)
     .map((item, index) => ({
       ...item,
       color: INCOME_COLORS[index % INCOME_COLORS.length]
     }))
-    .filter(item => item.value > 0); // 금액이 0원인 항목은 그리지 않음
+    .filter(item => item.value > 0);
 });
 
-// computed
 const chartOption = computed(() => {
   return {
     tooltip: {
@@ -54,83 +41,122 @@ const chartOption = computed(() => {
         return `${params.name}: <strong>${formattedMoney}원</strong> (${params.percent}%)`;
       }
     },
-    legend: {
-      type: 'scroll',      // 스크롤 가능하게 설정
-      orient: 'vertical',
-      right: '0%',         // 우측 상단 배치
-      top: '0%',
-      itemGap: 12,
-      textStyle: { color: '#6b7280', fontSize: 12 },
-      pageIconColor: '#ee8567', 
-      pageTextStyle: { color: '#6b7280' }
-    },
     series: [
       {
-        name: '수입 태그',
+        name: '수입 카테고리',
         type: 'pie',
-        center: ['45%', '50%'], // ✨ 요청하신 45% 중심 이동 적용
-        radius: ['40%', '65%'],
-        avoidLabelOverlap: true,
-        // ✨ 수입 차트 전용 오렌지 계열 컬러 적용
-        color: ['#ee8567', '#f4a28c', '#f9c0b1'], 
+        // 중앙 텍스트가 잘 보이도록 차트 위치를 가운데로 조금 조정
+        center: ['40%', '55%'], 
+        // ✨ 지출 차트와 동일하게 도넛 안쪽/바깥쪽 반지름 설정
+        radius: ['40%', '75%'], 
+        avoidLabelOverlap: false, 
+        color: chartData.value.map(item => item.color), 
         itemStyle: {
-          borderRadius: 10,
-          borderColor: '#ffffff',
-          borderWidth: 4,
+          borderRadius: 2,
+          borderWidth: 0,
           shadowBlur: 10,
           shadowColor: 'rgba(0, 0, 0, 0.1)',
           shadowOffsetX: 2,
           shadowOffsetY: 4
         },
-        // 라벨(텍스트) 꾸미기
+        // ✨ 기본 상태에서는 텍스트 숨기기
         label: {
-          show: true,
-          formatter: '{dot|●} {name|{b}}\n{percent|{d}%}', 
-          rich: {
-            dot: {
-              color: 'inherit',
-              fontSize: 12,
-              padding: [0, 4, 0, 0]
+          show: false,
+          position: 'center'
+        },
+        // ✨ 마우스 호버(또는 강제 하이라이트) 시 설정 (스케일 20 적용)
+        emphasis: {
+          scale: true,
+          scaleSize: 20, 
+          label: {
+            show: true, 
+            formatter: (params) => {
+              const formattedMoney = formatCurrency(params.value);
+              return `{name|${params.name}}\n{value|${formattedMoney}원}`;
             },
-            name: {
-              fontSize: 12,
-              fontWeight: 'bold',
-              color: '#111827'
-            },
-            percent: {
-              fontSize: 11,
-              color: '#6b7280',
-              backgroundColor: '#f3f4f6',
-              borderRadius: 4,
-              align: 'left',
-              padding: [3, 0, 0, 16]
+            rich: {
+              name: { fontSize: 13, color: '#6b7280', padding: [0, 0, 6, 0] },
+              value: { fontSize: 18, fontWeight: 'bold', color: '#111827' }
             }
           }
         },
-        // 콜아웃 라인(지시선) 꾸미기
         labelLine: {
-          show: true,
-          smooth: 0.2,
-          length: 10,
-          length2: 15,
-          lineStyle: {
-            width: 2,
-            type: 'dashed',
-            color: '#d1d5db'
-          }
+          show: false
         },
-        data: chartData.value
+        data: chartData.value 
       }
     ]
   };
 });
 
-// functions
+// ==========================================
+// 💡 [인터랙션 로직] 1위 항목 자동 강조
+// ==========================================
+const chartRef = ref(null);
+
+const highlightLargest = () => {
+  if (!chartRef.value || chartData.value.length === 0) return;
+  chartRef.value.dispatchAction({ type: 'highlight', seriesIndex: 0, dataIndex: 0 });
+};
+
+const downplayLargest = () => {
+  if (!chartRef.value || chartData.value.length === 0) return;
+  chartRef.value.dispatchAction({ type: 'downplay', seriesIndex: 0, dataIndex: 0 });
+};
+
+watch(
+  () => chartData.value,
+  async (newData) => {
+    if (newData.length > 0) {
+      await nextTick();
+      setTimeout(() => { highlightLargest(); }, 300);
+    }
+  },
+  { immediate: true, deep: true }
+);
+
+function onChartMouseOver(params) {
+  if (params.dataIndex !== 0) { downplayLargest(); }
+}
+
+function onChartMouseOut() {
+  highlightLargest();
+}
+
 function formatCurrency(value) {
   return new Intl.NumberFormat('ko-KR').format(Math.abs(value || 0));
 }
 </script>
 
 <template>
-  <v-chart class="h-full w-full" :option="chartOption" autoresize />
+  <div class="relative h-full w-full">
+    <div v-if="chartData.length === 0" class="flex h-full w-full flex-col items-center justify-center text-sm text-text-muted">
+      <span class="mb-2 text-2xl">💸</span>
+      이번 달 수입 내역이 없습니다.
+    </div>
+
+    <template v-else>
+      <v-chart
+        ref="chartRef"
+        class="h-full w-full"
+        :option="chartOption"
+        autoresize
+        @mouseover="onChartMouseOver"
+        @mouseout="onChartMouseOut"
+      />
+
+      <div class="custom-scrollbar absolute right-0 top-0 flex max-h-[110px] w-[110px] flex-col gap-2.5 overflow-y-auto rounded-md border border-line bg-surface p-2.5 shadow-sm">
+        <div v-for="item in chartData" :key="item.name" class="flex items-center gap-2">
+          <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: item.color }"></span>
+          <span class="truncate text-xs font-medium text-text-secondary">{{ item.name }}</span>
+        </div>
+      </div>
+    </template>
+  </div>
 </template>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 4px; }
+</style>

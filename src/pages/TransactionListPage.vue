@@ -4,10 +4,10 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { cn } from '@/lib/utils';
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 import SectionCard from '@/components/common/SectionCard.vue';
+import TransactionFormModal from '@/components/transaction/TransactionFormModal.vue';
 
 // 2. store/router
 import { useTransactionStore } from '@/stores/transaction';
-import { useRouter } from 'vue-router';
 
 // 3. constants
 import {
@@ -23,7 +23,6 @@ const props = defineProps({
 
 // 5. reactive state
 const transactionStore = useTransactionStore();
-const router = useRouter();
 const PAGE_LIMIT = 10;
 
 const activePeriod = ref(FILTER_PERIOD.MONTHLY);
@@ -69,26 +68,26 @@ const dummyLoading = ref(false);
 
 // [Computed] 현재 로딩 상태
 const isLoading = computed(() =>
-  props.dummyMode ? dummyLoading.value : transactionStore.loading
+  props.dummyMode ? dummyLoading.value : transactionStore.loading,
 );
 
 // [Computed] 화면에 표시할 리스트
 const displayTransactions = computed(() =>
   props.dummyMode
     ? dummyFilteredList.value.slice(0, dummyDisplayCount.value)
-    : transactionStore.transactions
+    : transactionStore.transactions,
 );
 
 // [Computed] 더 불러올 데이터 존재 여부
 const displayHasMore = computed(() =>
   props.dummyMode
     ? dummyDisplayCount.value < dummyFilteredList.value.length
-    : transactionStore.hasMore
+    : transactionStore.hasMore,
 );
 
 // [Computed] 데이터가 완전히 비어있는지 확인
 const isListEmpty = computed(
-  () => !isLoading.value && displayTransactions.value.length === 0
+  () => !isLoading.value && displayTransactions.value.length === 0,
 );
 
 // [Computed] 통계 데이터
@@ -109,7 +108,7 @@ const displayTotalExpense = computed(() => {
     .reduce((s, t) => s + t.amount, 0);
 });
 const displayNetAmount = computed(
-  () => displayTotalIncome.value - displayTotalExpense.value
+  () => displayTotalIncome.value - displayTotalExpense.value,
 );
 
 // ── 필터 및 데이터 요청 ──────────────────────────────────────
@@ -201,15 +200,25 @@ async function handleDelete(id) {
   if (!confirm('정말 삭제하시겠습니까?')) return;
   if (props.dummyMode) {
     dummyFilteredList.value = dummyFilteredList.value.filter(
-      (t) => t.id !== id
+      (t) => t.id !== id,
     );
   } else {
     await transactionStore.deleteTransaction(id);
   }
 }
 
+const selectedTransaction = ref(null);
+const isFormModalOpen = ref(false);
+
 const goToDetail = (id) => {
-  router.push({ name: 'transactionDetail', params: { id } });
+  const transaction = transactionStore.transactions.find((t) => t.id === id);
+  selectedTransaction.value = transaction ?? null;
+  isFormModalOpen.value = true;
+};
+
+const closeFormModal = () => {
+  isFormModalOpen.value = false;
+  selectedTransaction.value = null;
 };
 
 const formatCurrency = (value) =>
@@ -220,7 +229,7 @@ watch(
   [activePeriod, activeType, activeCategory, customStart, customEnd],
   () => {
     fetchWithFilters();
-  }
+  },
 );
 
 // Lifecycle
@@ -237,7 +246,7 @@ onMounted(() => {
         loadMore();
       }
     },
-    { root: scrollContainer.value, threshold: 0.1 }
+    { root: scrollContainer.value, threshold: 0.1 },
   );
   if (sentinel.value) observer.observe(sentinel.value);
 });
@@ -249,10 +258,9 @@ onUnmounted(() => {
 
 <template>
   <PageSectionLayout title="거래내역">
-    <div class="divide-y md:divide-none md:grid md:gap-5">
-      <SectionCard
-        class="rounded-none shadow-none border-0 bg-white p-4 md:rounded-xl md:shadow md:border md:p-6"
-      >
+    <div class="grid gap-5">
+      <SectionCard>
+        <div class="text-sm text-muted-foreground mb-3">기간</div>
         <div
           class="flex gap-4 border-b border-border pb-2 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide"
         >
@@ -268,7 +276,7 @@ onUnmounted(() => {
               cn(
                 'pb-2 text-sm text-muted-foreground relative',
                 activePeriod === period &&
-                  'text-primary font-medium after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-primary'
+                  'text-primary font-medium after:absolute after:bottom-[-2px] after:left-0 after:w-full after:h-[2px] after:bg-primary',
               )
             "
             @click="activePeriod = period"
@@ -312,7 +320,7 @@ onUnmounted(() => {
                 'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
                 activeType === type
                   ? 'bg-accent-ui text-accent-ui-foreground'
-                  : 'bg-button-dark text-button-dark-foreground'
+                  : 'bg-button-dark text-button-dark-foreground',
               )
             "
             @click="activeType = type"
@@ -322,9 +330,7 @@ onUnmounted(() => {
         </div>
       </SectionCard>
 
-      <SectionCard
-        class="rounded-none shadow-none border-0 bg-white p-4 md:rounded-xl md:shadow md:border md:p-6"
-      >
+      <SectionCard>
         <div
           ref="scrollContainer"
           class="overflow-y-auto max-h-[500px] pr-2 custom-scroll"
@@ -368,7 +374,7 @@ onUnmounted(() => {
                           'text-[10px] px-1.5 py-0.5 rounded',
                           item.type === TRANSACTION_TYPE.INCOME
                             ? 'bg-accent-ui/20 text-accent-ui'
-                            : 'bg-chip-muted text-chip-muted-foreground'
+                            : 'bg-chip-muted text-chip-muted-foreground',
                         )
                       "
                     >
@@ -395,7 +401,7 @@ onUnmounted(() => {
                       'font-bold text-sm',
                       item.type === TRANSACTION_TYPE.INCOME
                         ? 'text-accent-ui'
-                        : 'text-text-primary'
+                        : 'text-text-primary',
                     )
                   "
                 >
@@ -435,6 +441,21 @@ onUnmounted(() => {
       </SectionCard>
     </div>
   </PageSectionLayout>
+
+  <!-- float 버튼 -->
+  <button
+    class="fixed bottom-20 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-button-dark text-button-dark-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+    @click="isFormModalOpen = true"
+  >
+    <span class="text-2xl font-light leading-none">+</span>
+  </button>
+
+  <TransactionFormModal
+    :open="isFormModalOpen"
+    :initial-transaction="selectedTransaction"
+    @close="closeFormModal"
+    @saved="closeFormModal"
+  ></TransactionFormModal>
 </template>
 
 <style scoped>

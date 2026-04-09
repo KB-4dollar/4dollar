@@ -16,6 +16,8 @@ export const useTransactionStore = defineStore('transaction', {
     totalCount: 0,
     // 대시보드용 월별 통계 데이터를 담을 바구니
     monthlyStats: null,
+    // 에러 담을 바구니
+    error: null,
   }),
 
   getters: {
@@ -75,6 +77,7 @@ export const useTransactionStore = defineStore('transaction', {
     // 대시보드용 통계 가져오기
     async fetchMonthlyStats(userId, yearMonth) {
       this.loading = true;
+      this.error = null;
       try {
         const stats = await transactionService.getMonthlyStats(
           userId,
@@ -82,7 +85,11 @@ export const useTransactionStore = defineStore('transaction', {
         );
         this.monthlyStats = stats; // 성공하면 상태에 저장
       } catch (error) {
-        console.error('통계 로드 실패:', error);
+        // 서비스에서 던진 정제된 에러를 스토어 상태에 저장하고, UI로 다시 던짐
+        this.error = error;
+        console.error('[transactionStore.fetchMonthlyStats] failed:', error.message);
+        
+        throw error; // 여기서 에러를 던지고 DashboardPage.vue의 try-catch에서 잡음
       } finally {
         this.loading = false;
       }

@@ -6,7 +6,6 @@ const route = useRoute();
 const menus = [
   { name: '대시보드', path: '/app' },
   { name: '거래내역', path: '/list' },
-  { name: '입출금', path: '/transaction/new' },
 ];
 </script>
 <template>
