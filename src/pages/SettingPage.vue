@@ -1,11 +1,12 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onBeforeUnmount } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import router from '@/router';
 import { authService } from '@/api/services/authService';
 import { MessageCode } from '@/api/constants/messageCode';
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 import Button from '@/components/ui/Button.vue';
+import ToastMessage from '@/components/ui/ToastMessage.vue';
 
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
@@ -19,6 +20,28 @@ const confirmPassword = ref('');
 const nameMsg = ref('');
 const passwordMsg = ref('');
 
+// 🔥 toast 템플릿 (복붙용)
+const toastMessage = ref('');
+const isToastOpen = ref(false);
+
+let toastTimerId = null;
+
+const showToast = (message) => {
+  toastMessage.value = message;
+  isToastOpen.value = true;
+
+  if (toastTimerId) clearTimeout(toastTimerId);
+
+  toastTimerId = setTimeout(() => {
+    isToastOpen.value = false;
+    toastMessage.value = '';
+  }, 2500);
+};
+
+onBeforeUnmount(() => {
+  if (toastTimerId) clearTimeout(toastTimerId);
+});
+
 const updateName = async () => {
   if (!name.value.trim()) {
     nameMsg.value = MessageCode.NAME_REQUIRED.msg;
@@ -30,7 +53,7 @@ const updateName = async () => {
   });
 
   authStore.login(updatedUser);
-  nameMsg.value = MessageCode.NAME_UPDATE_SUCCESS.msg;
+  showToast(MessageCode.NAME_UPDATE_SUCCESS.msg);
 };
 
 const changePassword = async () => {
@@ -66,7 +89,8 @@ const changePassword = async () => {
   });
 
   authStore.login(updatedUser);
-  passwordMsg.value = MessageCode.PASSWORD_UPDATE_SUCCESS.msg;
+  passwordMsg.value = '';
+  showToast(MessageCode.PASSWORD_UPDATE_SUCCESS.msg);
 };
 
 const logout = () => {
@@ -141,4 +165,5 @@ const logout = () => {
       </div>
     </div>
   </PageSectionLayout>
+  <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>
