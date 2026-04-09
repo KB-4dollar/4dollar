@@ -4,6 +4,7 @@ import { authService } from '@/api/services/authService';
 import router from '@/router';
 import { validateSignup } from '@/utils/validation';
 import { MessageCode } from '@/api/constants/messageCode.js';
+import Button from '@/components/ui/Button.vue';
 
 const name = ref('');
 const email = ref('');
@@ -94,13 +95,16 @@ const signup = async () => {
           class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
-      <button
+      <Button
         @click="signup"
+        variant="danger"
+        size="md"
+        fullWidth
         :disabled="!name || !email || !password || !passwordConfirm"
-        class="w-full py-3 rounded-lg font-semibold transition bg-accent-ui text-accent-ui-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
+        class="mt-2"
       >
         회원가입
-      </button>
+      </Button>
       <p v-if="errorMsg" class="text-sm text-accent-ui mt-3 text-center">
         {{ errorMsg }}
       </p>

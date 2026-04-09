@@ -4,7 +4,7 @@ import { useAuthStore } from '@/stores/auth';
 import { authService } from '@/api/services/authService';
 import { ErrorCode } from '@/api/constants/errorCode';
 import { ref } from 'vue';
-
+import Button from '@/components/ui/Button.vue';
 const authStore = useAuthStore();
 
 const email = ref('');
@@ -67,13 +67,15 @@ const login = async () => {
           class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
-      <button
+      <Button
         @click="login"
+        variant="danger"
+        size="md"
+        fullWidth
         :disabled="!email || !password"
-        class="w-full py-3 rounded-lg font-semibold transition bg-accent-ui text-accent-ui-foreground disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90"
       >
         로그인
-      </button>
+      </Button>
       <p v-if="errorMsg" class="text-sm text-accent-ui mt-3 text-center">
         {{ errorMsg }}
       </p>
