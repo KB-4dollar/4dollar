@@ -207,7 +207,7 @@ function formatCurrency(value) {
     :open="isFormModalOpen"
     @close="isFormModalOpen = false"
     @saved="isFormModalOpen = false"
-  />
+  ></TransactionFormModal>
 </template>
 
 <style scoped>
