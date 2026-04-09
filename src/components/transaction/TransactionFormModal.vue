@@ -433,6 +433,7 @@ const submitTransaction = async () => {
             :value="form.memo"
             rows="5"
             placeholder="메모를 입력하세요"
+            maxlength="100"
             class="w-full rounded-[14px] border border-line bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
             @input="handleMemoInput"
           />
