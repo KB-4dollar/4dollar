@@ -78,7 +78,7 @@ watch(
 
     window.removeEventListener('keydown', handleKeydown);
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 onBeforeUnmount(() => {
@@ -94,47 +94,51 @@ onBeforeUnmount(() => {
   <Teleport to="body">
     <div
       v-if="open"
-      class="fixed inset-0 z-50 flex items-end justify-center bg-black/35 p-4 md:items-center"
+      class="fixed inset-0 z-50 flex items-end justify-center bg-black/35 md:p-4 md:items-center"
       @click.self="closeModal"
     >
       <section
-        :class="[
-          'w-full rounded-t-[28px] bg-surface md:rounded-[28px]',
-          maxWidthClass,
-          bodyClass,
-        ]"
+        class="w-full h-[100dvh] max-h-[100dvh] flex flex-col overflow-hidden bg-surface md:h-auto md:max-h-[90vh] md:w-[70%] md:max-w-xl md:rounded-[28px]"
         role="dialog"
         aria-modal="true"
         :aria-label="title || '모달'"
       >
         <header
           v-if="title || showCloseButton"
-          class="mb-6 flex items-center justify-between gap-4"
+          class="px-5 md:px-6 pt-4 md:pt-5 pb-3 md:pb-4 flex items-center justify-between gap-4 border-b border-line"
         >
-          <h2
-            v-if="title"
-            class="text-[1.75rem] font-extrabold leading-none text-text-primary"
-          >
-            {{ title }}
-          </h2>
-          <p
-            v-if="description"
-            class="mt-1 text-sm leading-6 text-text-secondary"
-          >
-            {{ description }}
-          </p>
+          <!-- 🔥 모바일 뒤로가기 -->
+          <button type="button" class="text-2xl md:hidden" @click="closeModal">
+            ←
+          </button>
+
+          <!-- 타이틀 -->
+          <div class="flex-1 min-w-0">
+            <h2
+              v-if="title"
+              class="text-[1.5rem] md:text-[1.75rem] font-extrabold truncate"
+            >
+              {{ title }}
+            </h2>
+            <p
+              v-if="description"
+              class="mt-1 text-sm text-text-secondary truncate"
+            >
+              {{ description }}
+            </p>
+          </div>
+
           <button
             v-if="showCloseButton"
-            type="button"
-            class="text-3xl leading-none text-text-secondary transition-colors hover:text-text-primary"
-            aria-label="닫기"
+            class="hidden md:block text-3xl"
             @click="closeModal"
           >
             ×
           </button>
         </header>
-
-        <slot />
+        <div class="flex-1 overflow-y-auto px-5 md:px-6 pt-4 md:pt-6 pb-6">
+          <slot />
+        </div>
       </section>
     </div>
   </Teleport>

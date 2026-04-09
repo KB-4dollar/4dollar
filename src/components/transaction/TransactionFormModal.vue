@@ -129,10 +129,7 @@ const selectCategory = (category) => {
 
 const handleAmountInput = (event) => {
   const digitsOnly = event.target.value.replace(/\D/g, '');
-  const sliced = digitsOnly.slice(0, 9);
-  const num = Number(sliced);
-  form.value.amount = num > MAX_AMOUNT ? String(MAX_AMOUNT) : sliced;
-  event.target.value = form.value.amount;
+  form.value.amount = digitsOnly.slice(0, 9);
   setFieldTouched('amount');
 };
 
@@ -235,7 +232,7 @@ watch(
       resetForm();
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const submitTransaction = async () => {
@@ -255,7 +252,7 @@ const submitTransaction = async () => {
     if (isEditMode.value) {
       const updatedTransaction = await transactionStore.updateTransaction(
         props.initialTransaction.id,
-        payload,
+        payload
       );
 
       emit('saved', updatedTransaction);
@@ -274,15 +271,14 @@ const submitTransaction = async () => {
 <template>
   <BaseModal
     :open="props.open"
-    :max-width-class="'max-w-lg'"
-    :body-class="'p-0'"
-    :show-close-button="false"
+    title="거래 정보 입력"
+    description="필수 항목을 모두 입력해야 추가 버튼이 활성화됩니다."
+    :max-width-class="'md:max-w-lg'"
+    :body-class="'px-5 pt-4 pb-6 md:px-6 md:pt-6 md:pb-6'"
+    :show-close-button="true"
     @close="emit('close')"
   >
-    <SectionCard
-      title="거래 정보 입력"
-      description="필수 항목을 모두 입력해야 추가 버튼이 활성화됩니다."
-    >
+    <SectionCard class="bg-transparent border-0 shadow-none p-0 rounded-none">
       <div class="space-y-6">
         <div class="space-y-3">
           <div class="flex items-center justify-between">
@@ -433,7 +429,6 @@ const submitTransaction = async () => {
             :value="form.memo"
             rows="5"
             placeholder="메모를 입력하세요"
-            maxlength="100"
             class="w-full rounded-[14px] border border-line bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
             @input="handleMemoInput"
           />
@@ -452,8 +447,8 @@ const submitTransaction = async () => {
               transactionStore.loading
                 ? '저장 중...'
                 : isEditMode
-                  ? '수정'
-                  : '추가'
+                ? '수정'
+                : '추가'
             }}
           </Button>
         </div>
