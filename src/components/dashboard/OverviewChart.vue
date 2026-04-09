@@ -140,7 +140,7 @@ function formatCurrency(value) {
         @mouseout="onChartMouseOut"
       />
 
-      <div class="custom-scrollbar absolute right-0 top-0 flex max-h-[110px] w-[110px] flex-col gap-2.5 overflow-y-auto rounded-md border border-line bg-surface p-2.5 shadow-sm">
+      <div class="custom-scrollbar absolute right-0 top-0 flex max-h-[110px] w-[90px] flex-col gap-2.5 overflow-y-auto rounded-md border border-line bg-surface p-2.5 shadow-sm">
         <div v-for="item in chartData" :key="item.name" class="flex items-center gap-2">
           <span class="h-2.5 w-2.5 shrink-0 rounded-full" :style="{ backgroundColor: item.color }"></span>
           <span class="truncate text-xs font-medium text-text-secondary">{{ item.name }}</span>
