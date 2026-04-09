@@ -21,8 +21,8 @@ const chartData = computed(() => {
 
   // 수입과 지출 데이터를 배열로 만들고, 금액이 큰 순서대로 정렬합니다.
   const data = [
-    { name: '총 수입', value: income, color: '#ee8567' },
-    { name: '총 지출', value: expense, color: '#243047' }
+    { name: '총 수입', value: income, color: '#F7717D' },
+    { name: '총 지출', value: expense, color: '#F7B2B7' }
   ];
 
   return data
