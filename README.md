@@ -3,10 +3,10 @@
 # 목차
 
 - [1. 프로젝트 소개](#1-프로젝트-소개)
-- [2. 폴더 구조](#2-폴더-구조)
-- [3. 팀원 구성](#3-팀원-구성)
-- [4. 기술 스택](#4-기술-스택)
-- [5. 주요 기능](#5-주요-기능)
+- [2. 팀원 구성](#2-팀원-구성)
+- [3. 기술 스택](#3-기술-스택)
+- [4. 주요 기능](#4-주요-기능)
+- [5. 폴더 구조](#5-폴더-구조)
 - [6. 컴포넌트 설계](#6-컴포넌트-설계)
 - [7. 구현 결과 화면](#7-구현-결과-화면)
 - [8. 프로젝트 후기](#8-프로젝트-후기)
@@ -22,7 +22,41 @@
 
 <!-- TODO: 아키텍쳐(프로젝트 구조, CI/CD) 내용 추가-->
 
-## 2. 폴더 구조
+## 2. 팀원 구성
+
+<!-- TODO: 팀원 정보 채우기 -->
+
+| 이름   | 역할 | 담당 기능 |
+| ------ | ---- | --------- |
+| 채수연 | 팀장 | -         |
+| 이승영 | 팀원 | -         |
+| 고현석 | 팀원 | -         |
+| 박신형 | 팀원 | -         |
+
+## 3. 기술 스택
+
+![Vue.js](https://img.shields.io/badge/Vue_3-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
+![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
+![Vue Router](https://img.shields.io/badge/Vue_Router-35495E?style=for-the-badge&logo=vuedotjs&logoColor=white)
+![Pinia](https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logoColor=black)
+![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![shadcn-vue](https://img.shields.io/badge/shadcn--vue-000000?style=for-the-badge&logoColor=white)
+![json-server](https://img.shields.io/badge/json--server-gray?style=for-the-badge&logo=json&logoColor=white)
+
+## 4. 주요 기능
+
+<!-- TODO: 구현한 기능 목록 채우기 -->
+
+| 기능           | 설명                                           |
+| -------------- | ---------------------------------------------- |
+| 수입/지출 등록 | 날짜, 금액, 카테고리, 메모 입력 후 저장        |
+| 거래 내역 조회 | 전체 내역 목록 확인                            |
+| 필터링         | 날짜, 카테고리, 수입/지출 유형별 필터          |
+| 월별 요약      | 총 수입, 총 지출, 순이익 요약 표시             |
+| 소비 패턴 분석 | 사용자 소비 패턴 분석하여 팩트폭행 잔소리 기능 |
+
+## 5. 폴더 구조
 
 ```text
 src/
@@ -43,40 +77,6 @@ src/
 ├── style/              # 전역 CSS 및 디자인 토큰
 └── utils/              # 유효성 검증, 에러 처리, 태그 파싱 등 유틸
 ```
-
-## 3. 팀원 구성
-
-<!-- TODO: 팀원 정보 채우기 -->
-
-| 이름   | 역할 | 담당 기능 |
-| ------ | ---- | --------- |
-| 채수연 | 팀장 | -         |
-| 이승영 | 팀원 | -         |
-| 고현석 | 팀원 | -         |
-| 박신형 | 팀원 | -         |
-
-## 4. 기술 스택
-
-![Vue.js](https://img.shields.io/badge/Vue_3-35495E?style=for-the-badge&logo=vuedotjs&logoColor=4FC08D)
-![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=FFD62E)
-![Vue Router](https://img.shields.io/badge/Vue_Router-35495E?style=for-the-badge&logo=vuedotjs&logoColor=white)
-![Pinia](https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logoColor=black)
-![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![shadcn-vue](https://img.shields.io/badge/shadcn--vue-000000?style=for-the-badge&logoColor=white)
-![json-server](https://img.shields.io/badge/json--server-gray?style=for-the-badge&logo=json&logoColor=white)
-
-## 5. 주요 기능
-
-<!-- TODO: 구현한 기능 목록 채우기 -->
-
-| 기능           | 설명                                           |
-| -------------- | ---------------------------------------------- |
-| 수입/지출 등록 | 날짜, 금액, 카테고리, 메모 입력 후 저장        |
-| 거래 내역 조회 | 전체 내역 목록 확인                            |
-| 필터링         | 날짜, 카테고리, 수입/지출 유형별 필터          |
-| 월별 요약      | 총 수입, 총 지출, 순이익 요약 표시             |
-| 소비 패턴 분석 | 사용자 소비 패턴 분석하여 팩트폭행 잔소리 기능 |
 
 ## 6. 컴포넌트 설계
 
