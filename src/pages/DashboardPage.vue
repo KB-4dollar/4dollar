@@ -226,54 +226,6 @@ function formatCurrency(value) {
 </template>
 
 <style scoped>
-/* 🌸 벚꽃 테마 전용 디자인 토큰 (Style Guide 준수: HTML 내 하드코딩 지양) */
-.cherry-bg {
-  background: linear-gradient(135deg, #fff5f8 0%, #fff0f5 100%);
-}
-.cherry-border {
-  border-color: #fbcfe8;
-}
-.cherry-text {
-  color: #db2777; /* 포인트 진한 핑크 */
-}
-.cherry-text-light {
-  color: #f472b6; /* 보조 연한 핑크 */
-}
-.hover\:cherry-text:hover {
-  color: #db2777;
-}
-.cherry-icon-bg:hover {
-  background-color: rgba(255, 255, 255, 0.7);
-}
-.cherry-badge {
-  background-color: rgba(255, 255, 255, 0.9);
-  border: 1px solid #fbcfe8;
-  box-shadow: 0 2px 4px rgba(219, 39, 119, 0.05);
-}
-.cherry-quote {
-  color: #fce7f3; /* 배경에 깔리는 연한 핑크색 따옴표 */
-  font-family: Georgia, serif;
-}
-/* 🌸 [추가] 벚꽃 새로고침 버튼 빙글빙글 애니메이션 정의 */
-@keyframes spin-cherry {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.cherry-spin {
-  display: inline-block; /* 회전 애니메이션이 잘 작동하도록 설정 */
-  transform-origin: center center; /* 중앙을 기준으로 회전 */
-}
-
-/* 호버 시 애니메이션 실행 */
-.cherry-spin:hover {
-  animation: spin-cherry 1s linear infinite; /* 1초 동안 무한히 회전 */
-}
-
 /* 기존 스크롤바 스타일 유지 */
 .custom-scrollbar::-webkit-scrollbar {
   width: 4px;
