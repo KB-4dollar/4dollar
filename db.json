@@ -186,6 +186,26 @@
       "memo": "",
       "tags": [],
       "id": "o-D3zMC"
+    },
+    {
+      "userId": "oQ1lekb",
+      "type": "수입",
+      "amount": 100000,
+      "date": "2026-04-09",
+      "category": "",
+      "memo": "",
+      "tags": [],
+      "id": "yUjfwFZ"
+    },
+    {
+      "userId": "oQ1lekb",
+      "type": "지출",
+      "amount": 4000,
+      "date": "2026-04-09",
+      "category": "식비",
+      "memo": "칼국수",
+      "tags": [],
+      "id": "_GMDF1S"
     }
   ]
 }
