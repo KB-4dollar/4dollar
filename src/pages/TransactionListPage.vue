@@ -455,7 +455,7 @@ onUnmounted(() => {
     :initial-transaction="selectedTransaction"
     @close="closeFormModal"
     @saved="closeFormModal"
-  />
+  ></TransactionFormModal>
 </template>
 
 <style scoped>
