@@ -7,6 +7,7 @@ import { ref, onBeforeUnmount } from 'vue';
 import Button from '@/components/ui/Button.vue';
 import { MessageCode } from '@/api/constants/messageCode.js';
 import ToastMessage from '@/components/ui/ToastMessage.vue';
+import FormInput from '@/components/ui/FormInput.vue';
 const authStore = useAuthStore();
 
 const email = ref('');
@@ -75,23 +76,21 @@ const login = async () => {
         <label class="block text-sm text-text-secondary mb-1">
           이메일 <span class="text-accent-ui">*</span>
         </label>
-        <input
+        <FormInput
           v-model="email"
           type="email"
           placeholder="이메일을 입력하세요"
-          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
       <div class="mb-6">
         <label class="block text-sm text-text-secondary mb-1">
           비밀번호 <span class="text-accent-ui">*</span>
         </label>
-        <input
+        <FormInput
           v-model="password"
           type="password"
           placeholder="비밀번호를 입력하세요"
           @keyup.enter="login"
-          class="w-full px-4 py-3 rounded-md border border-line bg-surface-muted focus:ring-2 focus:ring-accent-ui outline-none"
         />
       </div>
       <Button

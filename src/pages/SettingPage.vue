@@ -5,9 +5,11 @@ import router from '@/router';
 import { authService } from '@/api/services/authService';
 import { MessageCode } from '@/api/constants/messageCode';
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
+import SectionCard from '@/components/common/SectionCard.vue';
+import SectionStack from '@/components/common/SectionStack.vue';
 import Button from '@/components/ui/Button.vue';
 import ToastMessage from '@/components/ui/ToastMessage.vue';
-
+import FormInput from '@/components/ui/FormInput.vue';
 const authStore = useAuthStore();
 const user = computed(() => authStore.user);
 
@@ -100,18 +102,13 @@ const logout = () => {
 </script>
 <template>
   <PageSectionLayout title="설정">
-    <div class="mx-auto space-y-0 md:space-y-6">
-      <div class="bg-white p-4 md:rounded-xl md:shadow md:border md:p-6">
-        <h2 class="font-semibold mb-4">프로필 정보</h2>
+    <SectionStack>
+      <!-- 프로필 -->
+      <SectionCard title="프로필 정보">
+        <div class="flex flex-col gap-3">
+          <FormInput :model-value="user?.email" disabled />
 
-        <div class="space-y-3">
-          <input
-            :value="user?.email"
-            disabled
-            class="w-full px-3 py-2 border rounded-md bg-surface-muted"
-          />
-
-          <input v-model="name" class="w-full px-3 py-2 border rounded-md" />
+          <FormInput v-model="name" />
         </div>
 
         <Button @click="updateName" variant="danger" size="md" class="mt-4">
@@ -121,32 +118,15 @@ const logout = () => {
         <p v-if="nameMsg" class="text-sm text-accent-ui mt-2">
           {{ nameMsg }}
         </p>
-      </div>
+      </SectionCard>
 
-      <div class="bg-white p-4 md:rounded-xl md:shadow md:border md:p-6">
-        <h2 class="font-semibold mb-4">비밀번호 변경</h2>
+      <!-- 비밀번호 -->
+      <SectionCard title="비밀번호 변경">
+        <div class="flex flex-col gap-3">
+          <FormInput v-model="currentPassword" type="password" />
 
-        <div class="space-y-3">
-          <input
-            v-model="currentPassword"
-            type="password"
-            placeholder="현재 비밀번호"
-            class="w-full px-3 py-2 border border-line rounded-md bg-surface focus:ring-2 focus:ring-accent-ui outline-none"
-          />
-
-          <input
-            v-model="newPassword"
-            type="password"
-            placeholder="새 비밀번호"
-            class="w-full px-3 py-2 border border-line rounded-md bg-surface focus:ring-2 focus:ring-accent-ui outline-none"
-          />
-
-          <input
-            v-model="confirmPassword"
-            type="password"
-            placeholder="확인"
-            class="w-full px-3 py-2 border border-line rounded-md bg-surface focus:ring-2 focus:ring-accent-ui outline-none"
-          />
+          <FormInput v-model="newPassword" type="password" />
+          <FormInput v-model="confirmPassword" type="password" />
         </div>
 
         <Button @click="changePassword" variant="danger" size="md" class="mt-4">
@@ -156,14 +136,16 @@ const logout = () => {
         <p v-if="passwordMsg" class="text-sm text-accent-ui mt-2">
           {{ passwordMsg }}
         </p>
-      </div>
+      </SectionCard>
 
-      <div class="bg-white p-4 md:rounded-xl md:shadow md:border md:p-6">
+      <!-- 로그아웃 -->
+      <SectionCard>
         <Button @click="logout" variant="primary" size="md" fullWidth>
           로그아웃
         </Button>
-      </div>
-    </div>
+      </SectionCard>
+    </SectionStack>
   </PageSectionLayout>
+
   <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>

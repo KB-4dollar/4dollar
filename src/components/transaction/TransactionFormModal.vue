@@ -4,11 +4,12 @@ import { useTransactionStore } from '@/stores/transaction';
 
 import BaseModal from '@/components/ui/BaseModal.vue';
 import ToastMessage from '@/components/ui/ToastMessage.vue';
-import SectionCard from '../common/SectionCard.vue';
+import SectionStack from '@/components/common/SectionStack.vue';
 import Button from '../ui/Button.vue';
 import { parseHashTags, sanitizeTagInput } from '@/utils/tagParser';
 import { validateTransactionForm } from '@/utils/validation';
 import CategorySelectModal from './CategoryModal.vue';
+import FormInput from '@/components/ui/FormInput.vue';
 
 const CATEGORY_OPTIONS = [
   '식비',
@@ -220,7 +221,7 @@ watch(
       resetForm();
     }
   },
-  { immediate: true },
+  { immediate: true }
 );
 
 const submitTransaction = async () => {
@@ -240,7 +241,7 @@ const submitTransaction = async () => {
     if (isEditMode.value) {
       const updatedTransaction = await transactionStore.updateTransaction(
         props.initialTransaction.id,
-        payload,
+        payload
       );
 
       showToast('내역이 수정되었습니다.');
@@ -257,7 +258,6 @@ const submitTransaction = async () => {
   }
 };
 </script>
-
 <template>
   <BaseModal
     :open="props.open"
@@ -268,184 +268,126 @@ const submitTransaction = async () => {
     :show-close-button="true"
     @close="emit('close')"
   >
-    <SectionCard class="bg-transparent border-0 shadow-none p-0 rounded-none">
-      <div class="space-y-6">
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label
-              for="transaction-date"
-              class="text-sm font-semibold text-text-primary"
-            >
-              날짜
-            </label>
-            <span class="text-xs text-accent-ui">필수</span>
-          </div>
-          <input
-            id="transaction-date"
-            v-model="form.date"
-            type="date"
-            class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary focus:border-accent-ui focus:outline-none"
-            @blur="setFieldTouched('date')"
-          />
-          <p v-if="shouldShowError('date')" class="text-xs text-accent-ui">
-            {{ fieldErrors.date }}
-          </p>
-        </div>
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-semibold text-text-primary">구분</label>
-            <span class="text-xs text-accent-ui">필수</span>
-          </div>
-          <div class="grid grid-cols-2 gap-3">
-            <button
-              type="button"
-              class="rounded-[14px] border px-4 py-3 text-sm font-semibold transition-colors"
-              :class="
-                form.type === 'income'
-                  ? 'border-button-dark bg-button-dark text-button-dark-foreground'
-                  : 'border-line bg-surface text-text-primary hover:bg-surface-muted'
-              "
-              @click="selectType('income')"
-            >
-              수입
-            </button>
-            <button
-              type="button"
-              class="rounded-[14px] border px-4 py-3 text-sm font-semibold transition-colors"
-              :class="
-                form.type === 'expense'
-                  ? 'border-button-dark bg-button-dark text-button-dark-foreground'
-                  : 'border-line bg-surface text-text-primary hover:bg-surface-muted'
-              "
-              @click="selectType('expense')"
-            >
-              지출
-            </button>
-          </div>
-          <p v-if="shouldShowError('type')" class="text-xs text-accent-ui">
-            {{ fieldErrors.type }}
-          </p>
+    <SectionStack gap="lg">
+      <div class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-semibold">날짜</label>
+          <span class="text-xs text-accent-ui">필수</span>
         </div>
 
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label
-              for="transaction-amount"
-              class="text-sm font-semibold text-text-primary"
-            >
-              금액
-            </label>
-            <span class="text-xs text-accent-ui">필수</span>
-          </div>
-          <input
-            id="transaction-amount"
-            :value="form.amount"
-            type="text"
-            inputmode="numeric"
-            placeholder="금액을 입력하세요"
-            class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
-            @input="handleAmountInput"
-          />
-          <p
-            class="text-xs"
-            :class="
-              shouldShowError('amount')
-                ? 'text-accent-ui'
-                : 'text-text-secondary'
-            "
-          >
-            {{ formattedAmountHint }}
-          </p>
+        <FormInput v-model="form.date" @blur="setFieldTouched('date')" />
+
+        <p v-if="shouldShowError('date')" class="text-xs text-accent-ui">
+          {{ fieldErrors.date }}
+        </p>
+      </div>
+
+      <div class="space-y-3">
+        <div class="flex justify-between">
+          <label class="text-sm font-semibold">구분</label>
+          <span class="text-xs text-accent-ui">필수</span>
         </div>
 
-        <div v-if="form.type === 'income'" class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label
-              for="transaction-tags"
-              class="text-sm font-semibold text-text-primary"
-            >
-              태그
-            </label>
-            <span class="text-xs text-text-secondary">선택</span>
-          </div>
-          <input
-            id="transaction-tags"
-            :value="tagInput"
-            type="text"
-            placeholder="#월급 #용돈"
-            class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
-            @input="handleTagInput"
-          />
-        </div>
-
-        <div v-else class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label class="text-sm font-semibold text-text-primary">
-              카테고리
-            </label>
-            <span class="text-xs text-accent-ui">필수</span>
-          </div>
+        <div class="grid grid-cols-2 gap-3">
           <button
             type="button"
-            class="h-12 w-full rounded-[14px] border border-line bg-surface px-4 text-sm text-text-primary focus:border-accent-ui focus:outline-none"
-            :class="form.category ? 'text-text-primary' : 'text-text-muted'"
-            @click="openCategoryModal"
-            @blur="setFieldTouched('category')"
+            class="rounded-[14px] border px-4 py-3 text-sm font-semibold"
+            :class="
+              form.type === 'income'
+                ? 'bg-button-dark text-white'
+                : 'border-line'
+            "
+            @click="selectType('income')"
           >
-            <span class="flex items-center justify-between">
-              <span>{{ form.category || '카테고리 선택' }}</span>
-              <span class="text-lg text-text-secondary">›</span>
-            </span>
+            수입
           </button>
-          <p v-if="shouldShowError('category')" class="text-xs text-accent-ui">
-            {{ fieldErrors.category }}
-          </p>
-        </div>
 
-        <div class="space-y-3">
-          <div class="flex items-center justify-between">
-            <label
-              for="transaction-memo"
-              class="text-sm font-semibold text-text-primary"
-            >
-              메모
-            </label>
-            <span class="text-xs text-text-secondary"
-              >{{ memoLength }}/100</span
-            >
-          </div>
-          <textarea
-            id="transaction-memo"
-            :value="form.memo"
-            rows="5"
-            placeholder="메모를 입력하세요"
-            maxlength="100"
-            class="w-full rounded-[14px] border border-line bg-surface px-4 py-3 text-sm text-text-primary placeholder:text-text-muted focus:border-accent-ui focus:outline-none"
-            @input="handleMemoInput"
-          />
-          <p v-if="submitError" class="text-sm text-accent-ui">
-            {{ submitError }}
-          </p>
-          <Button
+          <button
             type="button"
-            variant="danger"
-            full-width="true"
-            size="lg"
-            :disabled="!isRequiredValid || transactionStore.loading"
-            @click="submitTransaction"
+            class="rounded-[14px] border px-4 py-3 text-sm font-semibold"
+            :class="
+              form.type === 'expense'
+                ? 'bg-button-dark text-white'
+                : 'border-line'
+            "
+            @click="selectType('expense')"
           >
-            {{
-              transactionStore.loading
-                ? '저장 중...'
-                : isEditMode
-                  ? '수정'
-                  : '추가'
-            }}
-          </Button>
+            지출
+          </button>
         </div>
       </div>
-    </SectionCard>
+
+      <!-- 금액 -->
+      <div class="space-y-3">
+        <div class="flex justify-between">
+          <label class="text-sm font-semibold">금액</label>
+          <span class="text-xs text-accent-ui">필수</span>
+        </div>
+
+        <FormInput
+          :model-value="form.amount"
+          @update:modelValue="handleAmountInput"
+        />
+
+        <p class="text-xs">
+          {{ formattedAmountHint }}
+        </p>
+      </div>
+      <!-- 태그 입력 (수입일 때만) -->
+      <div v-if="form.type === 'income'" class="space-y-3">
+        <div class="flex items-center justify-between">
+          <label class="text-sm font-semibold">태그</label>
+          <span class="text-xs text-text-secondary">선택</span>
+        </div>
+
+        <FormInput
+          :model-value="tagInput"
+          placeholder="#월급 #용돈"
+          @update:modelValue="handleTagInput"
+        />
+      </div>
+
+      <!-- 카테고리 -->
+      <div v-if="form.type !== 'income'" class="space-y-3">
+        <div class="flex justify-between">
+          <label class="text-sm font-semibold">카테고리</label>
+          <span class="text-xs text-accent-ui">필수</span>
+        </div>
+
+        <button
+          class="h-12 w-full border rounded-[14px] px-4"
+          @click="openCategoryModal"
+        >
+          {{ form.category || '카테고리 선택' }}
+        </button>
+      </div>
+
+      <!-- 메모 -->
+      <div class="space-y-3">
+        <div class="flex justify-between">
+          <label class="text-sm font-semibold">메모</label>
+          <span class="text-xs">{{ memoLength }}/100</span>
+        </div>
+
+        <textarea
+          :value="form.memo"
+          rows="5"
+          class="w-full border rounded-[14px] px-4 py-3"
+          @input="handleMemoInput"
+        />
+
+        <Button
+          variant="danger"
+          size="lg"
+          :disabled="!isRequiredValid"
+          @click="submitTransaction"
+        >
+          {{ isEditMode ? '수정' : '추가' }}
+        </Button>
+      </div>
+    </SectionStack>
   </BaseModal>
+
   <CategorySelectModal
     :open="isCategoryModalOpen"
     :categories="CATEGORY_OPTIONS"
@@ -453,5 +395,6 @@ const submitTransaction = async () => {
     @close="closeCategoryModal"
     @select="selectCategory"
   />
+
   <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>

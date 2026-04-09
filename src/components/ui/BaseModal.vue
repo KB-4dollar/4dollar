@@ -1,6 +1,6 @@
 <script setup>
 import { onBeforeUnmount, watch } from 'vue';
-
+import { X, ArrowLeft } from 'lucide-vue-next';
 /**
  * BaseModal props
  * @prop {boolean} open 모달 표시 여부. true일 때 렌더링되며 ESC 닫기와 body scroll lock이 활성화됩니다.
@@ -105,21 +105,23 @@ onBeforeUnmount(() => {
       >
         <header
           v-if="title || showCloseButton"
-          class="px-5 md:px-6 pt-4 md:pt-5 pb-3 md:pb-4 flex items-center justify-between gap-4 border-b border-line"
+          class="px-5 md:px-6 pt-4 md:pt-5 pb-3 md:pb-4 flex items-center gap-3 border-b border-line"
         >
-          <!-- 🔥 모바일 뒤로가기 -->
-          <button type="button" class="text-2xl md:hidden" @click="closeModal">
-            ←
+          <!-- 모바일 뒤로가기 -->
+          <button
+            type="button"
+            class="md:hidden flex items-center justify-center w-8 h-8"
+            @click="closeModal"
+          >
+            <ArrowLeft class="w-5 h-5 text-text-primary" />
           </button>
 
           <!-- 타이틀 -->
           <div class="flex-1 min-w-0">
-            <h2
-              v-if="title"
-              class="text-[1.5rem] md:text-[1.75rem] font-extrabold truncate"
-            >
+            <h2 class="text-[1.5rem] md:text-[1.75rem] font-extrabold truncate">
               {{ title }}
             </h2>
+
             <p
               v-if="description"
               class="mt-1 text-sm text-text-secondary truncate"
@@ -128,12 +130,13 @@ onBeforeUnmount(() => {
             </p>
           </div>
 
+          <!-- 웹 닫기 버튼 -->
           <button
             v-if="showCloseButton"
-            class="hidden md:block text-3xl"
+            class="hidden md:flex items-center justify-center w-10 h-10 rounded-full hover:bg-surface-muted transition"
             @click="closeModal"
           >
-            ×
+            <X class="w-5 h-5" />
           </button>
         </header>
         <div class="flex-1 overflow-y-auto px-5 md:px-6 pt-4 md:pt-6 pb-6">
