@@ -1,7 +1,8 @@
 <script setup>
-import { shallowRef, onMounted, computed, watch } from 'vue';
+import { ref, shallowRef, onMounted, computed, watch } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTransactionStore } from '@/stores/transaction';
+import { summaryService } from '@/api/services/summaryService';
 
 // 공통 컴포넌트 임포트
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
@@ -20,6 +21,9 @@ const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
 // 3. reactive state
+const topCategory = ref('');
+const feedbackMessage = ref('');
+
 const today = new Date();
 const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
@@ -42,6 +46,23 @@ const dashboardTitle = computed(() => {
   return `${userName}님의 ${currentMonth}월 소비`;
 });
 
+async function fetchStats() {
+  const userId = authStore.user?.id ? String(authStore.user.id) : null;
+  
+  if (userId) {
+    // 1. 차트용 전체 통계 데이터 요청
+    await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
+    
+    // ✨ 2. 팩폭 위젯 데이터 연동 로직 추가
+    const category = await summaryService.getTopExpenseCategory(userId, currentYearMonth);
+    topCategory.value = category || '지출 없음';
+    feedbackMessage.value = summaryService.getRandomFeedback(category);
+    
+  } else {
+    console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
+  }
+}
+
 // 5. lifecycle hooks
 watch(
   () => authStore.user?.id, 
@@ -61,17 +82,25 @@ onMounted(() => {
 });
 
 // 6. functions
-async function fetchStats() {
-  const userId = authStore.user?.id ? String(authStore.user.id) : null;
-  
-  console.log("🔍 fetchStats 실행 시도 - 현재 유저ID:", userId); 
 
-  if (userId) {
-    console.log("🚀 트랜잭션 데이터 요청 (대상 날짜: " + currentYearMonth + ")");
-    await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
-  } else {
-    console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
+
+// ✨ 위젯 새로고침 버튼 클릭 시 실행할 함수 (카테고리는 유지하고 멘트만 다시 뽑기)
+function refreshFeedback() {
+  const categoryForRefresh = topCategory.value === '지출 없음' ? null : topCategory.value;
+  
+  // 디버깅용: 현재 어떤 카테고리로 멘트를 찾고 있는지 콘솔 확인
+  console.log("🔄 새로고침 시도 카테고리:", categoryForRefresh);
+
+  let newMessage = summaryService.getRandomFeedback(categoryForRefresh);
+
+  // 멘트 풀이 여러 개일 경우, 이전 멘트와 똑같은 게 나오면 다를 때까지 다시 뽑기
+  let attempts = 0;
+  while (newMessage === feedbackMessage.value && attempts < 5) {
+    newMessage = summaryService.getRandomFeedback(categoryForRefresh);
+    attempts++;
   }
+
+  feedbackMessage.value = newMessage;
 }
 
 // 숫자에 콤마 찍어주는 함수
@@ -143,21 +172,22 @@ function formatCurrency(value) {
           </div>
 
           <div class="relative flex flex-col min-h-[300px] items-center justify-center rounded-lg border border-line bg-surface-muted p-6">
-            <button class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 2v6h-6"></path>
-                <path d="M3 12a9 9 0 1 0 2.13-5.85L21 8"></path>
-              </svg>
+            <button @click="refreshFeedback" class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 2v6h-6"></path>
+              <path d="M3 12a9 9 0 1 0 2.13-5.85L21 8"></path>
+            </svg>
             </button>
-
             <div class="text-center">
               <span class="inline-block px-2 py-1 mb-4 text-xs font-bold rounded-full bg-line text-text-secondary">
                 💡 이번 달 팩폭 알림
               </span>
               <p class="text-lg md:text-xl font-bold text-text-primary leading-relaxed break-keep">
-                "카페인 중독이 의심되네요.<br/>텀블러와 친해져 보는 건 어떨까요?"
+                "{{ feedbackMessage }}"
               </p>
-              <p class="mt-4 text-sm text-text-muted">가장 지출이 큰 카테고리: <strong class="text-text-secondary">식비</strong></p>
+              <p class="mt-4 text-sm text-text-muted">
+                가장 지출이 큰 카테고리: <strong class="text-text-secondary">{{ topCategory }}</strong>
+              </p>
             </div>
           </div>
 
