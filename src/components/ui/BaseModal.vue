@@ -21,6 +21,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  description: {
+    type: String,
+    required: false,
+  },
   maxWidthClass: {
     type: String,
     default: 'max-w-[430px]',
@@ -41,9 +45,8 @@ const closeModal = () => {
   emit('close');
 };
 
-const originalBodyOverflow = typeof document !== 'undefined'
-  ? document.body.style.overflow
-  : '';
+const originalBodyOverflow =
+  typeof document !== 'undefined' ? document.body.style.overflow : '';
 
 const handleKeydown = (event) => {
   if (event.key === 'Escape' && props.open) {
@@ -114,6 +117,12 @@ onBeforeUnmount(() => {
           >
             {{ title }}
           </h2>
+          <p
+            v-if="description"
+            class="mt-1 text-sm leading-6 text-text-secondary"
+          >
+            {{ description }}
+          </p>
           <button
             v-if="showCloseButton"
             type="button"

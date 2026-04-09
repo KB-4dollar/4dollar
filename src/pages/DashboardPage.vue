@@ -1,5 +1,5 @@
 <script setup>
-import { shallowRef, onMounted, computed, watch } from 'vue';
+import { shallowRef, onMounted, computed, watch, ref } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useTransactionStore } from '@/stores/transaction';
 
@@ -12,6 +12,8 @@ import OverviewChart from '@/components/dashboard/OverviewChart.vue';
 import IncomeChart from '@/components/dashboard/IncomeChart.vue';
 import ExpenseChart from '@/components/dashboard/ExpenseChart.vue';
 
+import TransactionFormModal from '@/components/transaction/TransactionFormModal.vue';
+
 // TODO: 개발이 완료되면 아래 명언 위젯 컴포넌트의 주석을 해제하고 우측 영역에 교체합니다.
 // import SummaryMentCard from '@/components/dashboard/SummaryMentCard.vue';
 
@@ -20,6 +22,7 @@ const authStore = useAuthStore();
 const transactionStore = useTransactionStore();
 
 // 3. reactive state
+const isFormModalOpen = ref(false);
 const today = new Date();
 const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
 
@@ -29,7 +32,7 @@ const currentTabComponent = shallowRef(OverviewChart);
 const tabs = [
   { id: 'overview', name: '전체 요약', component: OverviewChart },
   { id: 'income', name: '수입 분석', component: IncomeChart },
-  { id: 'expense', name: '지출 분석', component: ExpenseChart }
+  { id: 'expense', name: '지출 분석', component: ExpenseChart },
 ];
 
 // 4. computed
@@ -44,18 +47,18 @@ const dashboardTitle = computed(() => {
 
 // 5. lifecycle hooks
 watch(
-  () => authStore.user?.id, 
+  () => authStore.user?.id,
   (newId) => {
-    console.log("👀 유저 ID 변화 감지:", newId);
+    console.log('👀 유저 ID 변화 감지:', newId);
     if (newId) {
       fetchStats();
     }
-  }, 
-  { immediate: true } // 컴포넌트 로드 시 이미 로그인이 되어있다면 바로 실행
+  },
+  { immediate: true }, // 컴포넌트 로드 시 이미 로그인이 되어있다면 바로 실행
 );
 
 onMounted(() => {
-  console.log("✅ 대시보드 마운트 완료");
+  console.log('✅ 대시보드 마운트 완료');
   // authStore 에 user 저장 (회원가입 화면 구현 완료 후 주석 처리 예정)
   // authStore.user = { id: "1", name: "박신형" };
 });
@@ -63,14 +66,16 @@ onMounted(() => {
 // 6. functions
 async function fetchStats() {
   const userId = authStore.user?.id ? String(authStore.user.id) : null;
-  
-  console.log("🔍 fetchStats 실행 시도 - 현재 유저ID:", userId); 
+
+  console.log('🔍 fetchStats 실행 시도 - 현재 유저ID:', userId);
 
   if (userId) {
-    console.log("🚀 트랜잭션 데이터 요청 (대상 날짜: " + currentYearMonth + ")");
+    console.log(
+      '🚀 트랜잭션 데이터 요청 (대상 날짜: ' + currentYearMonth + ')',
+    );
     await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
   } else {
-    console.warn("⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.");
+    console.warn('⚠️ 유저 ID가 없어서 요청을 보낼 수 없습니다.');
   }
 }
 
@@ -115,10 +120,13 @@ function formatCurrency(value) {
 
       <SectionCard>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-2">
-          
           <div class="flex flex-col rounded-lg border border-line p-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-line pb-3 mb-3 gap-3 sm:gap-0">
-              <h3 class="text-base font-bold text-text-primary">{{ dashboardTitle }}</h3>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-line pb-3 mb-3 gap-3 sm:gap-0"
+            >
+              <h3 class="text-base font-bold text-text-primary">
+                {{ dashboardTitle }}
+              </h3>
 
               <div class="flex gap-3">
                 <button
@@ -128,43 +136,78 @@ function formatCurrency(value) {
                   :class="[
                     'text-sm font-bold transition-colors',
                     currentTabComponent === tab.component
-                      ? 'text-accent-ui' 
-                      : 'text-text-muted hover:text-text-primary'
+                      ? 'text-accent-ui'
+                      : 'text-text-muted hover:text-text-primary',
                   ]"
                 >
                   {{ tab.name }}
                 </button>
               </div>
             </div>
-            
+
             <div class="h-[280px] w-full">
               <component :is="currentTabComponent" :stats="stats" />
             </div>
           </div>
 
-          <div class="relative flex flex-col min-h-[300px] items-center justify-center rounded-lg border border-line bg-surface-muted p-6">
-            <button class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <div
+            class="relative flex flex-col min-h-[300px] items-center justify-center rounded-lg border border-line bg-surface-muted p-6"
+          >
+            <button
+              class="absolute top-4 right-4 text-text-muted hover:text-text-primary transition-colors"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
                 <path d="M21 2v6h-6"></path>
                 <path d="M3 12a9 9 0 1 0 2.13-5.85L21 8"></path>
               </svg>
             </button>
 
             <div class="text-center">
-              <span class="inline-block px-2 py-1 mb-4 text-xs font-bold rounded-full bg-line text-text-secondary">
+              <span
+                class="inline-block px-2 py-1 mb-4 text-xs font-bold rounded-full bg-line text-text-secondary"
+              >
                 💡 이번 달 팩폭 알림
               </span>
-              <p class="text-lg md:text-xl font-bold text-text-primary leading-relaxed break-keep">
-                "카페인 중독이 의심되네요.<br/>텀블러와 친해져 보는 건 어떨까요?"
+              <p
+                class="text-lg md:text-xl font-bold text-text-primary leading-relaxed break-keep"
+              >
+                "카페인 중독이 의심되네요.<br />텀블러와 친해져 보는 건
+                어떨까요?"
               </p>
-              <p class="mt-4 text-sm text-text-muted">가장 지출이 큰 카테고리: <strong class="text-text-secondary">식비</strong></p>
+              <p class="mt-4 text-sm text-text-muted">
+                가장 지출이 큰 카테고리:
+                <strong class="text-text-secondary">식비</strong>
+              </p>
             </div>
           </div>
-
         </div>
       </SectionCard>
     </template>
   </PageSectionLayout>
+
+  <!-- float 버튼 -->
+  <button
+    class="fixed bottom-20 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-button-dark text-button-dark-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+    @click="isFormModalOpen = true"
+  >
+    <span class="text-2xl font-light leading-none">+</span>
+  </button>
+
+  <TransactionFormModal
+    :open="isFormModalOpen"
+    @close="isFormModalOpen = false"
+    @saved="isFormModalOpen = false"
+  />
 </template>
 
 <style scoped>
