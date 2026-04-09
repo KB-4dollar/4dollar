@@ -19,7 +19,10 @@ export function validateSignup({ name, email, password, confirm }) {
   }
 }
 
-export function validateTransactionForm({ type, amount, date, category }) {
+const MAX_AMOUNT = 999999999;
+const MAX_MEMO_LENGTH = 100;
+
+export function validateTransactionForm({ type, amount, date, category, memo }) {
   const errors = {};
   const normalizedAmount = String(amount ?? '').trim();
   const numericAmount = Number(normalizedAmount);
@@ -34,6 +37,8 @@ export function validateTransactionForm({ type, amount, date, category }) {
     errors.amount = ErrorCode.INVALID_AMOUNT.msg;
   } else if (numericAmount < 1) {
     errors.amount = ErrorCode.INVALID_AMOUNT_RANGE.msg;
+  } else if (numericAmount > MAX_AMOUNT) {
+    errors.amount = '금액은 10억원 미만이어야 합니다.';
   }
 
   if (!String(date ?? '').trim()) {
@@ -42,6 +47,10 @@ export function validateTransactionForm({ type, amount, date, category }) {
 
   if (type === 'expense' && !String(category ?? '').trim()) {
     errors.category = ErrorCode.REQUIRED.msg;
+  }
+
+  if (memo && String(memo).length > MAX_MEMO_LENGTH) {
+    errors.memo = `메모는 ${MAX_MEMO_LENGTH}자 이하여야 합니다.`;
   }
 
   return {

@@ -129,7 +129,10 @@ const selectCategory = (category) => {
 
 const handleAmountInput = (event) => {
   const digitsOnly = event.target.value.replace(/\D/g, '');
-  form.value.amount = digitsOnly.slice(0, 9);
+  const sliced = digitsOnly.slice(0, 9);
+  const num = Number(sliced);
+  form.value.amount = num > MAX_AMOUNT ? String(MAX_AMOUNT) : sliced;
+  event.target.value = form.value.amount;
   setFieldTouched('amount');
 };
 

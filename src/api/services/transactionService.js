@@ -24,6 +24,10 @@ const buildTransactionPayload = (transactionData, userId) => {
   const normalizedAmount = Number(transactionData.amount);
   const normalizedDate = String(transactionData.date ?? '').trim();
   const normalizedMemo = String(transactionData.memo ?? '').trim();
+
+  if (normalizedMemo.length > 100) {
+    throw new Error('메모는 100자 이하여야 합니다.');
+  }
   const normalizedCategory =
     normalizedType === TRANSACTION_TYPE.EXPENSE
       ? String(transactionData.category ?? '').trim()
@@ -39,6 +43,10 @@ const buildTransactionPayload = (transactionData, userId) => {
 
   if (!Number.isInteger(normalizedAmount) || normalizedAmount < 1) {
     throw new Error('금액은 1원 이상의 정수여야 합니다.');
+  }
+
+  if (normalizedAmount > 999999999) {
+    throw new Error('금액은 10억원 미만이어야 합니다.');
   }
 
   if (!normalizedDate) {
