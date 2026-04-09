@@ -28,7 +28,9 @@ const feedbackMessage = ref('');
 const errorMessage = ref('');
 
 const today = new Date();
-const currentYearMonth = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+const currentYearMonth = `${today.getFullYear()}-${String(
+  today.getMonth() + 1
+).padStart(2, '0')}`;
 
 const currentTabComponent = shallowRef(OverviewChart);
 const tabs = [
@@ -55,7 +57,10 @@ async function fetchStats() {
   try {
     errorMessage.value = '';
     await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
-    const category = await summaryService.getTopExpenseCategory(userId, currentYearMonth);
+    const category = await summaryService.getTopExpenseCategory(
+      userId,
+      currentYearMonth
+    );
     topCategory.value = category || '지출 없음';
     feedbackMessage.value = summaryService.getRandomFeedback(category);
   } catch (error) {
@@ -66,12 +71,15 @@ async function fetchStats() {
 
 watch(
   () => authStore.user?.id,
-  (newId) => { if (newId) fetchStats(); },
-  { immediate: true },
+  (newId) => {
+    if (newId) fetchStats();
+  },
+  { immediate: true }
 );
 
 function refreshFeedback() {
-  const categoryForRefresh = topCategory.value === '지출 없음' ? null : topCategory.value;
+  const categoryForRefresh =
+    topCategory.value === '지출 없음' ? null : topCategory.value;
   let newMessage = summaryService.getRandomFeedback(categoryForRefresh);
   feedbackMessage.value = newMessage;
 }
@@ -82,15 +90,13 @@ function formatCurrency(value) {
 </script>
 
 <template>
-  <PageSectionLayout>
+  <PageSectionLayout title="대시보드">
     <div v-if="isLoading" class="flex justify-center py-20">
       <span class="text-text-secondary">재정 데이터를 분석 중입니다...</span>
     </div>
 
     <div v-else class="flex flex-col gap-6">
-      
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
         <div class="flex flex-col gap-4 lg:col-span-1">
           <SectionCard>
             <p class="mb-2 text-sm font-medium text-text-secondary">총 수입</p>
@@ -122,13 +128,23 @@ function formatCurrency(value) {
       <SectionCard>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-5 mt-2">
           <div class="flex flex-col rounded-lg border border-line p-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-line pb-3 mb-3 gap-3 sm:gap-0">
-              <h3 class="text-base font-bold text-text-primary">{{ dashboardTitle }}</h3>
+            <div
+              class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-line pb-3 mb-3 gap-3 sm:gap-0"
+            >
+              <h3 class="text-base font-bold text-text-primary">
+                {{ dashboardTitle }}
+              </h3>
               <div class="flex gap-3">
                 <button
-                  v-for="tab in tabs" :key="tab.id"
+                  v-for="tab in tabs"
+                  :key="tab.id"
                   @click="currentTabComponent = tab.component"
-                  :class="['text-sm font-bold transition-colors', currentTabComponent === tab.component ? 'text-accent-ui' : 'text-text-muted hover:text-text-primary']"
+                  :class="[
+                    'text-sm font-bold transition-colors',
+                    currentTabComponent === tab.component
+                      ? 'text-accent-ui'
+                      : 'text-text-muted hover:text-text-primary',
+                  ]"
                 >
                   {{ tab.name }}
                 </button>
@@ -139,10 +155,10 @@ function formatCurrency(value) {
             </div>
           </div>
 
-          <FeedbackWidget 
-            :top-category="topCategory" 
-            :feedback-message="feedbackMessage" 
-            @refresh="refreshFeedback" 
+          <FeedbackWidget
+            :top-category="topCategory"
+            :feedback-message="feedbackMessage"
+            @refresh="refreshFeedback"
           />
         </div>
       </SectionCard>
@@ -164,7 +180,14 @@ function formatCurrency(value) {
 </template>
 
 <style scoped>
-.custom-scrollbar::-webkit-scrollbar { width: 4px; }
-.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--line); border-radius: 4px; }
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 4px;
+}
 </style>

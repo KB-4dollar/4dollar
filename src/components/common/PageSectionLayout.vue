@@ -19,11 +19,12 @@ defineProps({
           {{ title }}
         </span>
       </div>
-      <h1
+      <!-- 웹에서는 헤더title이 안뜨도록
+       <h1
         class="hidden md:block mb-6 text-[2rem] font-extrabold text-text-primary"
       >
         {{ title }}
-      </h1>
+      </h1> -->
 
       <div class="pt-[50px] md:pt-0 space-y-0 md:space-y-6">
         <slot />
