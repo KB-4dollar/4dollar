@@ -248,7 +248,7 @@ watch(
       resetForm();
     }
   },
-  { immediate: true }
+  { immediate: true },
 );
 
 const submitTransaction = async () => {
@@ -268,7 +268,7 @@ const submitTransaction = async () => {
     if (isEditMode.value) {
       const updatedTransaction = await transactionStore.updateTransaction(
         props.initialTransaction.id,
-        payload
+        payload,
       );
 
       showToast('내역이 수정되었습니다.');
@@ -465,8 +465,8 @@ const submitTransaction = async () => {
               transactionStore.loading
                 ? '저장 중...'
                 : isEditMode
-                ? '수정'
-                : '추가'
+                  ? '수정'
+                  : '추가'
             }}
           </Button>
         </div>
