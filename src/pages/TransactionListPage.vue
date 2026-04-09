@@ -2,10 +2,15 @@
 // 1. import
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import { cn } from '@/lib/utils';
-import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
-import SectionCard from '@/components/common/SectionCard.vue';
+
 import TransactionFormModal from '@/components/transaction/TransactionFormModal.vue';
 import ToastMessage from '@/components/ui/ToastMessage.vue';
+
+// layout
+import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
+import SectionCard from '@/components/common/SectionCard.vue';
+import SectionStack from '@/components/common/SectionStack.vue';
+import SectionGrid from '@/components/common/SectionGrid.vue';
 
 // 2. store/router
 import { useTransactionStore } from '@/stores/transaction';
@@ -270,13 +275,12 @@ onUnmounted(() => {
   observer?.disconnect();
 });
 </script>
-
 <template>
   <PageSectionLayout title="거래내역">
-    <div class="grid gap-0 md:gap-5">
-      <SectionCard
-        class="rounded-none shadow-none border-b border-line md:rounded-xl md:shadow md:border"
-      >
+    <SectionStack>
+      <!-- 필터 영역 -->
+      <SectionCard variant="flat">
+        <!-- 기간 탭 -->
         <div
           class="flex gap-4 border-b border-border pb-2 mb-6 overflow-x-auto whitespace-nowrap scrollbar-hide"
         >
@@ -301,7 +305,8 @@ onUnmounted(() => {
           </button>
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <!-- 요약 -->
+        <SectionGrid :cols="3" gap="sm">
           <div>
             <div class="text-sm text-muted-foreground mb-1">총 수입</div>
             <div class="text-xl font-bold">
@@ -320,53 +325,60 @@ onUnmounted(() => {
               {{ formatCurrency(displayNetAmount) }}원
             </div>
           </div>
-        </div>
+        </SectionGrid>
 
-        <div class="text-sm text-muted-foreground mb-3">유형</div>
-        <div class="flex gap-2">
-          <button
-            v-for="type in [
-              '전체',
-              TRANSACTION_TYPE.INCOME,
-              TRANSACTION_TYPE.EXPENSE,
-            ]"
-            :key="type"
-            :class="
-              cn(
-                'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
-                activeType === type
-                  ? 'bg-accent-ui text-accent-ui-foreground'
-                  : 'bg-button-dark text-button-dark-foreground'
-              )
-            "
-            @click="activeType = type"
-          >
-            {{ type }}
-          </button>
+        <!-- 타입 필터 -->
+        <div class="mt-6">
+          <div class="text-sm text-muted-foreground mb-3">유형</div>
+          <div class="flex gap-2">
+            <button
+              v-for="type in [
+                '전체',
+                TRANSACTION_TYPE.INCOME,
+                TRANSACTION_TYPE.EXPENSE,
+              ]"
+              :key="type"
+              :class="
+                cn(
+                  'px-4 py-1.5 rounded-full text-sm font-medium transition-colors',
+                  activeType === type
+                    ? 'bg-accent-ui text-accent-ui-foreground'
+                    : 'bg-button-dark text-button-dark-foreground'
+                )
+              "
+              @click="activeType = type"
+            >
+              {{ type }}
+            </button>
+          </div>
         </div>
       </SectionCard>
 
-      <SectionCard
-        class="rounded-none shadow-none border-b border-line md:rounded-xl md:shadow md:border"
-      >
+      <!-- 리스트 영역 -->
+      <SectionCard variant="flat">
         <div ref="scrollContainer" class="overflow-y-auto max-h-[500px]">
+          <!-- 로딩 -->
           <div
             v-if="isLoading && displayTransactions.length === 0"
             class="flex justify-center items-center py-12"
           >
-            <span class="text-muted-foreground text-sm"
-              >데이터를 불러오는 중...</span
-            >
+            <span class="text-muted-foreground text-sm">
+              데이터를 불러오는 중...
+            </span>
           </div>
 
+          <!-- 빈 상태 -->
           <div
             v-else-if="isListEmpty"
             class="flex flex-col justify-center items-center py-16"
           >
             <div class="text-4xl mb-3">📁</div>
-            <span class="text-muted-foreground text-sm">내역이 없습니다.</span>
+            <span class="text-muted-foreground text-sm">
+              내역이 없습니다.
+            </span>
           </div>
 
+          <!-- 리스트 -->
           <template v-else>
             <div
               v-for="item in displayTransactions"
@@ -374,15 +386,20 @@ onUnmounted(() => {
               class="flex items-center justify-between py-4 border-b border-border last:border-0 hover:bg-accent/5 transition-colors cursor-pointer group"
               @click="goToDetail(item.id)"
             >
+              <!-- 왼쪽 -->
               <div class="flex items-center gap-4">
                 <div
                   class="w-10 h-10 rounded-full flex items-center justify-center bg-accent-ui text-accent-ui-foreground text-lg"
                 >
                   {{ CATEGORY_ICON_MAP[item.category] ?? '💳' }}
                 </div>
+
                 <div>
                   <div class="flex items-center gap-2">
-                    <span class="font-bold text-sm">{{ item.category }}</span>
+                    <span class="font-bold text-sm">
+                      {{ item.category }}
+                    </span>
+
                     <span
                       :class="
                         cn(
@@ -395,20 +412,23 @@ onUnmounted(() => {
                     >
                       {{ item.type }}
                     </span>
+
                     <span
                       v-for="(tag, index) in item.tags"
                       :key="index"
-                      class="text-[10px] text-blue-600 font-medium whitespace-nowrap"
+                      class="text-[10px] text-blue-600 font-medium"
                     >
                       #{{ tag }}
                     </span>
                   </div>
+
                   <div class="text-xs text-muted-foreground">
                     {{ item.memo }}
                   </div>
                 </div>
               </div>
 
+              <!-- 오른쪽 -->
               <div class="text-right">
                 <div
                   :class="
@@ -420,31 +440,32 @@ onUnmounted(() => {
                     )
                   "
                 >
-                  {{ item.type === TRANSACTION_TYPE.INCOME ? '+' : '-'
-                  }}{{ formatCurrency(item.amount) }}원
+                  {{ item.type === TRANSACTION_TYPE.INCOME ? '+' : '-' }}
+                  {{ formatCurrency(item.amount) }}원
                 </div>
+
                 <div class="text-[10px] text-muted-foreground">
                   {{ item.date }}
                 </div>
+
                 <button
                   @click.stop="handleDelete(item.id)"
-                  class="mt-1 p-1 px-2 rounded hover:bg-destructive/10 text-muted-foreground hover:text-destructive transition-colors"
+                  class="mt-1 text-[10px] text-muted-foreground hover:text-destructive"
                 >
-                  <p class="text-[10px]">삭제</p>
+                  삭제
                 </button>
               </div>
             </div>
           </template>
 
-          <div
-            ref="sentinel"
-            class="h-12 flex justify-center items-center mt-2"
-          >
+          <!-- 무한스크롤 -->
+          <div ref="sentinel" class="h-12 flex justify-center items-center">
             <span
               v-if="isFetchingMore"
               class="text-muted-foreground text-xs italic"
-              >데이터를 더 가져오는 중...</span
             >
+              데이터 더 불러오는 중...
+            </span>
             <span
               v-else-if="!displayHasMore && !isListEmpty"
               class="text-muted-foreground text-[10px]"
@@ -454,15 +475,15 @@ onUnmounted(() => {
           </div>
         </div>
       </SectionCard>
-    </div>
+    </SectionStack>
   </PageSectionLayout>
 
-  <!-- float 버튼 -->
+  <!-- FAB -->
   <button
-    class="fixed bottom-20 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-button-dark text-button-dark-foreground shadow-lg transition-transform hover:scale-105 active:scale-95"
+    class="fixed bottom-20 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-button-dark text-button-dark-foreground shadow-lg hover:scale-105 active:scale-95"
     @click="isFormModalOpen = true"
   >
-    <span class="text-2xl font-light leading-none">+</span>
+    <span class="text-2xl">+</span>
   </button>
 
   <TransactionFormModal
@@ -470,10 +491,10 @@ onUnmounted(() => {
     :initial-transaction="selectedTransaction"
     @close="closeFormModal"
     @saved="closeFormModal"
-  ></TransactionFormModal>
+  />
+
   <ToastMessage :open="isToastOpen" :message="toastMessage" />
 </template>
-
 <style scoped>
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
