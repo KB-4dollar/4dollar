@@ -6,9 +6,10 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import PageSectionLayout from '@/components/common/PageSectionLayout.vue';
 import SectionStack from '@/components/common/SectionStack.vue';
 
-// 3. components (transaction)
+// 3. components
 import TransactionFilterSection from '@/components/transaction/TransactionFilterSection.vue';
 import TransactionListSection from '@/components/transaction/TransactionListSection.vue';
+import TransactionFormModal from '@/components/transaction/TransactionFormModal.vue';
 
 // 4. store
 import { useTransactionStore } from '@/stores/transaction';
@@ -16,7 +17,9 @@ import { useTransactionStore } from '@/stores/transaction';
 // 5. constants
 import { TRANSACTION_TYPE, FILTER_PERIOD } from '@/api/constants/enumConstants';
 
-// 6. state
+// -------------------------
+// 📌 state
+// -------------------------
 const transactionStore = useTransactionStore();
 
 const PAGE_LIMIT = 10;
@@ -27,8 +30,11 @@ const activeCategory = ref('전체');
 const customStart = ref('');
 const customEnd = ref('');
 
+// ⭐ 모달 상태
+const selectedTransaction = ref(null);
+const isFormModalOpen = ref(false);
+
 // 무한스크롤
-const scrollContainer = ref(null);
 const sentinel = ref(null);
 const isFetchingMore = ref(false);
 let currentPage = 1;
@@ -36,7 +42,6 @@ let currentPage = 1;
 // -------------------------
 // 📌 computed
 // -------------------------
-
 const isLoading = computed(() => transactionStore.loading);
 
 const displayTransactions = computed(() => transactionStore.transactions);
@@ -69,14 +74,12 @@ const displayNetAmount = computed(
 // -------------------------
 // 📌 utils
 // -------------------------
-
 const formatCurrency = (value) =>
   new Intl.NumberFormat('ko-KR').format(Math.abs(value));
 
 // -------------------------
 // 📌 filter logic
 // -------------------------
-
 function getDateRange(period) {
   const today = new Date();
   const pad = (n) => String(n).padStart(2, '0');
@@ -109,7 +112,6 @@ function getDateRange(period) {
 // -------------------------
 // 📌 API
 // -------------------------
-
 async function fetchWithFilters() {
   currentPage = 1;
 
@@ -150,19 +152,29 @@ async function loadMore() {
 // 📌 actions
 // -------------------------
 
+// ⭐ 삭제
 async function handleDelete(id) {
   if (!confirm('정말 삭제하시겠습니까?')) return;
   await transactionStore.deleteTransaction(id);
 }
 
+// ⭐ 수정 모달 열기
 function goToDetail(id) {
-  console.log('상세 이동:', id);
+  const transaction = transactionStore.transactions.find((t) => t.id === id);
+
+  selectedTransaction.value = transaction ?? null;
+  isFormModalOpen.value = true;
+}
+
+// ⭐ 추가 모달 열기 (핵심)
+function openCreateModal() {
+  selectedTransaction.value = null;
+  isFormModalOpen.value = true;
 }
 
 // -------------------------
 // 📌 watchers
 // -------------------------
-
 watch(
   [activePeriod, activeType, activeCategory, customStart, customEnd],
   () => {
@@ -173,7 +185,6 @@ watch(
 // -------------------------
 // 📌 lifecycle
 // -------------------------
-
 let observer = null;
 
 onMounted(() => {
@@ -199,21 +210,23 @@ onUnmounted(() => {
   observer?.disconnect();
 });
 </script>
-
 <template>
   <PageSectionLayout title="거래내역">
     <SectionStack>
-      <!-- 🔥 필터 + 요약 -->
       <TransactionFilterSection
         :activeType="activeType"
+        :activePeriod="activePeriod"
+        :customStart="customStart"
+        :customEnd="customEnd"
         :income="displayTotalIncome"
         :expense="displayTotalExpense"
         :net="displayNetAmount"
         :format="formatCurrency"
         @update:type="activeType = $event"
+        @update:period="activePeriod = $event"
+        @update:start="customStart = $event"
+        @update:end="customEnd = $event"
       />
-
-      <!-- 🔥 리스트 -->
       <TransactionListSection
         :items="displayTransactions"
         :isLoading="isLoading"
@@ -225,6 +238,19 @@ onUnmounted(() => {
     </SectionStack>
   </PageSectionLayout>
 
-  <!-- 무한스크롤 sentinel -->
+  <button
+    class="fixed bottom-20 right-8 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-button-dark text-white shadow-lg"
+    @click="openCreateModal"
+  >
+    <span class="text-2xl">+</span>
+  </button>
+
+  <TransactionFormModal
+    :open="isFormModalOpen"
+    :initial-transaction="selectedTransaction"
+    @close="isFormModalOpen = false"
+    @saved="isFormModalOpen = false"
+  />
+
   <div ref="sentinel" class="h-10"></div>
 </template>
