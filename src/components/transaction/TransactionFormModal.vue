@@ -141,12 +141,12 @@ const selectCategory = (category) => {
   closeCategoryModal();
 };
 
-const handleAmountInput = (event) => {
-  const digitsOnly = event.target.value.replace(/\D/g, '');
+const handleAmountInput = (value) => {
+  const digitsOnly = value.replace(/\D/g, '');
   const sliced = digitsOnly.slice(0, 9);
   const num = Number(sliced);
   form.value.amount = num > MAX_AMOUNT ? String(MAX_AMOUNT) : sliced;
-  event.target.value = form.value.amount;
+
   setFieldTouched('amount');
 };
 
