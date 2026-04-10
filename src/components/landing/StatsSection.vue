@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import DemoCategory from '@/components/landing/demo/DemoCategory.vue';
 
 const sectionEl = ref(null);
 
@@ -16,6 +17,11 @@ defineExpose({
     <div
       class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center w-full max-w-6xl mx-auto"
     >
+      <div
+        class="w-full h-[220px] sm:h-[280px] md:h-[420px] flex items-center justify-center"
+      >
+        <DemoCategory />
+      </div>
       <div class="flex flex-col gap-5 md:gap-6">
         <div>
           <p class="text-xs md:text-sm text-accent-ui font-semibold mb-2">
@@ -51,22 +57,6 @@ defineExpose({
             직관적인 거래 기록
           </li>
         </ul>
-
-        <div class="mt-3 md:mt-4">
-          <button
-            class="w-full sm:w-auto px-6 py-3 bg-button-dark text-button-dark-foreground rounded-xl font-semibold shadow-[0_8px_20px_var(--panel-shadow)] hover:opacity-90 transition"
-          >
-            기록 시작하기
-          </button>
-        </div>
-      </div>
-
-      <div
-        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-surface rounded-2xl border border-line shadow-[0_10px_30px_var(--panel-shadow)] flex items-center justify-center"
-      >
-        <span class="text-text-muted text-sm md:text-base">
-          💛 transaction category Image
-        </span>
       </div>
     </div>
   </section>

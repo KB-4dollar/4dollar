@@ -40,8 +40,8 @@ const { activeIndex, scrollToSection } = useScrollSnap(
     />
 
     <HeroSection :ref="(el) => setSectionRef(el, 0)" />
-    <FeatureSection :ref="(el) => setSectionRef(el, 1)" />
-    <EventSection :ref="(el) => setSectionRef(el, 2)" />
+    <EventSection :ref="(el) => setSectionRef(el, 1)" />
+    <FeatureSection :ref="(el) => setSectionRef(el, 2)" />
     <StatsSection :ref="(el) => setSectionRef(el, 3)" />
     <CTASection :ref="(el) => setSectionRef(el, 4)" />
   </div>

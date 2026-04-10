@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-
+import DemoPet from '@/components/landing/demo/DemoPet.vue';
 const sectionEl = ref(null);
 
 defineExpose({
@@ -17,11 +17,9 @@ defineExpose({
       class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center w-full max-w-6xl mx-auto"
     >
       <div
-        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-surface rounded-2xl border border-line shadow-[0_10px_30px_var(--panel-shadow)] flex items-center justify-center"
+        class="w-full h-[220px] sm:h-[280px] md:h-[420px] rounded-2xl flex items-center justify-center"
       >
-        <span class="text-text-muted text-sm md:text-base">
-          💛 alert Image
-        </span>
+        <DemoPet />
       </div>
       <div class="flex flex-col gap-5 md:gap-6">
         <div>
@@ -31,7 +29,7 @@ defineExpose({
           <h2
             class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary leading-snug"
           >
-            팩폭알림으로 <br />
+            팩폭 캐릭터와 함께 <br />
             소비 습관을 바꾸세요
           </h2>
         </div>
@@ -57,13 +55,6 @@ defineExpose({
             절약을 위한 맞춤 제안
           </li>
         </ul>
-        <div class="mt-3 md:mt-4">
-          <button
-            class="w-full sm:w-auto px-6 py-3 bg-button-dark text-button-dark-foreground rounded-xl font-semibold shadow-[0_8px_20px_var(--panel-shadow)] hover:opacity-90 transition"
-          >
-            알림 받아보기
-          </button>
-        </div>
       </div>
     </div>
   </section>

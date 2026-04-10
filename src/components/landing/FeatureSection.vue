@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from 'vue';
+import DemoDashboard from '@/components/landing/demo/DemoDashboard.vue';
 
 const sectionEl = ref(null);
 
@@ -52,11 +53,9 @@ defineExpose({
         </ul>
       </div>
       <div
-        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-surface rounded-2xl border border-line shadow-[0_10px_30px_var(--panel-shadow)] flex items-center justify-center"
+        class="w-full h-[220px] sm:h-[280px] md:h-[420px] rounded-2xl flex items-center justify-center"
       >
-        <span class="text-text-muted text-sm md:text-base">
-          📊 Dashboard Image
-        </span>
+        <DemoDashboard />
       </div>
     </div>
   </section>
