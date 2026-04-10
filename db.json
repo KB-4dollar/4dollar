@@ -95,16 +95,6 @@
     },
     {
       "userId": "7qDneNy",
-      "type": "지출",
-      "amount": 100123,
-      "date": "2026-04-08",
-      "category": "기타",
-      "memo": "",
-      "tags": [],
-      "id": "rxtfsT4"
-    },
-    {
-      "userId": "7qDneNy",
       "type": "수입",
       "amount": 4235,
       "date": "2026-04-08",
@@ -126,16 +116,6 @@
         "배당금"
       ],
       "id": "wPCSOlR"
-    },
-    {
-      "userId": "7qDneNy",
-      "type": "지출",
-      "amount": 80000,
-      "date": "2026-04-08",
-      "category": "경조사비",
-      "memo": "",
-      "tags": [],
-      "id": "yI0B7GH"
     },
     {
       "userId": "7qDneNy",
@@ -179,33 +159,15 @@
     },
     {
       "userId": "7qDneNy",
-      "type": "지출",
-      "amount": 100000000,
-      "date": "2026-04-09",
-      "category": "병원",
-      "memo": "",
-      "tags": [],
-      "id": "o-D3zMC"
-    },
-    {
-      "userId": "oQ1lekb",
       "type": "수입",
-      "amount": 100000,
+      "amount": 10000,
       "date": "2026-04-09",
       "category": "",
-      "memo": "",
-      "tags": [],
-      "id": "yUjfwFZ"
-    },
-    {
-      "userId": "oQ1lekb",
-      "type": "지출",
-      "amount": 4000,
-      "date": "2026-04-09",
-      "category": "식비",
-      "memo": "칼국수",
-      "tags": [],
-      "id": "_GMDF1S"
+      "memo": "월급입니당",
+      "tags": [
+        "월급"
+      ],
+      "id": "vr_yQuK"
     }
   ]
 }
