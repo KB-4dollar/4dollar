@@ -123,10 +123,22 @@ const logout = () => {
       <!-- 비밀번호 -->
       <SectionCard title="비밀번호 변경">
         <div class="flex flex-col gap-3">
-          <FormInput v-model="currentPassword" type="password" />
+          <FormInput
+            v-model="currentPassword"
+            type="password"
+            placeholder="현재 비밀번호"
+          />
 
-          <FormInput v-model="newPassword" type="password" />
-          <FormInput v-model="confirmPassword" type="password" />
+          <FormInput
+            v-model="newPassword"
+            type="password"
+            placeholder="새 비밀번호"
+          />
+          <FormInput
+            v-model="confirmPassword"
+            type="password"
+            placeholder="새 비밀번호 확인"
+          />
         </div>
 
         <Button @click="changePassword" variant="danger" size="md" class="mt-4">
