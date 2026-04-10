@@ -34,15 +34,30 @@ const isLoading = computed(() => transactionStore.loading);
 const dashboardTitle = computed(() => `${authStore.user?.name || '사용자'}님의 ${today.getMonth() + 1}월 소비`);
 const isFormModalOpen = ref(false);
 
+// DashboardPage.vue의 fetchStats 함수 부분을 아래와 같이 수정하세요.
+
 async function fetchStats() {
   const userId = authStore.user?.id;
   if (!userId) return;
+  
   try {
-    await transactionStore.fetchMonthlyStats(userId, currentYearMonth);
+    // ✨ 1. 통계와 전체 내역을 동시에 요청 (로딩 상태를 한 번에 처리)
+    await Promise.all([
+      transactionStore.fetchMonthlyStats(userId, currentYearMonth),
+      transactionStore.fetchTransactions({
+        userId: userId,
+        // 현재 달의 시작일과 종료일 계산
+        date_gte: `${currentYearMonth}-01`,
+        date_lte: `${currentYearMonth}-${new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate()}`
+      })
+    ]);
+
     const category = await summaryService.getTopExpenseCategory(userId, currentYearMonth);
     topCategory.value = category || '지출 없음';
     feedbackMessage.value = summaryService.getRandomFeedback(category);
-  } catch (error) { console.error(error); }
+  } catch (error) { 
+    console.error('데이터 로드 실패:', error); 
+  }
 }
 
 watch(() => authStore.user?.id, (id) => { if (id) fetchStats(); }, { immediate: true });

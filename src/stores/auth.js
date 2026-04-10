@@ -19,6 +19,13 @@ export const useAuthStore = defineStore('auth', {
       this.isLogin = false;
       this.user = null;
     },
+    // 추가 대시보드 - 목표 소비 금액 설정 추가 함수 -> goalAmount 필드값을 새로 넣어줌
+    updateGoalAmount(amount) {
+      if (this.user) {
+        // 기존 user 객체에 goalAmount 속성이 없어도 동적으로 추가됩니다.
+        this.user.goalAmount = amount;
+      }
+    }
   },
   persist: true,
 });
