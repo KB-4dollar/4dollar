@@ -30,8 +30,8 @@ const menus = [
           menu.isMain
             ? 'bg-accent-ui text-white rounded-full w-14 h-14 flex items-center justify-center -mt-8 shadow-xl border-4 border-surface'
             : route.path === menu.path
-              ? 'text-accent-ui'
-              : 'text-text-muted'
+            ? 'text-accent-ui'
+            : 'text-text-muted'
         "
       />
     </RouterLink>

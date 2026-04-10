@@ -12,13 +12,13 @@ import GlobarPet from '@/components/common/GlobarPet.vue';
     <div class="md:pt-16 flex">
       <Sidebar />
 
-      <main class="flex-1 bg-page-bg pb-20 md:pb-0 overflow-auto">
+      <main class="flex-1 pb-20 md:pb-0 overflow-auto">
         <RouterView />
       </main>
     </div>
 
     <BottomNav />
 
-   <GlobarPet/>
+    <GlobarPet />
   </div>
 </template>
