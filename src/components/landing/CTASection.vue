@@ -11,9 +11,8 @@ defineExpose({
 <template>
   <section
     ref="sectionEl"
-    class="min-h-screen snap-start flex flex-col bg-[#e26d5c] text-white"
+    class="min-h-screen snap-start flex flex-col bg-accent-ui text-accent-ui-foreground"
   >
-    <!-- 중앙 CTA 영역 -->
     <div
       class="flex-1 flex flex-col items-center justify-center text-center px-5 md:px-20"
     >
@@ -24,7 +23,7 @@ defineExpose({
       </p>
 
       <button
-        class="bg-white text-[#e26d5c] px-6 py-3 rounded-xl font-semibold shadow hover:opacity-90 transition"
+        class="bg-surface text-accent-ui px-6 py-3 rounded-xl font-semibold shadow-[0_8px_20px_var(--panel-shadow)] hover:opacity-90 transition"
       >
         시작하기 →
       </button>
@@ -40,15 +39,14 @@ defineExpose({
         </div>
         <div>
           <p class="text-xl font-bold">∞</p>
-          <p class="text-xs opacity-80">팍폭 알림</p>
+          <p class="text-xs opacity-80">팩폭 알림</p>
         </div>
       </div>
     </div>
 
-    <!-- footer -->
-    <footer class="bg-[#d15f4f] px-5 md:px-20 py-10 text-sm">
+    <footer class="w-full bg-slate-900 text-gray-300 py-6 px-6 text-sm">
       <div
-        class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between gap-8"
+        class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-3"
       >
         <div>
           <h3 class="font-bold text-lg">4dollars</h3>
@@ -60,11 +58,13 @@ defineExpose({
           <p class="opacity-80 text-xs">이용약관</p>
           <p class="opacity-80 text-xs">개인정보처리방침</p>
         </div>
+
         <div>
           <p class="font-semibold">개발</p>
           <p class="opacity-80 text-xs mt-1">https://github.com/KB-4dollar</p>
         </div>
       </div>
+
       <div class="text-center text-xs opacity-70 mt-8">
         © 2026 4dollar. All rights reserved.
       </div>
