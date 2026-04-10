@@ -7,23 +7,63 @@ defineExpose({
   el: sectionEl,
 });
 </script>
+
 <template>
   <section
     ref="sectionEl"
-    class="h-screen snap-start flex items-center bg-[#f6e9e4]"
+    class="min-h-screen snap-start flex items-center bg-[#fef6f3] px-5 md:px-20 py-16 md:py-0"
   >
-    <div class="grid grid-cols-2 gap-10 items-center px-20 w-full fade-up show">
-      <div class="bg-white p-6 rounded-xl shadow-md">📋 리스트</div>
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center w-full max-w-6xl mx-auto"
+    >
+      <div
+        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-white rounded-2xl shadow-md flex items-center justify-center"
+      >
+        <span class="text-gray-400 text-sm md:text-base"> 💛 alert Image </span>
+      </div>
 
-      <div>
-        <h2 class="text-2xl font-bold mb-4">경조사비 특화 관리</h2>
+      <div class="flex flex-col gap-5 md:gap-6">
+        <div>
+          <p class="text-xs md:text-sm text-accent-ui font-semibold mb-2">
+            SMART INSIGHT ALERT
+          </p>
 
-        <ul class="text-gray-500 space-y-2">
-          <li>결혼, 장례 등 관리 설명...</li>
-          <li>✓ 결혼/장례 관리</li>
-          <li>✓ 대상자별 기록</li>
-          <li>✓ 금액 추천</li>
+          <h2
+            class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-snug"
+          >
+            팩폭알림으로 <br />
+            소비 습관을 바꾸세요
+          </h2>
+        </div>
+
+        <p class="text-sm md:text-base text-gray-500 leading-relaxed max-w-md">
+          내 소비 데이터를 분석해 자동으로 알림을 제공합니다. 불필요한 지출을
+          줄이고 더 나은 소비 습관을 만들어보세요.
+        </p>
+
+        <ul class="space-y-2 md:space-y-3 text-sm md:text-base text-gray-600">
+          <li class="flex items-center gap-2">
+            <span class="text-accent-ui">✔</span>
+            소비 패턴 분석
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-accent-ui">✔</span>
+            실시간 팩폭 알림 무제한 제공
+          </li>
+          <li class="flex items-center gap-2">
+            <span class="text-accent-ui">✔</span>
+            절약을 위한 맞춤 제안
+          </li>
         </ul>
+
+        <!-- 버튼 -->
+        <div class="mt-3 md:mt-4">
+          <button
+            class="w-full sm:w-auto px-6 py-3 bg-accent-ui text-white rounded-xl font-semibold shadow hover:opacity-90 transition"
+          >
+            알림 받아보기
+          </button>
+        </div>
       </div>
     </div>
   </section>

@@ -9,9 +9,9 @@ const authStore = useAuthStore();
 
 const goLogin = () => {
   if (authStore.isLogin) {
-    router.push('/app'); // ⭐ 로그인 상태면 대시보드
+    router.push('/app');
   } else {
-    router.push('/login'); // ⭐ 아니면 로그인
+    router.push('/login');
   }
 };
 
@@ -44,7 +44,7 @@ defineExpose({
       >
         스마트한 가계부 관리
       </div>
-      <h1 class="text-5xl font-bold text-[#e26d5c] mb-4">4dollars</h1>
+      <h1 class="text-5xl font-bold text-[#e26d5c] mb-4">4DOLLAR</h1>
       <p class="text-gray-600 mb-8">
         경조사비부터 일상 지출까지, 모든 거래를 한눈에
       </p>
