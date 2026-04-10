@@ -40,6 +40,51 @@ const petImageSets = {
   critical: [c1, c2]
 };
 
+// --- [✨ 추가 로직: 드래그 이동 제어] ---
+const position = ref({ x: 40, y: 0 }); // 초기 위치 (left-10 = 40px)
+const isDragging = ref(false);
+const hasMoved = ref(false); // 드래그인지 클릭인지 판별
+let offset = { x: 0, y: 0 };
+
+const startDrag = (e) => {
+  isDragging.value = true;
+  hasMoved.value = false;
+
+  // 마우스/터치 좌표 가져오기
+  const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+  const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+
+  // 클릭한 지점과 캐릭터 좌표 사이의 간격 저장
+  offset.x = clientX - position.value.x;
+  offset.y = clientY - position.value.y;
+
+  window.addEventListener('mousemove', onDrag);
+  window.addEventListener('mouseup', stopDrag);
+  window.addEventListener('touchmove', onDrag);
+  window.addEventListener('touchend', stopDrag);
+};
+
+const onDrag = (e) => {
+  if (!isDragging.value) return;
+  hasMoved.value = true; // 이동이 발생함
+
+  const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+  const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+
+  position.value = {
+    x: clientX - offset.x,
+    y: clientY - offset.y
+  };
+};
+
+const stopDrag = () => {
+  isDragging.value = false;
+  window.removeEventListener('mousemove', onDrag);
+  window.removeEventListener('mouseup', stopDrag);
+  window.removeEventListener('touchmove', onDrag);
+  window.removeEventListener('touchend', stopDrag);
+};
+
 // --- [3. 애니메이션 로직 (프레임 교체)] ---
 const currentFrameIndex = ref(0);
 let frameInterval = null;
@@ -61,8 +106,15 @@ watch(currentTier, () => {
   startAnimation();
 });
 
-onMounted(() => startAnimation());
-onUnmounted(() => clearInterval(frameInterval));
+onMounted(() => {
+  // 초기 Y축 위치 설정 (화면 하단에서 10정도 띄움)
+  position.value.y = window.innerHeight - (window.innerWidth < 768 ? 200 : 300);
+  startAnimation();
+});
+
+onUnmounted(() => {
+  if (frameInterval) clearInterval(frameInterval);
+});
 
 const currentPetImage = computed(() => {
   const set = petImageSets[currentTier.value];
@@ -81,6 +133,9 @@ const messageTiers = {
 };
 
 const talk = () => {
+  // 🌟 [추가] 드래그 중이었다면 대화를 띄우지 않음
+  if (hasMoved.value) return;
+
   if (bubbleTimer) clearTimeout(bubbleTimer);
   const messages = messageTiers[currentTier.value] || messageTiers.normal;
   currentMessage.value = messages[Math.floor(Math.random() * messages.length)];
@@ -90,7 +145,10 @@ const talk = () => {
 </script>
 
 <template>
-  <div class="fixed bottom-10 left-10 z-[999] flex flex-col items-center pointer-events-none">
+  <div 
+    class="fixed z-[999] flex flex-col items-center select-none"
+    :style="{ left: position.x + 'px', top: position.y + 'px' }"
+  >
     
     <transition name="fade-up">
       <div 
@@ -120,8 +178,10 @@ const talk = () => {
     </transition>
 
     <div 
-      @click="talk" 
-      class="pointer-events-auto cursor-pointer transition-transform duration-300 active:scale-95 flex justify-center items-center"
+      @mousedown="startDrag"
+      @touchstart="startDrag"
+      @mouseup="talk"
+      class="pointer-events-auto cursor-grab active:cursor-grabbing transition-transform duration-300 active:scale-95 flex justify-center items-center"
     >
       <div 
         class="md:w-64 md:h-64 w-48 h-48 drop-shadow-2xl flex justify-center items-center transition-all duration-300"
@@ -130,7 +190,7 @@ const talk = () => {
         <img 
           :src="currentPetImage" 
           alt="curbe pet" 
-          class="w-full h-full object-contain" 
+          class="w-full h-full object-contain pointer-events-none" 
         />
       </div>
     </div>
@@ -138,6 +198,11 @@ const talk = () => {
 </template>
 
 <style scoped>
+/* 드래그 시 텍스트 선택 방지 */
+.select-none {
+  user-select: none;
+}
+
 /* 말풍선 등장 애니메이션 */
 .fade-up-enter-active, .fade-up-leave-active {
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
