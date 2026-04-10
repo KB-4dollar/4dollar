@@ -154,8 +154,8 @@ const handleMemoInput = (event) => {
   form.value.memo = event.target.value.slice(0, MAX_MEMO_LENGTH);
 };
 
-const handleTagInput = (event) => {
-  const sanitizedValue = sanitizeTagInput(event.target.value);
+const handleTagInput = (value) => {
+  const sanitizedValue = sanitizeTagInput(value);
   tagInput.value = sanitizedValue;
   form.value.tags = parseHashTags(sanitizedValue);
 };

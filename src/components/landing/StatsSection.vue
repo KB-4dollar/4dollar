@@ -11,7 +11,7 @@ defineExpose({
 <template>
   <section
     ref="sectionEl"
-    class="min-h-screen snap-start flex items-center bg-[#f8fafc] px-5 md:px-20 py-16 md:py-0"
+    class="min-h-screen snap-start flex items-center bg-surface-muted px-5 md:px-20 py-16 md:py-0"
   >
     <div
       class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center w-full max-w-6xl mx-auto"
@@ -23,16 +23,21 @@ defineExpose({
           </p>
 
           <h2
-            class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-snug"
+            class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary leading-snug"
           >
             간편한 수입·지출 관리
           </h2>
         </div>
 
-        <p class="text-sm md:text-base text-gray-500 leading-relaxed max-w-md">
+        <p
+          class="text-sm md:text-base text-text-secondary leading-relaxed max-w-md"
+        >
           카테고리별로 지출을 분류하고, 수입은 태그로 자유롭게 관리해보세요.
         </p>
-        <ul class="space-y-2 md:space-y-3 text-sm md:text-base text-gray-600">
+
+        <ul
+          class="space-y-2 md:space-y-3 text-sm md:text-base text-text-secondary"
+        >
           <li class="flex items-center gap-2">
             <span class="text-accent-ui">✔</span>
             카테고리별 지출 관리
@@ -46,9 +51,10 @@ defineExpose({
             직관적인 거래 기록
           </li>
         </ul>
+
         <div class="mt-3 md:mt-4">
           <button
-            class="w-full sm:w-auto px-6 py-3 bg-accent-ui text-white rounded-xl font-semibold shadow hover:opacity-90 transition"
+            class="w-full sm:w-auto px-6 py-3 bg-button-dark text-button-dark-foreground rounded-xl font-semibold shadow-[0_8px_20px_var(--panel-shadow)] hover:opacity-90 transition"
           >
             기록 시작하기
           </button>
@@ -56,10 +62,10 @@ defineExpose({
       </div>
 
       <div
-        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-white rounded-2xl shadow-md flex items-center justify-center"
+        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-surface rounded-2xl border border-line shadow-[0_10px_30px_var(--panel-shadow)] flex items-center justify-center"
       >
-        <span class="text-gray-400 text-sm md:text-base">
-          💛 transaction category Image
+        <span class="text-text-muted text-sm md:text-base">
+          💛 transaction category Image
         </span>
       </div>
     </div>

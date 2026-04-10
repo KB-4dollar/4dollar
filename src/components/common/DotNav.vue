@@ -9,8 +9,8 @@
       class="w-3 h-3 rounded-full cursor-pointer transition-all duration-300"
       :class="
         activeIndex === i
-          ? 'bg-[#e26d5c] scale-125'
-          : 'bg-gray-300 hover:bg-gray-400'
+          ? 'bg-pink-400 scale-125 shadow-md'
+          : 'bg-gray-300 hover:bg-pink-200'
       "
     />
   </div>

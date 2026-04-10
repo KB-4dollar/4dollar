@@ -395,30 +395,32 @@ onUnmounted(() => {
                 </div>
 
                 <div>
-                  <div class="flex items-center gap-2">
-                    <span class="font-bold text-sm">
-                      {{ item.category }}
-                    </span>
-
+                  <div class="flex flex-wrap items-center gap-2 mb-1">
+                    <!-- 타입 (수입 / 지출만 강조) -->
                     <span
                       :class="
                         cn(
-                          'text-[10px] px-1.5 py-0.5 rounded',
+                          'text-[10px] px-2 py-0.5 rounded-full font-medium',
                           item.type === TRANSACTION_TYPE.INCOME
-                            ? 'bg-accent-ui/20 text-accent-ui'
-                            : 'bg-chip-muted text-chip-muted-foreground'
+                            ? 'bg-gray-100 text-gray-600'
+                            : 'bg-green-200 text-green-600'
                         )
                       "
                     >
                       {{ item.type }}
                     </span>
 
+                    <!-- 카테고리 (텍스트 유지) -->
+                    <span class="text-sm font-medium text-text-primary">
+                      {{ item.category }}
+                    </span>
+
+                    <!-- 태그 (텍스트 유지) -->
                     <span
                       v-for="(tag, index) in item.tags"
                       :key="index"
-                      class="text-[10px] text-blue-600 font-medium"
-                    >
-                      #{{ tag }}
+                      class="text-sm font-medium text-text-primary"
+                      >{{ tag }}
                     </span>
                   </div>
 

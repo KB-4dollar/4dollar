@@ -11,37 +11,39 @@ defineExpose({
 <template>
   <section
     ref="sectionEl"
-    class="min-h-screen snap-start flex items-center bg-[#fef6f3] px-5 md:px-20 py-16 md:py-0"
+    class="min-h-screen snap-start flex items-center bg-page-bg px-5 md:px-20 py-16 md:py-0"
   >
     <div
       class="grid grid-cols-1 md:grid-cols-2 gap-10 md:gap-14 items-center w-full max-w-6xl mx-auto"
     >
       <div
-        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-white rounded-2xl shadow-md flex items-center justify-center"
+        class="w-full h-[220px] sm:h-[280px] md:h-[420px] bg-surface rounded-2xl border border-line shadow-[0_10px_30px_var(--panel-shadow)] flex items-center justify-center"
       >
-        <span class="text-gray-400 text-sm md:text-base"> 💛 alert Image </span>
+        <span class="text-text-muted text-sm md:text-base">
+          💛 alert Image
+        </span>
       </div>
-
       <div class="flex flex-col gap-5 md:gap-6">
         <div>
           <p class="text-xs md:text-sm text-accent-ui font-semibold mb-2">
             SMART INSIGHT ALERT
           </p>
-
           <h2
-            class="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 leading-snug"
+            class="text-2xl sm:text-3xl md:text-4xl font-bold text-text-primary leading-snug"
           >
             팩폭알림으로 <br />
             소비 습관을 바꾸세요
           </h2>
         </div>
-
-        <p class="text-sm md:text-base text-gray-500 leading-relaxed max-w-md">
+        <p
+          class="text-sm md:text-base text-text-secondary leading-relaxed max-w-md"
+        >
           내 소비 데이터를 분석해 자동으로 알림을 제공합니다. 불필요한 지출을
           줄이고 더 나은 소비 습관을 만들어보세요.
         </p>
-
-        <ul class="space-y-2 md:space-y-3 text-sm md:text-base text-gray-600">
+        <ul
+          class="space-y-2 md:space-y-3 text-sm md:text-base text-text-secondary"
+        >
           <li class="flex items-center gap-2">
             <span class="text-accent-ui">✔</span>
             소비 패턴 분석
@@ -55,11 +57,9 @@ defineExpose({
             절약을 위한 맞춤 제안
           </li>
         </ul>
-
-        <!-- 버튼 -->
         <div class="mt-3 md:mt-4">
           <button
-            class="w-full sm:w-auto px-6 py-3 bg-accent-ui text-white rounded-xl font-semibold shadow hover:opacity-90 transition"
+            class="w-full sm:w-auto px-6 py-3 bg-button-dark text-button-dark-foreground rounded-xl font-semibold shadow-[0_8px_20px_var(--panel-shadow)] hover:opacity-90 transition"
           >
             알림 받아보기
           </button>

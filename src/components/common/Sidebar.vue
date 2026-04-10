@@ -8,19 +8,21 @@ const menus = [
   { name: '거래내역', path: '/list' },
 ];
 </script>
+
 <template>
-  <!-- ✅ PC용 사이드바 -->
-  <aside class="hidden md:flex w-60 bg-white p-5 flex-col">
+  <aside
+    class="hidden md:flex fixed top-16 left-0 w-60 h-[calc(100vh-4rem)] bg-surface p-5 flex-col shadow-[4px_0_20px_var(--panel-shadow)]"
+  >
     <nav class="flex flex-col gap-3">
       <RouterLink
         v-for="menu in menus"
         :key="menu.path"
         :to="menu.path"
-        class="px-4 py-4 rounded-xl transition"
+        class="px-4 py-4 rounded-xl transition-all duration-200"
         :class="
           route.path === menu.path
-            ? 'bg-[#d97a5f] text-white'
-            : 'text-gray-700 hover:bg-gray-200'
+            ? 'bg-button-dark text-button-dark-foreground shadow-md'
+            : 'text-text-secondary hover:bg-surface-muted'
         "
       >
         {{ menu.name }}
@@ -28,16 +30,15 @@ const menus = [
     </nav>
   </aside>
 
-  <!-- ✅ 모바일 하단 네비 (밖으로 빼기) -->
   <nav
-    class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 h-16 flex justify-around items-center md:hidden"
+    class="fixed bottom-0 left-0 w-full bg-white border-t border-gray-200 h-16 flex justify-around items-center md:hidden shadow-[0_-4px_20px_rgba(0,0,0,0.05)]"
   >
     <RouterLink
       v-for="menu in menus"
       :key="menu.path"
       :to="menu.path"
-      class="text-sm"
-      :class="route.path === menu.path ? 'text-[#d97a5f]' : 'text-gray-500'"
+      class="text-sm font-medium transition"
+      :class="route.path === menu.path ? 'text-pink-400' : 'text-gray-500'"
     >
       {{ menu.name }}
     </RouterLink>
