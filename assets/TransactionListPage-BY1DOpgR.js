@@ -1,4 +1,4 @@
-import{o as l,c as r,i as ue,n as k,_ as ie,j as ce,e as n,k as p,C as g,w as de,g as fe,l as me,h as y,m as C,p as ve,q as ee,b as s,F as M,r as S,d as u,t as i,T as v,s as pe,v as ge,x as xe,y as _e,z as b,A,B as ye}from"./index-Clxr_p_a.js";const be={props:{cols:{type:Number,default:2},gap:{type:String,default:"md"}},computed:{gridClass(){const w={sm:"gap-3 md:gap-4",md:"gap-4 md:gap-6",lg:"gap-6 md:gap-8"};return`
+import{o as l,c as r,i as ue,n as k,_ as ie,j as ce,e as n,k as p,C as g,w as de,g as fe,l as me,h as y,m as C,p as ve,q as ee,b as s,F as M,r as S,d as u,t as i,T as v,s as pe,v as ge,x as xe,y as _e,z as b,A,B as ye}from"./index-DU0KRqtW.js";const be={props:{cols:{type:Number,default:2},gap:{type:String,default:"md"}},computed:{gridClass(){const w={sm:"gap-3 md:gap-4",md:"gap-4 md:gap-6",lg:"gap-6 md:gap-8"};return`
         grid
         grid-cols-1
         md:grid-cols-${this.cols}
