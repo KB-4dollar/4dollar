@@ -38,7 +38,7 @@ const stats = computed(() => transactionStore.monthlyStats);
 const minLoadingTime = ref(true);
 setTimeout(() => {
   minLoadingTime.value = false;
-}, 5000);
+}, 2000);
 
 // 스토어 로딩이 끝났더라도, 5초가 안 지났으면 무조건 true를 반환해서 커비를 달리게 합니다!
 const isLoading = computed(() => transactionStore.loading || minLoadingTime.value);
