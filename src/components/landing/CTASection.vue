@@ -22,12 +22,6 @@ defineExpose({
         4dollar와 함께 스마트한 가계부 관리를 경험해보세요
       </p>
 
-      <button
-        class="bg-surface text-accent-ui px-6 py-3 rounded-xl font-semibold shadow-[0_8px_20px_var(--panel-shadow)] hover:opacity-90 transition"
-      >
-        시작하기 →
-      </button>
-
       <div class="flex gap-10 mt-10 text-center">
         <div>
           <p class="text-xl font-bold">8+</p>
