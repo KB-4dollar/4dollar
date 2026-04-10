@@ -2,6 +2,7 @@
 import Header from '@/components/common/Header.vue';
 import Sidebar from '@/components/common/Sidebar.vue';
 import BottomNav from '@/components/common/BottomNav.vue';
+import GlobarPet from '@/components/common/GlobarPet.vue';
 </script>
 
 <template>
@@ -17,5 +18,7 @@ import BottomNav from '@/components/common/BottomNav.vue';
     </div>
 
     <BottomNav />
+
+   <GlobarPet/>
   </div>
 </template>
