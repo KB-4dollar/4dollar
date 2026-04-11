@@ -1,6 +1,6 @@
 <template>
   <div
-    class="fixed right-6 top-1/2 -translate-y-1/2 z-50 hidden md:flex flex-col gap-3"
+    class="fixed z-50 flex gap-3 bottom-6 left-1/2 -translate-x-1/2 flex-row md:top-1/2 md:right-6 md:left-auto md:-translate-y-1/2 md:flex-col"
   >
     <div
       v-for="(sec, i) in sections"
@@ -10,7 +10,7 @@
       :class="
         activeIndex === i
           ? 'bg-pink-400 scale-125 shadow-md'
-          : 'bg-gray-300 hover:bg-pink-200'
+          : 'bg-gray-300 opacity-60 hover:opacity-100'
       "
     />
   </div>
