@@ -2,10 +2,11 @@
 import { ref } from 'vue';
 import DotNav from '@/components/common/DotNav.vue';
 import HeroSection from '@/components/landing/HeroSection.vue';
-import FeatureSection from '@/components/landing/FeatureSection.vue';
-import EventSection from '@/components/landing/EventSection.vue';
-import StatsSection from '@/components/landing/StatsSection.vue';
-import CTASection from '@/components/landing/CTASection.vue';
+import CTASection from '@/components/landing/FinalSection.vue';
+import FeatureSection from '@/components/landing/SecondSection.vue';
+import StatsSection from '@/components/landing/ThirdSection.vue';
+import EventSection from '@/components/landing/FirstSection.vue';
+
 import '@/style/landing.css';
 
 import { useScrollSnap } from '@/components/landing/useScrollSnap';
@@ -31,7 +32,7 @@ const { activeIndex, scrollToSection } = useScrollSnap(
 <template>
   <div
     ref="scrollContainer"
-    class="h-screen overflow-y-scroll snap-y snap-mandatory scroll-smooth"
+    class="h-screen flex flex-row overflow-x-scroll overflow-y-hidden snap-x snap-mandatory scroll-smooth md:flex-col md:overflow-y-scroll md:overflow-x-hidden md:snap-y"
   >
     <DotNav
       :sections="sections"

@@ -15,3 +15,39 @@
   opacity: 1;
   transform: translateY(0);
 }
+/* 등장 + 살짝 튀는 효과 */
+@keyframes logoEntry {
+  0% {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-6px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-logo-entry {
+  animation: logoEntry 0.9s ease-out;
+}
+
+/* 살짝 떠있는 느낌 (지속) */
+@keyframes logoFloat {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* entry 끝난 후 자연스럽게 이어지게 */
+.animate-logo-entry {
+  animation: logoEntry 0.9s ease-out, logoFloat 3s ease-in-out 1s infinite;
+}

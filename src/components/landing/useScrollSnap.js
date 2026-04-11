@@ -11,12 +11,19 @@ export function useScrollSnap(sectionRefs, scrollContainer) {
     const container = scrollContainer.value;
 
     const handleScroll = () => {
-      const scrollTop = container.scrollTop;
-      const height = container.clientHeight;
+      const container = scrollContainer.value;
 
-      const index = Math.round(scrollTop / height);
+      const isMobile = window.innerWidth < 768;
 
-      activeIndex.value = index;
+      if (isMobile) {
+        const scrollLeft = container.scrollLeft;
+        const width = container.clientWidth;
+        activeIndex.value = Math.round(scrollLeft / width);
+      } else {
+        const scrollTop = container.scrollTop;
+        const height = container.clientHeight;
+        activeIndex.value = Math.round(scrollTop / height);
+      }
     };
 
     container.addEventListener('scroll', handleScroll);
