@@ -18,7 +18,7 @@
 > 수입과 지출을 기록하고 월별 재정을 한눈에 확인할 수 있는 가계부 서비스
 
 - **기간:** 2026.04.07 ~ 2026.04.13 (5일)
-- **배포 링크:** <!-- TODO: GitHub Pages 링크 -->
+- **배포 링크:** [배포 링크](https://kb-4dollar.github.io/4dollar/#/app)
 
 <!-- TODO: 아키텍쳐(프로젝트 구조, CI/CD) 내용 추가-->
 
@@ -28,10 +28,14 @@
 
 | 이름   | 역할 | 담당 기능 |
 | ------ | ---- | --------- |
-| 채수연 | 팀장 | -         |
-| 이승영 | 팀원 | -         |
-| 고현석 | 팀원 | -         |
-| 박신형 | 팀원 | -         |
+| 채수연 | 팀장 | - 프로젝트 셋팅, 공통 레이아웃&컴포넌트&스타일 정리, 거래내역 등록/수정 개발, 배포 환경 구축        |
+| 이승영 | 팀원 | - 백엔드 공통 유틸 작성, 리스트 페이지 개발        |
+| 고현석 | 팀원 | - 기능 명세 관리, 대시보드 개발 - 소비패턴 분석, 캘린더 뷰        |
+| 박신형 | 팀원 | - 화면설계서 작성, 공통 에러처리, 로그인/회원가입, 사용자 프로필 개발, 랜딩페이지, 반응형 작업         |
+
+
+
+
 
 ## 3. 기술 스택
 
@@ -41,7 +45,6 @@
 ![Pinia](https://img.shields.io/badge/Pinia-FFD859?style=for-the-badge&logoColor=black)
 ![Axios](https://img.shields.io/badge/Axios-5A29E4?style=for-the-badge&logo=axios&logoColor=white)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS_v4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
-![shadcn-vue](https://img.shields.io/badge/shadcn--vue-000000?style=for-the-badge&logoColor=white)
 ![json-server](https://img.shields.io/badge/json--server-gray?style=for-the-badge&logo=json&logoColor=white)
 
 ## 4. 주요 기능
