@@ -18,7 +18,7 @@
 > 수입과 지출을 기록하고 월별 재정을 한눈에 확인할 수 있는 가계부 서비스
 
 - **기간:** 2026.04.07 ~ 2026.04.13 (5일)
-- **배포 링크:** [배포 링크](https://kb-4dollar.github.io/4dollar/#/app)
+- **배포 링크:** [[배포 링크](https://kb-4dollar.github.io/4dollar/)](https://kb-4dollar.github.io/4dollar/)
 
 <!-- TODO: 아키텍쳐(프로젝트 구조, CI/CD) 내용 추가-->
 
