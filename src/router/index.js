@@ -24,13 +24,13 @@ const publicRoutes = [
         path: '',
         name: 'dashboard',
         component: Dashboard,
-        // meta: { requiresAuth: false }, // 테스트를 위해 저도 false 해둘게요,,
+        meta: { requiresAuth: false }, // 테스트를 위해 저도 false 해둘게요,,
       },
       {
         path: '/list',
         name: 'transactionList',
         component: () => import('@/pages/TransactionListPage.vue'),
-        meta: { requiresAuth: false }, // 테스트를 위해 우선 false
+        //meta: { requiresAuth: true }, // 테스트를 위해 우선 false
         props: { dummyMode: false },
       },
       {
@@ -72,10 +72,6 @@ const router = createRouter({
 //네비게이션 가드
 router.beforeEach(async (to) => {
   const authStore = useAuthStore();
-  // ✅ 더미 테스트를 위해 'transactionList'는 가드를 통과시킴
-  if (to.name === 'transactionList') {
-    return true;
-  }
 
   if (to.meta.requiresAuth && !authStore.isLogin) {
     return '/login';
