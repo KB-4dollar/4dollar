@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 @import 'tailwindcss';
-@import "tw-animate-css";
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -33,6 +33,19 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
+  --color-page-bg: var(--page-bg);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-line: var(--line);
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-accent-ui: var(--accent-ui);
+  --color-accent-ui-foreground: var(--accent-ui-foreground);
+  --color-button-dark: var(--button-dark);
+  --color-button-dark-foreground: var(--button-dark-foreground);
+  --color-chip-muted: var(--chip-muted);
+  --color-chip-muted-foreground: var(--chip-muted-foreground);
 }
 
 :root {
@@ -60,6 +73,20 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
+  --page-bg: #fdf6f8;
+  --surface: #ffffff;
+  --surface-muted: #f3f4f6;
+  --line: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --accent-ui: #ec5f8d;
+  --accent-ui-foreground: #ffffff;
+  --button-dark: #243047;
+  --button-dark-foreground: #ffffff;
+  --chip-muted: #eef2f7;
+  --chip-muted-foreground: #6b7280;
+  --panel-shadow: rgba(15, 23, 42, 0.06);
 }
 
 .dark {
@@ -86,6 +113,20 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+  --page-bg: var(--background);
+  --surface: var(--card);
+  --surface-muted: var(--muted);
+  --line: var(--border);
+  --text-primary: var(--foreground);
+  --text-secondary: var(--muted-foreground);
+  --text-muted: oklch(0.62 0 0);
+  --accent-ui: #ee8567;
+  --accent-ui-foreground: #ffffff;
+  --button-dark: #2d3748;
+  --button-dark-foreground: #ffffff;
+  --chip-muted: oklch(0.3 0 0);
+  --chip-muted-foreground: var(--muted-foreground);
+  --panel-shadow: rgba(0, 0, 0, 0.28);
 }
 
 @layer base {

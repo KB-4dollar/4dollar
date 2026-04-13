@@ -1,0 +1,31 @@
+<svg width="960" height="520" viewBox="0 0 960 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="960" height="520" rx="24" fill="#F8FAFC"/>
+  <text x="48" y="64" fill="#0F172A" font-family="Arial, sans-serif" font-size="30" font-weight="700">공통 버튼 미리보기</text>
+  <text x="48" y="98" fill="#64748B" font-family="Arial, sans-serif" font-size="16">Button.vue variant와 사용 예시</text>
+
+  <rect x="48" y="136" width="180" height="56" rx="14" fill="#243047"/>
+  <text x="138" y="171" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="24" font-weight="700">추가</text>
+  <text x="48" y="220" fill="#475569" font-family="Arial, sans-serif" font-size="16">primary / 기본 액션</text>
+
+  <rect x="258" y="136" width="180" height="56" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+  <text x="348" y="171" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="24" font-weight="700">취소</text>
+  <text x="258" y="220" fill="#475569" font-family="Arial, sans-serif" font-size="16">outline / 취소, 닫기</text>
+
+  <rect x="468" y="136" width="180" height="56" rx="14" fill="#EE8567"/>
+  <text x="558" y="171" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="24" font-weight="700">삭제</text>
+  <text x="468" y="220" fill="#475569" font-family="Arial, sans-serif" font-size="16">danger / 삭제, 위험 액션</text>
+
+  <rect x="678" y="136" width="180" height="56" rx="14" fill="transparent"/>
+  <text x="768" y="171" text-anchor="middle" fill="#6B7280" font-family="Arial, sans-serif" font-size="24" font-weight="700">닫기</text>
+  <text x="678" y="220" fill="#475569" font-family="Arial, sans-serif" font-size="16">ghost / 보조 액션</text>
+
+  <rect x="48" y="280" width="864" height="176" rx="24" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+  <text x="88" y="338" fill="#111827" font-family="Arial, sans-serif" font-size="24" font-weight="700">정말 삭제하시겠습니까?</text>
+  <text x="88" y="378" fill="#6B7280" font-family="Arial, sans-serif" font-size="18">이 작업은 취소할 수 없습니다.</text>
+
+  <rect x="88" y="400" width="360" height="56" rx="14" fill="#FFFFFF" stroke="#E5E7EB" stroke-width="2"/>
+  <text x="268" y="435" text-anchor="middle" fill="#111827" font-family="Arial, sans-serif" font-size="24" font-weight="700">취소</text>
+
+  <rect x="468" y="400" width="360" height="56" rx="14" fill="#EE8567"/>
+  <text x="648" y="435" text-anchor="middle" fill="#FFFFFF" font-family="Arial, sans-serif" font-size="24" font-weight="700">삭제</text>
+</svg>
